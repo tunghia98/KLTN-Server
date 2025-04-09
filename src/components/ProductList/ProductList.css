@@ -1,0 +1,10 @@
+.product-list {
+    box-sizing: border-box;
+    width: 100%;
+    right: 0px;
+    display:grid;
+    grid-template-columns: repeat(5, minmax(250px, 1fr));
+    gap: 30px;
+    justify-content: space-between;
+    padding:20px;
+}

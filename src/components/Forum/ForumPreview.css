@@ -1,0 +1,88 @@
+.forum-preview {
+    /* border:solid 1px black; */
+    height: 100%;
+    width: 100%;
+}
+.topic-preview {
+    height: 75%;
+    width: 100%;
+    display: grid;
+    grid-template-areas: 
+    "main sub";/* Chia thành 2 cột */
+    margin-bottom: 25px;
+    gap:15px;
+}
+.main-topic{
+    grid-area:main;
+    width: 100%;
+    height: 100%;
+    border:solid 1px black;
+    border-radius:10px;
+    display:flex;
+    flex-direction: column; /* Sắp xếp theo chiều dọc */    
+    justify-content: flex-start;  /* Không có giãn cách, để phần tử theo chiều dọc tự động chiếm không gian */
+    text-align: left;
+    cursor: pointer;
+}
+.topic-img{
+    width: 200px;
+    height: 200px;
+    margin:0 auto;
+}
+.topic-title{
+    width: auto;     /* Để ảnh tự động điều chỉnh theo chiều rộng của ảnh gốc */
+    height: auto;
+    text-align: left;
+}
+.topic-describle{
+    width: auto;     /* Nội dung sẽ tự động fit theo kích thước nội dung */
+    padding: 5px;
+}
+.sub-topic{
+    height: 100%;
+    grid-area: sub;
+    display:grid;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 20px;
+}
+.sub-topic-1, .sub-topic-2{
+    height: 100%;
+    width: 100%;
+    border:solid 1px black;
+    display: flex;
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+    position:relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.sub-topic-1{
+    align-self: start;
+}
+.sub-topic-2{
+    align-self: end; 
+}
+.topic-small-icon{
+    width:100px;
+    height: 100%;
+    padding-bottom: 10px;
+    flex:1;
+    position: relative;
+    object-fit: contain;
+}
+
+.topic-describle{
+    font-size: 15px;
+    text-align: left;
+    padding: 10px;
+    flex:1;
+}
+.homepage-forum-btn{
+    width: 100%;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+}

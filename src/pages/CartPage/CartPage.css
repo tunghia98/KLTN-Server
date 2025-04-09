@@ -1,0 +1,10 @@
+.cart-page-main{
+    display:flex;
+    flex-direction:row;
+}
+.cart-page-left{
+    width: 100%;
+}
+.cart-page-right{
+    width: 30%;
+}

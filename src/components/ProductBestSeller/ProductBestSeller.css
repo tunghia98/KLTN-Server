@@ -1,0 +1,44 @@
+.product-category {
+    position: relative;
+    padding: 20px;
+    margin:0 auto;
+    background: #f6f6e9;
+}
+
+.category-items {
+    margin-top: 40px;
+    position: relative;
+}
+
+.custom-prev-arrow, 
+.custom-next-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background: white;
+    border: none;
+    font-size: 24px;
+    padding: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.custom-prev-arrow {
+    left: -40px;
+
+}
+
+.custom-next-arrow {
+    right: -40px;
+    
+}
+.product-category-line{
+    border: none; /* Xóa viền mặc định */
+    height: 1px; /* Độ dày đường kẻ */
+    background-color: grey; /* Màu */
+    width: 50%; /* Chiều rộng */
+    margin-top:40px;
+}

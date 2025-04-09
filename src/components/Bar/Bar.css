@@ -1,0 +1,37 @@
+.category-navbar{
+    height: max-content;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.categories-navbar h1{
+}
+
+.categories-navbar-detail{
+    flex:1;
+    display: grid;
+    grid-template-columns: repeat(6,minmax(200px,1fr)); /* Đảm bảo phần tử xếp ngang */
+    gap: 30px;
+    height: max-content;
+}
+.category-detail{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+.category-thumb{
+    width: 200px;
+    height: 200px;
+}
+.category-title{
+    margin:10px auto;
+    border:none;
+    color: #000;
+    text-align: center;
+}
+.category-name{
+    text-decoration: none;
+}

@@ -1,0 +1,18 @@
+.product-filter {
+    width: 100%;
+    font-family: Arial, sans-serif;
+    background: #fff;
+    padding: 16px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    display:flex;
+    flex-direction: column;
+    gap:20px;
+  }
+
+  .main-filter{
+    display:flex;
+    flex-direction: column;
+    gap:10px;
+  }
+  

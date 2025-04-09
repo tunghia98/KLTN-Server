@@ -1,0 +1,13 @@
+.product-pagination {
+    text-align: center;
+    margin: 20px 0;
+    margin-top: auto; /* Đẩy pagination xuống dưới */
+    padding: 10px;
+    text-align: center;
+}
+
+.product-pagination button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+}

@@ -1,0 +1,45 @@
+.footer-detail{
+    padding-top: 30px;
+}
+.footer-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Chia thành 4 cột đều */
+    gap: 10px; /* Khoảng cách giữa các cột */
+    background-color: #f6f6e9;
+    padding: 20px;
+    text-align: left;
+    font: 19px Arial;
+    color: #272727;
+    border: 1px solid #ccc; /* Viền cho mỗi cột */
+  }
+  
+.website-name{
+    font-size: 30px;
+    text-align:center;
+}
+.grid-item-logo {
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    height: 100%; /* Đảm bảo chiều cao của grid item */
+}
+.logo-footer{
+    width: 80%;
+    height: max-content;
+    cursor: pointer;
+}
+ul{
+    list-style-type: none;
+    padding: 0;
+}
+li{
+    padding: 10px;
+}
+  
+.footer-grid-container > div {
+    text-align: left;
+    padding: 20px 0;
+}
+.title{
+    padding-left:10px;
+}
+  

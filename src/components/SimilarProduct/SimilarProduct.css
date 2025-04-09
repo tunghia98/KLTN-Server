@@ -1,0 +1,58 @@
+.similar-product{
+    width: 100%;
+    height: 100%;
+}
+
+.similar-product-list{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin:0 auto;
+    justify-content: space-between;
+    row-gap: 10px;
+}
+
+.similar-product-item{
+    width: max-content;
+    height: max-content;
+    display: grid;
+    place-items: center; /* Căn giữa ngang + dọc */
+    border: 1px solid black;
+}
+
+.similar-product-item img{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.similar-product-item p{
+    font-size: 14px;
+    text-align: left;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.similar-product-price-trans{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+
+.similar-product-item span{
+    font-size: 14px;
+    color: #ff6600;
+    font-weight: bold;
+}
+
+.similar-product-item button{
+    width: 100%;
+    padding: 1px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

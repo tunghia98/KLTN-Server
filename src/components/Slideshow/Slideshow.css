@@ -1,0 +1,109 @@
+.slideshow {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80vw;
+    height: 30vw;
+    margin: 0 auto;
+}
+
+.slider {
+    width: inherit;
+    height: inherit;
+    overflow: hidden;
+    position: relative;
+}
+
+.slides {
+    display: flex;
+    width: 500%; /* 5 slides * 100% */
+    transition: margin-left 1s ease-in-out;
+}
+
+.slide {
+    width: 20%; /* Mỗi slide chiếm 20% của tổng 500% */
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slides img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.navigation-manual {
+    position: absolute;
+    bottom: 20px;
+    width: inherit;
+    display: flex;
+    justify-content: center;
+}
+
+.manual-btn {
+    border: 2px solid #fff;
+    padding: 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.manual-btn:not(:last-child) {
+    margin-right: 40px;
+}
+
+.manual-btn:hover {
+    background: red;
+}
+
+/* Điều khiển slide bằng radio buttons */
+input[type="radio"] {
+    display: none;
+}
+
+#radio1:checked ~ .slides {
+    margin-left: 0%;
+}
+#radio2:checked ~ .slides {
+    margin-left: -100%;
+}
+#radio3:checked ~ .slides {
+    margin-left: -200%;
+}
+#radio4:checked ~ .slides {
+    margin-left: -300%;
+}
+#radio5:checked ~ .slides {
+    margin-left: -400%;
+}
+
+.navigation-auto{
+    position:absolute;
+    display: flex;
+    width: 800px;
+    justify-content: center;
+    margin-top: 460px
+}
+.navigation-auto div {
+    border: 2px solid green;
+    padding: 5px;
+    border-radius: 10px;
+    transition: 1s;
+}
+.navigation-auto div:not(:last-child){
+    margin-right: 40px;
+}
+#radio2:checked ~ .navigation-auto .auto-btn2{
+    background: green;
+}
+#radio3:checked ~ .navigation-auto .auto-btn3{
+    background: green;
+}
+#radio4:checked ~ .navigation-auto .auto-btn4{
+    background: green;
+}#radio5:checked ~ .navigation-auto .auto-btn5{
+    background: green;
+}
