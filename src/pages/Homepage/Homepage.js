@@ -1,15 +1,25 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductBestSellers from "../../components/ProductBestSeller/ProductBestSeller.jsx";
 import SellerCard from "../../components/Seller/SellerCard.jsx";
 import ForumPreview from "../../components/Forum/ForumPreview.jsx";
 import Slideshow from "../../components/Slideshow/Slideshow.jsx";
-import { categories, sellers, bestsellers } from "./test.js";
+import { categories, sellers, bestsellers, products } from "../../data/data.js";
 import CategoryBar from "../../components/Bar/CategoryBar.jsx";
 import CategoryProducts from "../../components/CategoryProducts/CategoryProducts"; // Import mới
+import Brand from "../../components/Bar/Brand.jsx";
 import "./Homepage.css";
 
 const Homepage = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Khi path thay đổi về "/", có thể thực hiện hành động như reset state, fetch data lại...
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const navigate = useNavigate();
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
 
@@ -40,13 +50,18 @@ const Homepage = () => {
       {/* Hiển thị sản phẩm bán chạy */}
       <div className="homepage-product">
         <h1 className="title">TOP SẢN PHẨM BÁN CHẠY</h1>
-        <ProductBestSellers bestsellers={bestsellers} />
+        <ProductBestSellers bestsellers={bestsellers} products={products} />
       </div>
 
+      <Brand></Brand>
       {/* Hiển thị sản phẩm theo từng danh mục */}
       <div className="homepage-category-products">
         {categories.map((category, index) => (
-          <CategoryProducts key={index} category={category} />
+          <CategoryProducts
+            key={index}
+            category={category}
+            products={products}
+          />
         ))}
       </div>
     </div>

@@ -1,0 +1,15 @@
+.seller-page {
+    padding: 2rem;
+  }
+  
+  .seller-info {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2rem;
+  }
+  
+  .seller-products .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  

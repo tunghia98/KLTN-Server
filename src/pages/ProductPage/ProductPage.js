@@ -4,31 +4,38 @@ import "./ProductPage.css";
 import ProductList from "../../components/ProductList/ProductList.jsx";
 import ProductFilter from "../../components/ProductFilter/ProductFilter.jsx";
 import Pagination from "../../components/Pagination/Pagination.jsx";
-import productsData from "../../data/productsData.js";
+import { products, bestsellers, categories, sellers } from "../../data/data.js";
 
 function ProductPage() {
-  const { categoryName } = useParams();
+  const { categorySlug } = useParams(); // 💡 Đổi tên từ categoryName thành categorySlug
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 15;
 
+  const category = categories.find((cat) => cat.slug === categorySlug); // 💡 Tìm category theo slug
+
   useEffect(() => {
-    const productsInCategory = productsData.filter(
-      (product) => product.category === categoryName
-    );
-    setFilteredProducts(productsInCategory);
-    setCurrentPage(1);
-  }, [categoryName]);
-
-  // ✅ Bộ lọc nâng cao
-  const handleFilter = ({ crops, brands, sellers, cities, priceRange }) => {
-    let filtered = productsData;
-
-    if (categoryName) {
-      filtered = filtered.filter(
-        (product) => product.category === categoryName
+    if (category) {
+      const productsInCategory = products.filter(
+        (product) => product.categoryId === category.id
       );
+      setFilteredProducts(productsInCategory);
+    } else {
+      setFilteredProducts([]);
     }
+    setCurrentPage(1);
+  }, [category]);
+
+  const handleFilter = ({
+    crops,
+    brands,
+    sellers: sellerNames,
+    cities,
+    priceRange,
+  }) => {
+    let filtered = category
+      ? products.filter((product) => product.categoryId === category.id)
+      : products;
 
     if (crops.length > 0) {
       filtered = filtered.filter((product) => crops.includes(product.name));
@@ -38,12 +45,22 @@ function ProductPage() {
       filtered = filtered.filter((product) => brands.includes(product.brand));
     }
 
-    if (sellers.length > 0) {
-      filtered = filtered.filter((product) => sellers.includes(product.seller));
+    if (sellerNames.length > 0) {
+      const selectedSellerIds = sellers
+        .filter((s) => sellerNames.includes(s.name))
+        .map((s) => s.id);
+      filtered = filtered.filter((product) =>
+        selectedSellerIds.includes(product.sellerId)
+      );
     }
 
     if (cities.length > 0) {
-      filtered = filtered.filter((product) => cities.includes(product.city));
+      const selectedSellerIdsByCity = sellers
+        .filter((s) => cities.includes(s.city))
+        .map((s) => s.id);
+      filtered = filtered.filter((product) =>
+        selectedSellerIdsByCity.includes(product.sellerId)
+      );
     }
 
     if (priceRange && priceRange.length === 2) {
@@ -67,7 +84,9 @@ function ProductPage() {
 
   return (
     <div className="product-page">
-      <h1>Danh sách sản phẩm</h1>
+      <h1>
+        {category ? `Danh mục: ${category.name}` : "Danh mục không tồn tại"}
+      </h1>
       <div className="product-page-content">
         <div className="product-page-filter">
           <ProductFilter onFilter={handleFilter} />

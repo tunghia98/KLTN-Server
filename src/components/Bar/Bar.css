@@ -35,3 +35,36 @@
 .category-name{
     text-decoration: none;
 }
+.brand-bar {
+    padding: 2rem;
+    text-align: center;
+    background-color: #457d58;
+  }
+  
+  .brand-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #f6f6e9;
+  }
+  
+  .brand-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    justify-items: center;
+  }
+  
+  .brand-card {
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    padding: 1rem;
+    width: 100%;
+    max-width: 220px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .brand-card:hover {
+    transform: scale(1.03);
+    background-color: #e0f7e9;
+  }

@@ -1,5 +1,6 @@
 import React from 'react'
 import logo from "../../assets/logo-2-gra.png";
+import { Link } from 'react-router-dom';
 import "../../styles/global.css"
 import './Footer.css'
 
@@ -9,7 +10,7 @@ return (
         <div className="footer-detail">
             <div class="footer-grid-container">
                 <div class="grid-item-logo">
-                    <img className="logo-footer" src={logo}></img>
+                    <Link to="/"><img className="logo-footer" src={logo}></img></Link>
                 </div>
                 <div class="grid-item-service-customer">
                     <h4 className='title'>DỊCH VỤ KHÁCH HÀNG</h4>

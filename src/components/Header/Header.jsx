@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
 import { faCircleUser, faMagnifyingGlass, faLocationDot, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 import Login from "../AuthForm/Login"; 
 import logo from "../../assets/logo-2-gra.png";
 import Register from "../AuthForm/Register"; // Import PopupLogin
@@ -14,7 +16,7 @@ function Header() {
       <header>
         <nav>
           <ul>
-            <img className="header-logo" src={logo} alt="Logo" />
+            <Link to="/"><img className="header-logo" src={logo} alt="Logo"  /></Link>
             <li>
               <div className="header-search">
                 <input type="text" className="search-text" />

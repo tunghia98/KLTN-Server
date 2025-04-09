@@ -7,12 +7,19 @@ import "slick-carousel/slick/slick-theme.css";
 import { faChevronRight, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const ProductBestSellers = ({ bestsellers = [] }) => {
+// 🔥 Component nhận cả bestsellers và danh sách products
+const ProductBestSellers = ({ bestsellers = [], products = [] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderRef = useRef(null);
 
-  // Kiểm tra bestsellers có tồn tại hay không
-  const visibleProducts = Array.isArray(bestsellers) ? bestsellers.slice(0, 10) : [];
+  // 🔄 Chuyển bestsellers (chỉ có productId) thành danh sách sản phẩm chi tiết
+  const bestsellerProducts = Array.isArray(bestsellers)
+    ? bestsellers
+        .map(bs => products.find(p => p.id === bs.productId))
+        .filter(p => p) // loại bỏ sản phẩm không tìm thấy
+    : [];
+
+  const visibleProducts = bestsellerProducts.slice(0, 10); // chỉ lấy 10 sản phẩm
   const slidesToShow = Math.min(4, visibleProducts.length);
 
   const settings = {
@@ -37,8 +44,8 @@ const ProductBestSellers = ({ bestsellers = [] }) => {
     <div className="product-category">
       <Slider ref={sliderRef} {...settings} className="category-items">
         {visibleProducts.length > 0 ? (
-          visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} categoryName={product.category} />
+          visibleProducts.map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
           ))
         ) : (
           <p>Không có sản phẩm nào</p>

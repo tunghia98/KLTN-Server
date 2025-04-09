@@ -12,14 +12,14 @@ function CategoryBar({ categories, setSelectedCategoryIndex }) {
   }
   const handleClick = () => {
     // Điều hướng đến trang tất cả sản phẩm theo danh mục
-    navigate(`/products/${categories.name}`);
+    navigate(`/products/${categories.slug}`);
   }
   return (
     <div className="category-navbar">
       <h1>DANH MỤC SẢN PHẨM</h1>
       <div className="categories-navbar-detail">
         {categories.map((category, index) => {
-          const path = `/products/${toSlug(category.name)}/`; // tạo path riêng từng danh mục
+          const path = `/products/${category.slug}`; // tạo path riêng từng danh mục
 
           return (
             <div className="category-detail" key={index}>
