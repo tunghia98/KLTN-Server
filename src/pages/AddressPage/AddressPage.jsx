@@ -4,6 +4,8 @@ import AddressList from "../../components/Address/AddressList.jsx";
 import AddressForm from "../../components/Address/AddressForm.jsx";
 import Popup from "../../components/Common/Popup.jsx";
 import Button from "../../components/Common/Button.jsx";
+import {useAddress} from "../../components/Address/AddressContext.jsx"
+import { v4 as uuidv4 } from 'uuid';
 
 const AddressPage = () => {
   const initialAddresses = [
@@ -11,10 +13,21 @@ const AddressPage = () => {
     { id: 2, name: "Trần Minh Tâm", phone: "0901234567", detail: "19 Nguyễn Văn Linh, P. Tân Hưng, Q. 7, HCM" },
   ];
 
-  const [addresses, setAddresses] = useState(initialAddresses);
+  // Đọc danh sách địa chỉ từ localStorage nếu có
+  const storedAddresses = JSON.parse(localStorage.getItem("addresses")) || initialAddresses;
+  const [addresses, setAddresses] = useState(storedAddresses);
+
   const [selectedId, setSelectedId] = useState(initialAddresses[0]?.id || null);
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
+  const { setDefaultAddress } = useAddress();
+
+  useEffect(() => {
+    const defaultAddr = addresses.find((addr) => addr.isDefault);
+    setDefaultAddress(defaultAddr);
+  }, [addresses]);
+  
+  
 
   const handleAdd = () => {
     setEditingAddress(null);
@@ -28,53 +41,97 @@ const AddressPage = () => {
   };
 
   const handleSave = (newAddress) => {
-    setAddresses(prevAddresses => 
-      prevAddresses.map(addr => ({
+    const addressToAdd = {
+      ...newAddress,
+      id: uuidv4(),
+    };
+
+    let updatedAddresses;
+
+    if (newAddress.isDefault) {
+      updatedAddresses = addresses.map(addr => ({
         ...addr,
-        isDefault: newAddress.isDefault ? addr.id === newAddress.id : addr.isDefault
-      }))
-    );
-  
+        isDefault: false,
+      }));
+    } else {
+      updatedAddresses = [...addresses];
+    }
+
+    updatedAddresses.push(addressToAdd);
+    setAddresses(updatedAddresses);
+    localStorage.setItem("addresses", JSON.stringify(updatedAddresses));
+    if (newAddress.isDefault) {
+      setSelectedId(addressToAdd.id);
+    }
     setShowForm(false);
   };
+  const handleUpdate = (updatedAddress) => {
+    let updatedAddresses = addresses.map((addr) => {
+      if (addr.id === updatedAddress.id) {
+        return updatedAddress;
+      } else if (updatedAddress.isDefault) {
+        return { ...addr, isDefault: false };
+      } else {
+        return addr;
+      }
+    });
   
+    setAddresses(updatedAddresses);
+    localStorage.setItem("addresses", JSON.stringify(updatedAddresses));
+    if (updatedAddress.isDefault) {
+      setDefaultAddress(updatedAddress); // <-- cập nhật vào context
+    }
+  
+    setEditingAddress(null);
+    setShowForm(false);
+  };
 
   const handleDelete = (id) => {
-    setAddresses(addresses.filter(addr => addr.id !== id));
+    const newAddresses = addresses.filter(addr => addr.id !== id);
+    setAddresses(newAddresses);
+
+    // Nếu địa chỉ bị xóa là mặc định thì reset selectedId
+    if (id === selectedId) {
+      const defaultAddr = newAddresses.find(addr => addr.isDefault);
+      setSelectedId(defaultAddr ? defaultAddr.id : newAddresses[0]?.id || null);
+    }
   };
 
-  const handleSelect = (id) => {
-    setSelectedId(id);
-  };
-
-  const handleUpdate = (data) => {
-    setAddresses((prevAddresses) =>
-      prevAddresses.map((addr) =>
-        addr.id === data.id ? { ...addr, ...data } : addr
-      )
-    );
-    setShowForm(false);
+  const handleSelectDefault = (selectedId) => {
+    const updatedAddresses = addresses.map((addr) => ({
+      ...addr,
+      isDefault: addr.id === selectedId,
+    }));
+    setAddresses(updatedAddresses);
+  
+    // Gán địa chỉ mặc định vào context
+    const defaultAddr = updatedAddresses.find((a) => a.isDefault);
+    setDefaultAddress(defaultAddr);
   };
 
   return (
     <div className="address-page">
       <h2>Chọn địa chỉ giao hàng</h2>
 
-      <AddressList 
-        addresses={addresses} 
-        selectedId={selectedId} 
-        onSelect={handleSelect} 
-        onEdit={handleEdit} 
-        onDelete={handleDelete} 
+      <AddressList
+        addresses={addresses}
+        selectedId={selectedId}
+        onSelect={handleSelectDefault}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
 
-      <Button text="Thêm địa chỉ mới" onClick={handleAdd} btnStyle="add"></Button>
+      <Button text="Thêm địa chỉ mới" onClick={handleAdd} btnStyle="add" />
 
-      <Popup isOpen={showForm} onClose={() => setShowForm(false)} title={editingAddress ? "Sửa địa chỉ" : "Thêm địa chỉ"}>
-        <AddressForm 
-          initialData={editingAddress}  // Truyền editingAddress thay vì initialAddresses
-          onSave={handleSave} 
-          onCancel={() => setShowForm(false)} 
+      <Popup
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title={editingAddress ? "Sửa địa chỉ" : "Thêm địa chỉ"}
+      >
+        <AddressForm
+          initialData={editingAddress}
+          onSave={handleSave}
+          onCancel={() => setShowForm(false)}
           onUpdate={handleUpdate}
         />
       </Popup>

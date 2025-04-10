@@ -9,9 +9,6 @@
     padding: 10px 0;
     width: 100%;
   }
-.car-title-bar{
-  width: 70%;
-}
 input[type="checkbox"] {
     width: 18px;
     height: 18px;
@@ -52,7 +49,8 @@ input[type="checkbox"] {
     width: 100%;
 
   }
-  .cart-item-checkbox{
+  .cart-item-img{
+    width: 100px;
   }
   .cart-item-img-container{
     display: flex;

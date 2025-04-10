@@ -5,20 +5,30 @@ import RatingSupply from "../Rating/RatingSupply.jsx";
 import SimilarProduct from "../SimilarProduct/SimilarProduct.jsx";
 import Button from "../Common/Button.jsx";
 import { useNavigate } from "react-router-dom";
+import {useCart} from "../../components/Cart/CartContext.jsx"
 
 function ProductDetail({ product, seller }) {
   const { name, price, description } = product; // Lấy các thuộc tính từ product
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
   const productSellCounter = 10;
 
   const increaseQuantity = () => setQuantity((prev) => Math.min(prev + 1, 100));
   const decreaseQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
 
   const handleBuyNow = () => {
-    navigate("/cart"); // Điều hướng đến trang giỏ hàng
+    navigate(`/checkout`); // Điều hướng đến trang giỏ hàng
   };
 
+  const handleAddToCart = () => {
+    const cartItem = {
+      ...product,
+      quantity,
+    };
+    addToCart(cartItem); // <-- Thêm vào context
+    alert("Đã thêm vào giỏ hàng");
+  };
   return (
     <div className="product-detail">
       {/* Hình ảnh sản phẩm */}
@@ -98,7 +108,7 @@ function ProductDetail({ product, seller }) {
           </div>
         </div>
         <button className="buy-now" onClick={handleBuyNow}>Mua ngay</button>
-        <button className="add-to-cart">Thêm vào giỏ hàng</button>
+        <button className="add-to-cart" onClick={handleAddToCart}>Thêm vào giỏ hàng</button>
         <SimilarProduct />
       </div>
 

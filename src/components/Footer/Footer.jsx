@@ -1,52 +1,58 @@
-import React from 'react'
-import logo from "../../assets/logo-2-gra.png";
+import React from 'react';
+import logo from "../../assets/logo-footer.png";
 import { Link } from 'react-router-dom';
-import "../../styles/global.css"
-import './Footer.css'
+import "../../styles/global.css";
+import './Footer.css';
 
-function Footer(){
-return (
-    <footer>
-        <div className="footer-detail">
-            <div class="footer-grid-container">
-                <div class="grid-item-logo">
-                    <Link to="/"><img className="logo-footer" src={logo}></img></Link>
-                </div>
-                <div class="grid-item-service-customer">
-                    <h4 className='title'>DỊCH VỤ KHÁCH HÀNG</h4>
-                    <ul>
-                        <li>Trang chủ</li>
-                        <li>My Farm Forum</li>
-                        <li>Hướng dẫn mua hàng, đặt hàng</li>
-                        <li>Mua hàng</li>
-                        <li>Đơn hàng</li>
-                        <li>Trả hàng, hoàn tiền</li>
-                        <li>Liên hệ My Farm</li>
-                        <li>Chính sách bảo hành</li>
-                    </ul>
-                </div>
-                <div class="grid-item-about">
-                    <h4 className='title'>MY FARM</h4>
-                    <ul>
-                        <li>Về My Farm</li>
-                        <li>Điều khoản</li>
-                        <li>Chính sách bảo mật</li>
-                        <li>Kênh người bán</li>
-                        <li>Giảm giá</li>
-                        <li>Liên hệ hợp tác</li>
-                    </ul>
-                </div>
-                <div class="grid-item-payment-shipping">
-                    <h4 className='title'>HÌNH THỨC THANH TOÁN</h4>
-                    <div className='payment-method'>
-                        COD
+function Footer() {
+    return (
+        <footer>
+            <div className="footer-detail">
+                <div className="footer-grid-container">
+                    <div className="grid-item-logo">
+                        <Link to="/"><img className="logo-footer" src={logo} alt="Logo" /></Link>
                     </div>
-                    <h4 className='title'>ĐƠN VỊ VẬN CHUYỂN</h4>
-                    <div className='shipping-company'></div>
+
+                    <div className="grid-item-service-customer">
+                        <h4 className="title">DỊCH VỤ KHÁCH HÀNG</h4>
+                        <ul>
+                            <li><Link to="/">Trang chủ</Link></li>
+                            <li><Link to="/forum">My Farm Forum</Link></li>
+                            <li><Link to="/huong-dan">Hướng dẫn mua hàng, đặt hàng</Link></li>
+                            <li><Link to="/mua-hang">Mua hàng</Link></li>
+                            <li><Link to="/don-hang">Đơn hàng</Link></li>
+                            <li><Link to="/tra-hang">Trả hàng, hoàn tiền</Link></li>
+                            <li><Link to="/contact">Liên hệ LÚA</Link></li>
+                            <li><Link to="/warranty-policy">Chính sách bảo hành</Link></li>
+                        </ul>
+                    </div>
+
+                    <div className="grid-item-about">
+                        <h4 className="title">LÚA - CHỢ NÔNG</h4>
+                        <ul>
+                            <li><Link to="/about">Giới thiệu</Link></li>
+                            <li><Link to="/terms-of-service">Điều khoản</Link></li>
+                            <li><Link to="/privacy-policy">Chính sách bảo mật</Link></li>
+                            <li><Link to="/seller-channel">Kênh người bán</Link></li>
+                            <li><Link to="/discounts">Giảm giá</Link></li>
+                            <li><Link to="/partnership">Liên hệ hợp tác</Link></li>
+                        </ul>
+                    </div>
+
+                    <div className="grid-item-payment-shipping">
+                        <h4 className="title">HÌNH THỨC THANH TOÁN</h4>
+                        <div className="payment-method">
+                            COD
+                        </div>
+                        <h4 className="title">ĐƠN VỊ VẬN CHUYỂN</h4>
+                        <div className="shipping-company">
+                            {/* Logo hoặc tên đơn vị vận chuyển */}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>
-);
-};
-export default Footer
+        </footer>
+    );
+}
+
+export default Footer;

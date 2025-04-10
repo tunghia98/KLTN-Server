@@ -1,13 +1,24 @@
 import React from "react";
 import "./Checkout.css";
+import { useNavigate } from "react-router-dom";
+import { useAddress } from "../../components/Address/AddressContext.jsx"; // đảm bảo đúng path
 
-const ShippingInfo = ({ user }) => {
+const ShippingInfo = () => {
+  const navigate = useNavigate();
+  const { defaultAddress } = useAddress(); // Lấy từ context
+
+  const handleClick = () => {
+    navigate("/address");
+  };
+
+  if (!defaultAddress) return <p>Chưa có địa chỉ mặc định.</p>;
+
   return (
     <div className="shipping-info">
       <h3>Giao tới</h3>
-      <p>{user.name} - {user.phone}</p>
-      <p>{user.address}</p>
-      <button className="change-btn">Thay đổi</button>
+      <p>{defaultAddress.name} - {defaultAddress.phone}</p>
+      <p>{defaultAddress.detail}</p>
+      <button className="change-btn" onClick={handleClick}>Thay đổi</button>
     </div>
   );
 };

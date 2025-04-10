@@ -12,10 +12,13 @@ export const CartProvider = ({ children }) => {
       const exists = prevItems.find((item) => item.id === product.id);
       if (exists) {
         return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      // Khi thêm mới thì mặc định checked: true
+      return [...prevItems, { ...product, quantity: 1, checked: true }];
     });
   };
 
@@ -31,11 +34,33 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  const toggleChecked = (id) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
+    );
+  };
+
+  const toggleCheckAll = (checked) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) => ({ ...item, checked }))
+    );
+  };
+
   const clearCart = () => setCartItems([]);
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, updateQuantity, clearCart }}
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        toggleChecked,
+        toggleCheckAll,
+        clearCart,
+      }}
     >
       {children}
     </CartContext.Provider>

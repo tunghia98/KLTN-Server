@@ -40,7 +40,7 @@ function Header() {
             <li>
               <div className="header-cart">
                 <FontAwesomeIcon icon={faShoppingCart} className="icon-cart" />
-                <span><a>Giỏ hàng</a></span>
+                <span><Link to="/cart">Giỏ hàng</Link></span>
               </div>
             </li>
           </ul>

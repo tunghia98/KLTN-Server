@@ -5,11 +5,11 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* Chia thành 4 cột đều */
     gap: 10px; /* Khoảng cách giữa các cột */
-    background-color: #f6f6e9;
+    background-color: #457d58;
     padding: 20px;
     text-align: left;
     font: 19px Arial;
-    color: #272727;
+    color: #f8f8f8;
     border: 1px solid #ccc; /* Viền cho mỗi cột */
   }
   
@@ -42,4 +42,12 @@ li{
 .title{
     padding-left:10px;
 }
+.footer-detail li a {
+    text-decoration: none;
+    color: inherit;
+  }
+  .footer-detail li a:hover {
+    color: green;
+    font-weight: bold;
+  }
   

@@ -43,6 +43,7 @@ export const products = [
     price: 15000,
     sellerId: 1,
     slug: toSlug("Hạt giống cà chua F1"),
+    image: "./logo.png",
   },
   {
     id: 2,
@@ -52,6 +53,7 @@ export const products = [
     price: 75000,
     sellerId: 2,
     slug: toSlug("Phân bón hữu cơ vi sinh"),
+    image: "./logo.png",
   },
   {
     id: 3,
@@ -61,6 +63,7 @@ export const products = [
     price: 4500000,
     sellerId: 3,
     slug: toSlug("Máy xới đất mini"),
+    image: "./logo.png",
   },
   {
     id: 4,
@@ -70,6 +73,7 @@ export const products = [
     price: 120000,
     sellerId: 1,
     slug: toSlug("Cuộn màng phủ nông nghiệp"),
+    image: "./logo.png",
   },
   {
     id: 5,
@@ -79,6 +83,7 @@ export const products = [
     price: 30000,
     sellerId: 5,
     slug: toSlug("Rau sạch hữu cơ túi 500g"),
+    image: "./logo.png",
   },
   {
     id: 6,
@@ -88,6 +93,7 @@ export const products = [
     price: 80000,
     sellerId: 4,
     slug: toSlug("Chậu cây cảnh sứ men"),
+    image: "./logo.png",
   },
   {
     id: 7,
@@ -97,6 +103,7 @@ export const products = [
     price: 60000,
     sellerId: 2,
     slug: toSlug("Chế phẩm EM gốc"),
+    image: "./logo.png",
   },
   {
     id: 8,
@@ -106,6 +113,7 @@ export const products = [
     price: 25000,
     sellerId: 3,
     slug: toSlug("Bìa nilon che mưa cho cây"),
+    image: "./logo.png",
   },
   {
     id: 9,
@@ -115,6 +123,7 @@ export const products = [
     price: 12000,
     sellerId: 1,
     slug: toSlug("Hạt giống cải ngọt"),
+    image: "./logo.png",
   },
   {
     id: 10,
@@ -124,6 +133,7 @@ export const products = [
     price: 95000,
     sellerId: 2,
     slug: toSlug("Phân NPK 20-20-15"),
+    image: "./logo.png",
   },
 ];
 export const sellers = [

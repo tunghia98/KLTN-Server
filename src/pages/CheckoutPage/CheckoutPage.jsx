@@ -1,6 +1,6 @@
 import React from "react";
-import OrderSummary from "../../components/Checkout/OrderSummary";
-import ShippingInfo from "../../components/Checkout/ShippingInfo";
+import OrderSummary from "../../components/Checkout/OrderSummary.jsx";
+import ShippingInfo from "../../components/Checkout/ShippingInfo.jsx";
 import Payment from "../../components/Payment/Payment.jsx";
 
 const userInfo = {

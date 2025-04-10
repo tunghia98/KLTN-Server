@@ -1,29 +1,44 @@
 import "./ProductCard.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../Cart/CartContext";
 
 const ProductCard = ({ product, categoryName, index }) => {
+  const { addToCart } = useCart(); // dùng context
+  const navigate = useNavigate(); // để chuyển hướng khi mua
+
   if (!product) return <p>Không có sản phẩm.</p>;
 
-  // Sử dụng product.slug cho đường dẫn động
   const productLink = `/product/${product.slug}`;
+
+  // const handleBuyNow = () => {
+  //   addToCart(product);       // thêm vào giỏ hàng
+  //   navigate("/cart");        // chuyển tới trang giỏ hàng
+  // };
 
   return (
     <div className="product-card">
       <img
-        src={product.image || "logo-2.png"}
+        src={product.image}
         alt={product.name}
         className="card-img"
       />
+
       <h3 className="card-title">
         <Link
-          to={productLink} // Đường dẫn sử dụng slug sản phẩm
-          state={{ product, idSeller:product.idSeller }} // Truyền state sản phẩm cho trang chi tiết
+          to={productLink}
+          state={{ product, idSeller: product.idSeller }}
           className="card-link"
         >
           {product.name}
         </Link>
       </h3>
+
       <p className="card-price">${product.price || "Liên hệ"}</p>
+
+      {/* Nút mua ngay */}
+      {/* <button className="buy-btn" onClick={handleBuyNow}>
+        Mua ngay
+      </button> */}
     </div>
   );
 };

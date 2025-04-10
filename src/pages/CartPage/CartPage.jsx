@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import "./CartPage.css";
-import CartList from "../../components/Cart/CartList";
-import CartSummary from "../../components/Cart/CartSummary";
-import ShippingInfo from "../../components/Checkout/ShippingInfo";
-import OrderSummary from "../../components/Checkout/OrderSummary";
-
-const initialCart = [
-  { id: 1, name: "Sản phẩm A", price: 22000, quantity: 2, image: "/logo192.png" },
-  { id: 2, name: "Sản phẩm B", price: 175000, quantity: 1, image: "/logo192.png" },
-];
+import CartList from "../../components/Cart/CartList.jsx";
+import CartSummary from "../../components/Cart/CartSummary.jsx";
+import ShippingInfo from "../../components/Checkout/ShippingInfo.jsx";
+import OrderSummary from "../../components/Checkout/OrderSummary.jsx";
+import { useCart } from "../../components/Cart/CartContext.jsx";
 
 const userInfo = {
   name: "Nguyễn Hoàng Kiều Ngân",
@@ -17,41 +13,31 @@ const userInfo = {
 };
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState(initialCart);
-
-  const updateQuantity = (id, delta) => {
-    setCartItems(cartItems.map(item =>
-      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-    ));
-  };
-
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+  const { cartItems, updateQuantity, removeFromCart, toggleChecked, toggleCheckAll } = useCart(); // Dùng từ context
+  const checkedItems = cartItems.filter((item) => item.checked);
+  const total = checkedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  
   return (
     <div className="cart-page">
       <h2>Giỏ hàng</h2>
       <div className="cart-page-main">
         <div className="cart-page-left">
-          <CartList 
-          items={cartItems} 
-          onIncrease={(id) => updateQuantity(id, 1)} 
-          onDecrease={(id) => updateQuantity(id, -1)} 
-          onRemove={removeItem} 
-        />
+          <CartList
+            products={cartItems}
+            onIncrease={(id) => updateQuantity(id, cartItems.find(item => item.id === id).quantity + 1)}
+            onDecrease={(id) => updateQuantity(id, Math.max(1, cartItems.find(item => item.id === id).quantity - 1))}
+            onRemove={removeFromCart}
+            onToggleCheck={toggleChecked}
+            onToggleCheckAll={toggleCheckAll}
+          />
         </div>
 
-      <div className="cart-page-right">
-        <ShippingInfo user={userInfo} />
-        <OrderSummary total={total} />
-        <CartSummary total={total} />
+        <div className="cart-page-right">
+          <ShippingInfo user={userInfo} />
+          <OrderSummary total={total} />
+          <CartSummary total={total} />
+        </div>
       </div>
-
-      </div>
-
     </div>
   );
 };

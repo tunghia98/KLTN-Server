@@ -78,6 +78,7 @@ const AddressForm = ({ initialData, onSave, onCancel, onUpdate }) => {
             className="default-check"
             name="isDefault"
             checked={formData.isDefault}
+            disabled={initialData.isDefault}
             onChange={(e) => setFormData(prev => ({ ...prev, isDefault: e.target.checked }))}
         />
         <span>Đặt làm địa chỉ mặc định</span>

@@ -7,9 +7,15 @@ import CartPage from "../pages/CartPage/CartPage";
 import Address from "../pages/AddressPage/AddressPage";
 import CheckoutPage from "../pages/CheckoutPage/CheckoutPage";
 import SellerPage from "../pages/SellerPage/SellerPage.jsx";
+import TermsOfServicePage from "../pages/TermsOfServicePage.jsx";
+import PrivacyPolicyPage from "../pages/PrivacyPolicyPage.jsx";
+import AboutPage from "../pages/AboutPage.jsx";
+import ContactPage from "../pages/ContactPage.jsx";
+import WarrantyPolicyPage from "../pages/WarrantyPolicyPage.jsx";
 
 // Import dữ liệu
 import { categories, bestsellers, sellers, products } from "../data/data.js";
+
 
 // Gộp tất cả products từ các category lại thành 1 mảng duy nhất
 const allProducts = categories.flatMap((category) => category.products);
@@ -26,6 +32,11 @@ const AppRoutes = () => {
       <Route path="/cart" element={<CartPage />} />
       <Route path="/address" element={<Address />} />
       <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/terms-of-service" element={<TermsOfServicePage/>}/>
+      <Route path="/privacy-policy" element={<	PrivacyPolicyPage/>}/>
+      <Route path="/about" element={<AboutPage/>}/>
+      <Route path="/contact" element={<ContactPage/>}/>
+      <Route path="/warranty-policy" element={<WarrantyPolicyPage/>}/>
     </Routes>
   );
 };
