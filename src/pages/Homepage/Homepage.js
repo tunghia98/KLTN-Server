@@ -3,8 +3,6 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductBestSellers from "../../components/ProductBestSeller/ProductBestSeller.jsx";
-import SellerCard from "../../components/Seller/SellerCard.jsx";
-import ForumPreview from "../../components/Forum/ForumPreview.jsx";
 import Slideshow from "../../components/Slideshow/Slideshow.jsx";
 import { categories, sellers, bestsellers, products } from "../../data/data.js";
 import CategoryBar from "../../components/Bar/CategoryBar.jsx";

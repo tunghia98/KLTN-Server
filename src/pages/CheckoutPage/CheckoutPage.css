@@ -1,0 +1,25 @@
+.checkout-page {
+  display:flex;
+  flex-direction: row;
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 5px;
+}
+.checkout-page h2{
+  text-align: center;
+}
+
+
+.checkout-page-payment{
+}
+.checkout-page-right{
+  display:flex;
+  flex-direction: column;
+}
+.checkout-page-shippinginfo{}
+.checkout-page-discount{}
+.checkout-page-summary{
+
+}

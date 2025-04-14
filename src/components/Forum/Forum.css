@@ -1,0 +1,69 @@
+/* CSS cho diễn đàn */
+body {
+    font-family: Arial, sans-serif;
+  }
+  
+  .navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+  }
+  
+  .navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar ul li {
+    display: inline;
+    margin-right: 20px;
+  }
+  
+  .navbar ul li a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .forum-list, .thread-page, .post-page {
+    padding: 20px;
+  }
+  
+  .thread, .post {
+    background-color: white;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .forum-list ul {
+    list-style: none;
+  }
+  
+  .forum-list li {
+    margin: 10px 0;
+  }
+  
+  .forum-list li a {
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .forum-list li a:hover {
+    color: #007bff;
+  }
+  
+  .thread h3 {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .thread ul {
+    list-style: none;
+  }
+  
+  .thread ul li {
+    margin-bottom: 15px;
+  }
+  

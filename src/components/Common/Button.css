@@ -168,4 +168,28 @@
   cursor: pointer;
   transition: background-color 0.25s;
 }
-/* Bạn có thể thêm nhiều kiểu nút khác ở đây */
+.btn-apply {
+  background-color: #17a2b8;  /* Xanh biển nhạt */
+  color: white;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-apply:hover {
+  background-color: #138496;  /* Xanh biển đậm hơn khi hover */
+}
+
+.btn-apply:active {
+  background-color: #117a8b;  /* Xanh biển tối khi nhấn */
+}
+
+.btn-apply:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+

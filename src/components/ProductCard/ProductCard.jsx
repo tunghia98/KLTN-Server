@@ -1,6 +1,7 @@
 import "./ProductCard.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../Cart/CartContext";
+import { useCart } from "../../contexts/CartContext";
+import formatVND from "../../utils/format";
 
 const ProductCard = ({ product, categoryName, index }) => {
   const { addToCart } = useCart(); // dùng context
@@ -18,7 +19,7 @@ const ProductCard = ({ product, categoryName, index }) => {
   return (
     <div className="product-card">
       <img
-        src={product.image}
+        src={product.images[0]}
         alt={product.name}
         className="card-img"
       />
@@ -33,7 +34,7 @@ const ProductCard = ({ product, categoryName, index }) => {
         </Link>
       </h3>
 
-      <p className="card-price">${product.price || "Liên hệ"}</p>
+      <p className="card-price">{formatVND(product.price) || "Liên hệ"}</p>
 
       {/* Nút mua ngay */}
       {/* <button className="buy-btn" onClick={handleBuyNow}>

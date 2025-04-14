@@ -11,7 +11,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onTog
   onChange={() => onToggleCheck(item.id)} />
 
       <div className="cart-item-img-container">
-        <img src={item.image} alt={item.name} className="cart-item-img" />
+        <img src={item.images[0]} alt={item.name} className="cart-item-img" />
         <a>{item.name}</a>
       </div>
 

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./CartPage.css";
 import CartList from "../../components/Cart/CartList.jsx";
 import CartSummary from "../../components/Cart/CartSummary.jsx";
 import ShippingInfo from "../../components/Checkout/ShippingInfo.jsx";
 import OrderSummary from "../../components/Checkout/OrderSummary.jsx";
-import { useCart } from "../../components/Cart/CartContext.jsx";
+import { useCart } from "../../contexts/CartContext.jsx";
 
 const userInfo = {
   name: "Nguyễn Hoàng Kiều Ngân",
@@ -13,7 +14,7 @@ const userInfo = {
 };
 
 const CartPage = () => {
-  const { cartItems, updateQuantity, removeFromCart, toggleChecked, toggleCheckAll } = useCart(); // Dùng từ context
+  const { cartItems, updateQuantity, removeFromCart, toggleChecked, toggleCheckAll } = useCart();
   const checkedItems = cartItems.filter((item) => item.checked);
   const total = checkedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   
@@ -35,7 +36,7 @@ const CartPage = () => {
         <div className="cart-page-right">
           <ShippingInfo user={userInfo} />
           <OrderSummary total={total} />
-          <CartSummary total={total} />
+          <CartSummary total={total} cartItems={checkedItems} />
         </div>
       </div>
     </div>

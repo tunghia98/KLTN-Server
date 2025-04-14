@@ -1,9 +1,8 @@
 .product-card {
     width: 250px;
-    height: fit-content;
     border: 2px solid #457d58;
     display: block;
-    margin: 0 auto;  
+    margin: 0 auto;
 }
 .product-card:hover{
     border-radius: 10%;
@@ -37,4 +36,10 @@
 }
 .product-card .card-link{
     text-decoration: none;
+    height: 48px; /* hoặc số dòng cố định, ví dụ 2 dòng */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* số dòng muốn hiển thị */
+    -webkit-box-orient: vertical;
 }

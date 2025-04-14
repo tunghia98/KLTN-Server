@@ -24,13 +24,14 @@
     align-items: center;
     border-radius: 10px;
     height: 100%;
+
 }
 
 .product-detail-img-main {
     width: 100%;
+    height: 100%;
     max-height: 500px;
-    max-width: 500px;
-    object-fit: cover;
+    object-fit: contain;
     border: 1px solid #ccc;
     border-radius: 10px;
 }
@@ -51,6 +52,7 @@
     cursor: pointer;
 }
 .product-main-info {
+    box-sizing: border-box;
     display: grid;
     grid-template-rows: 38% 32% 30%;
     width: 100%;
@@ -59,6 +61,7 @@
     height: 100%; 
     overflow: hidden; 
     row-gap: 10px;
+    overflow: hidden;
 }
 
 /* Thông tin sản phẩm */
@@ -68,6 +71,8 @@
     border-radius: 10px;
     height: 100%;
     flex: 0 0 auto;
+    padding-left:15px;
+    box-sizing: border-box;
 }
 
 .product-rating-and-sold {
@@ -109,8 +114,10 @@
     border-radius: 10px;
     height: 100%;
     padding-left:15px;
+    padding-right:15px;
     position: relative;
     flex:0 0 auto;
+    box-sizing: border-box;
 }
 
 .delivery-from, .delivery-to{
@@ -148,6 +155,8 @@
     min-height: 0; /* Ngăn lỗi mở rộng vô hạn */
     overflow-y: auto; /* Nếu nội dung quá nhiều, có thanh cuộn */
     height: 100%;
+    box-sizing: border-box;
+    padding-left:15px;
 }
 .product-promotion ul{
     list-style: none;
@@ -169,13 +178,16 @@
     align-items: center;
     grid-row:1/3;
     grid-column: 3/4;
+    overflow: hidden;
 }
 
 .buy-now, .add-to-cart {
+    margin:0 auto;
     width: 100%;
     padding: 10px;
     font-size: 16px;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .buy-now {
@@ -201,24 +213,33 @@
 
 .product-supply{
     width:100%;
-    height: 100px;
+    height: 100%;
     display:flex;
     border-bottom: solid 1px #ccc;
+    align-items: center;
+}
+.product-supply a{
+    text-decoration: none;
+    font-weight: bold;
 }
 
 .product-supply img{
-    width: 100px;
+    border: 10px solid white;
+    width: fit-content;
     height: 100px;
 }
 .supply-information{
+    padding-top:5px;
     display: flex;
     flex-direction: column;
     margin-left: 10px;
+    gap:5px;
 }
 .supply-rating-and-sold{
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: left;
+    gap: 5px;
+    flex-direction: column;
 }
 .quantity-controls {
     display: flex;
@@ -258,4 +279,22 @@
     margin-top:20px;
     position: relative; 
 }
-
+.product-detail-title{
+    padding-left:15px;
+    font-size: larger;
+}
+.product-detail-thumbnail {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .product-detail-thumbnail:hover {
+    border-color: #4caf50;
+  }
+  
+  .product-detail-thumbnail.active {
+    border-color: #2e7d32;
+  }
+  

@@ -12,6 +12,10 @@ import PrivacyPolicyPage from "../pages/PrivacyPolicyPage.jsx";
 import AboutPage from "../pages/AboutPage.jsx";
 import ContactPage from "../pages/ContactPage.jsx";
 import WarrantyPolicyPage from "../pages/WarrantyPolicyPage.jsx";
+import ForumHomePage from '../pages/Forum/ForumHomePage.jsx';
+import ForumPage from '../pages/Forum/ForumPage.jsx';
+import ThreadPage from '../pages/Forum/ThreadPage.jsx';
+import PostPage from '../pages/Forum/PostPage.jsx';
 
 // Import dữ liệu
 import { categories, bestsellers, sellers, products } from "../data/data.js";
@@ -37,6 +41,10 @@ const AppRoutes = () => {
       <Route path="/about" element={<AboutPage/>}/>
       <Route path="/contact" element={<ContactPage/>}/>
       <Route path="/warranty-policy" element={<WarrantyPolicyPage/>}/>
+      <Route path="/forum" element ={<ForumHomePage/>} />
+      <Route path="/forum/:id" element ={<ForumPage/>} />
+      <Route path="/forum/:forumId/thread/:threadId" element={<ThreadPage/>} />
+      <Route path="/forum/:forumId/thread/:threadId/post/:postId" element={<PostPage/>} />
     </Routes>
   );
 };
