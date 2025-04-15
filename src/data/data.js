@@ -34,6 +34,12 @@ export const categories = [
   },
   { id: 8, name: "Khác", slug: "khac", img: "./logo.png" },
 ];
+export const userAccounts = [
+  { id: 10, username: "Shop123", password: "hehehe123", name: "Nông Sản Tây Nguyên", address: "Buôn Ma Thuột", avatar: "/logo.png", role: "seller" },
+  { id: 11, username: "ngan123", password: "hehehe123", name: "Nguyễn Hoàng Kiều Ngân", address: "52 Trần Văn Dư, P13, Tân Bình, TPHCM", avatar: "/logo.png", role: "user" },
+  { id: 12, username: "A123", password: "hehehe123", name: "Nguyễn Văn A", address: "17 Nguyễn Chánh Sắt, P13, Tân Bình, TPHCM", avatar: "/logo.png", role: "user" },
+  { id: 99, username: "admin", password: "taodanhchetcha", name: "Quản trị viên", address: "Hệ thống", avatar: "/logo.png", role: "admin" }
+];
 export const products = [
   {
     id: 1,
