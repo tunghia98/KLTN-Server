@@ -16,32 +16,65 @@ function Login({ isOpen, onClose, onSwitchToRegister }) {
 
   if (!isOpen) return null;
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
-    // Tìm người dùng trong dữ liệu
-    const foundUser = userAccounts.find(
-      (u) => u.username === email && u.password === password
-    );
-
-    if (foundUser) {
-      setUser(foundUser);
-      localStorage.setItem('user', JSON.stringify(foundUser));
-      alert(`Chào mừng ${foundUser.name}!`);
-    
-      // Điều hướng dựa trên role
-      if (foundUser.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (foundUser.role === "seller") {
-        navigate("/seller/dashboard");
-        onClose();
-      } else {
-        onClose();
+  
+    try {
+      const response = await fetch("https://kltn.azurewebsites.net/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userName: email,
+          password: password,
+        }),
+      });
+  
+      if (!response.ok) {
+        const message = await response.text();
+        alert(message || "Sai tài khoản hoặc mật khẩu!");
+        return;
       }
-    } else {
-      alert("Sai tài khoản hoặc mật khẩu!");
+  
+      const data = await response.json();
+  
+      // Lưu token
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+  
+      // ✅ Giải mã token KHÔNG có schema
+      const payload = JSON.parse(atob(data.accessToken.split(".")[1]));
+      const userId = payload["userId"];
+      const username = payload["username"];
+      const role = payload["role"]; // Đúng định dạng bạn tạo
+  
+      const loggedInUser = { userId, username, role };
+  
+      setUser(loggedInUser);
+      if (rememberMe) {
+        localStorage.setItem("user", JSON.stringify(loggedInUser));
+      }
+  
+      alert(`Chào mừng ${username}!`);
+  
+      // Điều hướng theo role
+      if (role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (role === "seller") {
+        navigate("/seller/dashboard");
+      } else {
+        navigate("/");
+      }
+  
+      onClose();
+  
+    } catch (err) {
+      alert("Lỗi kết nối đến máy chủ!");
+      console.error(err);
     }
   };
+  
 
   return ReactDOM.createPortal(
     <Popup isOpen={isOpen} onClose={onClose} title="Đăng nhập" redirectTo="/">
