@@ -1,0 +1,93 @@
+/* Layout container */
+.management-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f7fafc;
+  }
+  
+  /* Sidebar */
+  .management-layout-aside {
+    width: 16rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    position: fixed; /* Giữ sidebar cố định */
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+  
+  .management-layout-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .management-layout-menu-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .management-layout-menu-list li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .management-layout-menu-list li a {
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #4a5568;
+    transition: background-color 0.3s ease;
+  }
+  
+  .management-layout-menu-list li a:hover {
+    color: #3182ce;
+    background-color: #edf2f7;
+  }
+  
+  /* Main content area */
+  .main-content {
+    margin-left: 16rem; /* Chừa khoảng cho sidebar */
+    margin-top: 4rem; /* Chừa khoảng cho header */
+    padding: 1.5rem;
+    flex: 1;
+    background-color: #f7fafc;
+  }
+  
+  .flex-1 {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header */
+  .management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2d3748;
+    color: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .management-header .title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .management-header .menu {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .management-header .menu a {
+    text-decoration: none;
+    color: #ffffff;
+    transition: text-decoration 0.3s ease;
+  }
+  
+  .management-header .menu a:hover {
+    text-decoration: underline;
+  }
+  

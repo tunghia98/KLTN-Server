@@ -1,13 +1,21 @@
-// src/components/PrivateRoute.jsx
-import { Navigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { Navigate } from "react-router-dom";
 
-const PrivateRoute = ({ children, allowedRoles }) => {
-  const { user } = useUser();
+const PrivateRoute = ({ allowedRoles, children }) => {
+  const { user, loading } = useUser();
 
-  if (!user) return <Navigate to="/login" replace />;
-  if (!allowedRoles.includes(user.role)) return <Navigate to="/unauthorized" replace />;
-  
+  if (loading) {
+    return <div>Đang kiểm tra phiên đăng nhập...</div>;  // hoặc loading spinner
+  }
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" />;
+  }
+
   return children;
 };
 

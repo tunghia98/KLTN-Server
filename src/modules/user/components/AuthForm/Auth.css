@@ -12,7 +12,7 @@
   padding: 30px 25px;
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  width: 350px;
+  width: 100%;
   transition: all 0.3s ease-in-out;
 }
 
@@ -27,11 +27,14 @@
 }
 
 .form-group {
+  margin:0 auto;
   width: 100%;
   display:flex;
   flex-direction: row;
   margin-bottom: 18px;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-items: center;
+
 }
 
 label {
@@ -41,7 +44,8 @@ label {
   display: block;
 }
 
-input {
+.form-group input {
+  width: 60%;
   padding: 12px;
   font-size: 15px;
   border-radius: 8px;
@@ -59,26 +63,30 @@ button:hover {
   background-color: #0056b3;
 }
 
-.checkbox-group {
-  display: flex;
+.checkbox-group{
+  margin: 0 auto;
+  width: 100%;
+  display:flex;
+  flex-direction: column;
+  gap:1px;
+  margin-bottom: 18px;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
 }
-
+.popup-login-form{
+  margin:0 auto;
+  width: 80%;
+}
 .popup-login-form .form-actions {
   margin-top: 10px;
+  text-align: center;
 }
-
-.popup-login-form .form-actions button {
-  width: 100%;
-  font-size: 16px;
+.popup-login-form label{
+  text-align: left;
 }
-
 .popup-login-form .register-link,
 .popup-login-form .forgot-link {
   display: block;
-  text-align: center;
   margin-top: 12px;
   font-size: 14px;
   color: #007bff;
@@ -89,4 +97,9 @@ button:hover {
 .popup-login-form .register-link:hover,
 .popup-login-form .forgot-link:hover {
   text-decoration: underline;
+}
+.auth-options{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

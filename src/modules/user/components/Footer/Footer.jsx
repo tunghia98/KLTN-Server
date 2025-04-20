@@ -1,9 +1,20 @@
-import React from 'react';
+import React,{useStat} from 'react';
 import logo from "../../../../assets/logo-footer.png";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../../../../contexts/UserContext';
+import Login from "../AuthForm/Login.jsx"
 import './Footer.css';
 
 function Footer() {
+    const navigate = useNavigate();
+    const { isLoggedIn } = useUser();
+    const handleClick = () => {
+        if (isLoggedIn) {
+          navigate("/onboarding");
+        } else {
+          navigate("/login");
+        }
+      };
     return (
         <footer>
             <div className="footer-detail">
@@ -32,7 +43,7 @@ function Footer() {
                             <li><Link to="/about">Giới thiệu</Link></li>
                             <li><Link to="/terms-of-service">Điều khoản</Link></li>
                             <li><Link to="/privacy-policy">Chính sách bảo mật</Link></li>
-                            <li><Link to="/seller-channel">Kênh người bán</Link></li>
+                            <li onClick={handleClick}>Kênh người bán</li>
                             <li><Link to="/discounts">Giảm giá</Link></li>
                             <li><Link to="/partnership">Liên hệ hợp tác</Link></li>
                         </ul>

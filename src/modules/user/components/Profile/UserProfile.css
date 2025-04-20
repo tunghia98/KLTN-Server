@@ -1,112 +1,127 @@
-/* Basic Reset */
+/* Profile container */
 .profile-container {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  .profile-title {
-    font-size: 24px;
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-  .profile-card {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    padding: 20px;
-  }
-  .profile-content > div {
-    margin-bottom: 8px;
-  }
-  .btn {
-    padding: 8px 16px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .btn-outline {
-    padding: 6px 14px;
-    border: 1px solid #4CAF50;
-    background: white;
-    color: #4CAF50;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .btn-danger {
-    padding: 8px 16px;
-    background: #e53935;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .tabs {
-    margin-bottom: 30px;
-  }
-  .tabs input {
-    display: none;
-  }
-  .tabs label {
-    margin-right: 10px;
-    padding: 8px 16px;
-    background: #eee;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .tabs input:checked + label {
-    background: #4CAF50;
-    color: white;
-  }
-  .tab-content {
-    margin-top: 15px;
-    display: none;
-  }
-  #tab-addresses:checked ~ #addresses,
-  #tab-orders:checked ~ #orders {
-    display: block;
-  }
-  .address-card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  .default-label {
-    color: green;
-    margin-left: 8px;
-    font-weight: 600;
-  }
-  .order-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .order-table th, .order-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  .tab-title {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-  .membership-section ul {
-    padding-left: 20px;
-    list-style: disc;
-  }
-  .mt-4 {
-    margin-top: 16px;
-  }
-  .mt-8 {
-    margin-top: 32px;
-  }
-  .text-right {
-    text-align: right;
-  }
-  
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+/* Title */
+.profile-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Profile card */
+.profile-card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.profile-content {
+  font-size: 16px;
+}
+
+.profile-content strong {
+  font-weight: bold;
+}
+
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"]:checked + label {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+input[type="radio"]:checked + label + .tab-content {
+  display: block;
+}
+
+.tab-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.address-card, .order-table {
+  margin-bottom: 20px;
+}
+
+.default-label {
+  color: green;
+  font-weight: bold;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #3b82f6;
+  color: #3b82f6;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Membership section */
+.membership-section {
+  margin-top: 30px;
+}
+
+.membership-section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.membership-section li {
+  margin-bottom: 10px;
+}
+
+/* Button danger (Logout) */
+.btn-danger {
+  background-color: #ef4444;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+}
+
+/* Text align right */
+.text-right {
+  text-align: right;
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.mt-8 {
+  margin-top: 32px;
+}

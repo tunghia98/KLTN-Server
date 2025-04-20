@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import toSlug from "../utils/toSlug.js";
 import Homepage from "../modules/user/pages/Homepage/Homepage";
 import ProductPage from "../modules/user/pages/ProductPage/ProductPage";
 import ProductDetailPage from "../modules/user/pages/ProductDetailPage/ProductDetailPage";
@@ -14,65 +13,108 @@ import ContactPage from "../modules/user/pages/ContactPage.jsx";
 import WarrantyPolicyPage from "../modules/user/pages/WarrantyPolicyPage.jsx";
 import ForumPage from '../modules/user/pages/Forum/ForumPage.jsx';
 import ThreadDetailPage from '../modules/user/pages/Forum/ThreadDetailPage.jsx';
-// Import dữ liệu
-import { categories, bestsellers, sellers, products } from "../data/data.js";
 import UserInfoPage from "../modules/user/pages/UserInfoPage/UserInfoPage.jsx";
 import { useUser } from "../contexts/UserContext";
 import PrivateRoute from "../components/PrivateRoute.jsx";
-import SellerDashboard from "../pages/SellerDashboard/SellerDashboard.jsx";
-import AdminDashboard from "../modules/admin/pages/AdminDashboard.jsx";
 import ManageUsers from "../modules/admin/pages/ManageUsers.jsx";
 import ApproveSellers from "../modules/admin/pages/ApproveSellers.jsx";
 import ManageForum from "../modules/admin/pages/ManageForum.jsx";
 import EditLogo from "../modules/admin/pages/EditLogo.jsx";
-// Gộp tất cả products từ các category lại thành 1 mảng duy nhất
-const allProducts = categories.flatMap((category) => category.products);
+import SellerOnboarding from "../modules/user/components/Onboarding/SellerOnboarding.jsx";
+import Login from "../modules/user/components/AuthForm/Login.jsx";
+import ManagementLayout from "../layouts/ManagementLayout.jsx"; // Đảm bảo dùng chung layout
+import OrdersManagementPage from "../modules/seller/pages/Orders/OrdersManagementPage.jsx";
+import ProductsManagementPage from "../modules/seller/pages/Products/ProductsManagementPage.jsx";
+import OrderDetailPage from "../modules/seller/pages/Orders/OrderManagementDetailPage.jsx";
 
 const AppRoutes = () => {
   const { user } = useUser();
+  
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Homepage />} />
-      <Route path="/products/:categorySlug" element={<ProductPage />} />
-      <Route path="/products" element={<ProductPage />} />
-      {/* Cập nhật đoạn này */}
-      <Route path="/product/:productSlug" element={<ProductDetailPage products={products} />} />
-      <Route path="/seller/:sellerId" element={<SellerInfoPage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/address" element={<Address />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/terms-of-service" element={<TermsOfServicePage/>}/>
-      <Route path="/privacy-policy" element={<	PrivacyPolicyPage/>}/>
-      <Route path="/about" element={<AboutPage/>}/>
-      <Route path="/contact" element={<ContactPage/>}/>
-      <Route path="/profile" element ={<UserInfoPage/>}/>
-      <Route path="/warranty-policy" element={<WarrantyPolicyPage/>}/>
-      <Route path="/forum" element ={<ForumPage/>} />
-      <Route path="/forum/thread/:title" element={<ThreadDetailPage/>} />
-      {/* Seller Route */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Homepage />} />
+      <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/warranty-policy" element={<WarrantyPolicyPage />} />
+      <Route path="/profile" element={<UserInfoPage />} />
+      <Route path="/forum" element={<ForumPage />} />
+      <Route path="/forum/thread/:title" element={<ThreadDetailPage />} />
+      <Route path="/seller/:sellername" element={<SellerInfoPage />} />
+
+      {/* Seller and Admin Routes using ManagementLayout */}
       <Route
         path="/seller/dashboard"
         element={
           <PrivateRoute allowedRoles={['seller', 'admin']}>
-            <SellerDashboard />
+            <ManagementLayout/>
           </PrivateRoute>
         }
       />
-
-      {/* Admin Routes */}
+      <Route 
+        path="/seller/orders" 
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <OrdersManagementPage>
+              </OrdersManagementPage>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route 
+        path="/seller/orders/:orderId" 
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <OrderDetailPage/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route 
+        path="/seller/products"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <ManagementLayout>
+            <ProductsManagementPage />
+          </ManagementLayout>
+        </PrivateRoute>
+        }
+      />
+{/* ADMIN */}
+      
       <Route
         path="/admin/dashboard"
         element={
           <PrivateRoute allowedRoles={['admin']}>
-            <AdminDashboard />
+            <ManagementLayout>
+            </ManagementLayout>
           </PrivateRoute>
         }
       />
+      <Route 
+        path="/seller/products"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <ManagementLayout>
+            <ProductsManagementPage />
+          </ManagementLayout>
+        </PrivateRoute>
+        }
+      />
+
       <Route
         path="/admin/manage-users"
         element={
           <PrivateRoute allowedRoles={['admin']}>
-            <ManageUsers />
+            <ManagementLayout>
+              <ManageUsers />
+            </ManagementLayout>
           </PrivateRoute>
         }
       />
@@ -80,7 +122,9 @@ const AppRoutes = () => {
         path="/admin/approve-sellers"
         element={
           <PrivateRoute allowedRoles={['admin']}>
-            <ApproveSellers />
+            <ManagementLayout>
+              <ApproveSellers />
+            </ManagementLayout>
           </PrivateRoute>
         }
       />
@@ -88,7 +132,9 @@ const AppRoutes = () => {
         path="/admin/manage-forum"
         element={
           <PrivateRoute allowedRoles={['admin']}>
-            <ManageForum />
+            <ManagementLayout>
+              <ManageForum />
+            </ManagementLayout>
           </PrivateRoute>
         }
       />
@@ -96,14 +142,18 @@ const AppRoutes = () => {
         path="/admin/edit-avatar"
         element={
           <PrivateRoute allowedRoles={['admin']}>
-            <EditLogo />
+            <ManagementLayout>
+              <EditLogo />
+            </ManagementLayout>
           </PrivateRoute>
         }
       />
 
-      {/* Optional: Trang nếu user không có quyền */}
-      <Route path="/unauthorized" element={<h2>Không có quyền truy cập!</h2>} />
+      {/* Seller Onboarding Route */}
+      <Route path="/onboarding" element={<SellerOnboarding />} />
 
+      {/* Unauthorized page */}
+      <Route path="/unauthorized" element={<h2>Không có quyền truy cập!</h2>} />
     </Routes>
   );
 };

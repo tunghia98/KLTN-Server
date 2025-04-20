@@ -1,0 +1,87 @@
+/* General styles for the page */
+.order-management-container {
+    padding: 1rem;
+    background-color: #f7fafc;
+  }
+  
+  .order-management-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  /* Table styles */
+  .order-management-table {
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 0.375rem;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+  
+  .order-management-table thead {
+    background-color: #edf2f7;
+  }
+  
+  .order-management-table th,
+  .order-management-table td {
+    padding: 1rem;
+    text-align: left;
+  }
+  
+  .order-management-table th {
+    font-weight: bold;
+    color: #4a5568;
+  }
+  
+  .order-management-table td {
+    color: #4a5568;
+  }
+  
+  .order-management-table tr {
+    border-top: 1px solid #e2e8f0;
+  }
+  
+  /* Button styles */
+  .order-management-table button {
+    background-color: #4299e1;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .order-management-table button:hover {
+    background-color: #2b6cb0;
+  }
+.order-management-status{
+  font-size: 16px;
+  padding: 10px;
+  width: 200px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.order-management-status:hover{
+  border-color: #007bff;
+}
+.order-management-status:focus{
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+.order-management-status option{
+  font-size: 16px;
+  padding: 10px;
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+.order-management-status option:hover{
+  background-color: #f1f1f1;
+}

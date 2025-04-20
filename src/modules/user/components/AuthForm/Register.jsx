@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import "./Auth.css"; // Style riêng cho cả đăng nhập và đăng ký
 import Button from "../../../../components/Common/Button";
 import Popup from "../../../../components/Common/Popup"; // Import component Popup
@@ -21,7 +22,7 @@ function Register({ isOpen, onClose, onSwitchToLogin }) {
     onClose();
   };
 
-  return (
+  return ReactDOM.createPortal(
     <Popup isOpen={isOpen} onClose={onClose} title="Đăng ký tài khoản">
       <form onSubmit={handleRegister} className="popup-login-form">
         <div className="form-group">
@@ -61,7 +62,8 @@ function Register({ isOpen, onClose, onSwitchToLogin }) {
           </a>
         </p>
       </form>
-    </Popup>
+    </Popup>,
+    document.body
   );
 }
 

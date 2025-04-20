@@ -17,7 +17,7 @@
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    max-width: 500px;
+    max-width: 600px;
     width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -27,6 +27,9 @@
   /* Tiêu đề của Popup */
   .popup-header {
     margin-bottom: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
   
   /* Nút đóng */

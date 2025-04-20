@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, Link } from "react-router-dom";
 import { faCircleUser, faMagnifyingGlass, faLocationDot, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import Login from "../AuthForm/Login"; 
-import Register from "../AuthForm/Register";
+import Register from "../AuthForm/Register"; // Import Register
 import logo from "../../../../assets/logo-2-gra.png";
 import "./Header.css";
 import { useUser } from "../../../../contexts/UserContext.jsx";
@@ -12,6 +12,18 @@ function Header() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
   const { user } = useUser();
+  
+  // Hàm chuyển qua trang đăng ký từ đăng nhập
+  const handleSwitchToRegister = () => {
+    setLoginOpen(false);   // Đóng Login Popup
+    setRegisterOpen(true);  // Mở Register Popup
+  };
+
+  // Hàm chuyển qua trang đăng nhập từ đăng ký
+  const handleSwitchToLogin = () => {
+    setRegisterOpen(false);  // Đóng Register Popup
+    setLoginOpen(true);      // Mở Login Popup
+  };
 
   return (
     <header>
@@ -39,7 +51,7 @@ function Header() {
               {user ? (
                 <span><Link to="/profile">Sửa thông tin</Link></span>
               ) : (
-                <span><a href="#" onClick={() => setLoginOpen(true)}>Đăng nhập</a></span>
+                <span><Link to="/login" onClick={() => setLoginOpen(true)}>Đăng nhập</Link></span>
               )}
             </div>
           </li>
@@ -63,15 +75,18 @@ function Header() {
         </ul>
       </div>
 
+      {/* Mở Login Popup */}
       <Login
         isOpen={isLoginOpen}
         onClose={() => setLoginOpen(false)}
-        onSwitchToRegister={() => setRegisterOpen(true)}
+        onSwitchToRegister={handleSwitchToRegister} // Truyền hàm chuyển qua đăng ký
       />
+
+      {/* Mở Register Popup */}
       <Register
         isOpen={isRegisterOpen}
         onClose={() => setRegisterOpen(false)}
-        onSwitchToLogin={() => setLoginOpen(true)}
+        onSwitchToLogin={handleSwitchToLogin} // Truyền hàm chuyển qua đăng nhập
       />
     </header>
   );

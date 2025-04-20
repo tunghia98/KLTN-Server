@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import {useUser} from "../../../../contexts/UserContext.jsx"
+import { useUser } from "../../../../contexts/UserContext.jsx";
 import { useNavigate } from 'react-router-dom';
-import "./UserProfile.css"
+import "./UserProfile.css";
 
 const UserProfile = () => {
-    const { user } = useUser();  // ⛔️ Sai
-    const navigate = useNavigate();
-
+  const { user, logout } = useUser();  // ⛔️ Sai
+  const navigate = useNavigate();
 
   const [addresses, setAddresses] = useState([
     { id: 1, text: "Số 10, Ấp Bình Minh, Xã Hòa Phú, Củ Chi, TP. HCM", default: true },
@@ -21,15 +20,8 @@ const UserProfile = () => {
   ]);
 
   const handleLogout = () => {
-    // 1. Xoá token hoặc user info khỏi localStorage
-    localStorage.removeItem('token');     // hoặc: removeItem('user')
-    localStorage.removeItem('user');
-
-    // 2. Optional: reset context hoặc state app nếu bạn dùng
-    // dispatch({ type: 'LOGOUT' }); // nếu dùng Context API hoặc Redux
-
-    // 3. Điều hướng về trang login (hoặc homepage)
-    navigate('/');
+    logout();           // Gọi hàm context để xóa user và token đúng cách
+    navigate('/');      // Điều hướng về trang chính (hoặc trang login)
   };
 
   return (
@@ -114,7 +106,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-
-/* CSS */
-/* Thêm file userProfile.css */
-
