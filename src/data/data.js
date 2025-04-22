@@ -421,3 +421,35 @@ export const order_details = [
     total: 12000,
   },
 ];
+export const promotions = [
+  {
+    id: 1,
+    code: "FREESHIP01",
+    discount_type: "free_shipping", // Giảm giá freeship
+    amount: 0, // Không cần số tiền giảm vì là freeship
+    start_date: "2025-04-15T00:00:00Z",
+    end_date: "2025-04-30T23:59:59Z",
+    seller_id: 1, // Cửa hàng tạo mã giảm giá
+    applicable_products: [1, 2, 3], // Áp dụng cho các sản phẩm có id là 1, 2, 3
+  },
+  {
+    id: 2,
+    code: "DISCOUNT10",
+    discount_type: "percentage", // Giảm theo tỷ lệ phần trăm
+    amount: 10, // Giảm 10%
+    start_date: "2025-04-20T00:00:00Z",
+    end_date: "2025-05-01T23:59:59Z",
+    seller_id: 2, // Cửa hàng tạo mã giảm giá
+    applicable_products: [4, 5], // Áp dụng cho các sản phẩm có id là 4, 5
+  },
+  {
+    id: 3,
+    code: "BUY1GET1",
+    discount_type: "buy_one_get_one", // Giảm giá mua 1 tặng 1
+    amount: 0, // Không cần số tiền giảm vì là chương trình mua 1 tặng 1
+    start_date: "2025-04-22T00:00:00Z",
+    end_date: "2025-05-05T23:59:59Z",
+    seller_id: 3, // Cửa hàng tạo mã giảm giá
+    applicable_products: [6, 7, 8], // Áp dụng cho các sản phẩm có id là 6, 7, 8
+  },
+];

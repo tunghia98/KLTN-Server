@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "./OrdersManagementPage.css";
 import { useUser } from "../../../../contexts/UserContext";
 import { orders, userAccounts } from "../../../../data/data.js";
+import getSelectBackgroundColor from "../../utils/getSelectBackgroundColor.js";
 
 const OrderManagementPage = () => {
   const { user } = useUser();
@@ -31,21 +32,6 @@ const OrderManagementPage = () => {
     );
     // TODO: nếu có server -> fetch API cập nhật đơn hàng
     // fetch(`/api/orders/${orderId}`, { method: 'PATCH', body: JSON.stringify({ status: newStatus }) })
-  };
-
-  const getSelectBackgroundColor = (status) => {
-    switch (status) {
-      case "Đang giao":
-        return "#ffec99"; // Màu vàng nhạt
-      case "Đã giao":
-        return "#a5e6a5"; // Màu xanh lá nhạt
-      case "Đã xác nhận":
-        return "#99ccff"; // Màu xanh dương nhạt
-      case "Đã huỷ":
-        return "#f8d7da"; // Màu đỏ nhạt
-      default:
-        return "#fff"; // Màu mặc định
-    }
   };
 
   return (

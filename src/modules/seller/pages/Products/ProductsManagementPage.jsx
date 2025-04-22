@@ -1,11 +1,13 @@
 // ProductManagementPage.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ProductsManagementPage.css";
 import { useUser } from "../../../../contexts/UserContext.jsx";
 import {products} from "../../../../data/data.js";
 
 function ProductManagementPage() {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [sellerproducts, setProducts] = useState(products.filter(
     (product) => product.sellerId === user.id
   ));
@@ -16,6 +18,9 @@ function ProductManagementPage() {
       // TODO: gọi API xoá sản phẩm ở backend nếu có
     }
   };
+  const handleEdit = (product) => {
+    navigate(`/seller/products/edit/${product.id}`, {state:{product}});
+  }
 
   return (
     <div className="product-management">
@@ -27,7 +32,9 @@ function ProductManagementPage() {
             <th>Tên sản phẩm</th>
             <th>Giá</th>
             <th>Trạng thái</th>
+            <th>Tồn kho</th>
             <th>Hành động</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -43,8 +50,12 @@ function ProductManagementPage() {
             <td>{product.name}</td>
             <td>{product.price.toLocaleString()}₫</td>
             <td>{product.active ? "Đang bán" : "Tạm ẩn"}</td>
+            <td>{product.quantity}</td>
             <td>
-              <button className="edit-btn">Sửa</button>
+              <button 
+              className="edit-btn"
+              onClick={() => handleEdit(product)}
+              >Sửa</button>
               <button
                 className="delete-btn"
                 onClick={() => handleDelete(product.id)}

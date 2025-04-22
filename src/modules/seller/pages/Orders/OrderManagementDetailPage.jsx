@@ -29,9 +29,16 @@ const OrderDetailPage = () => {
   });
 
   return (
-    <div className="order-detail-container">
+    <div>
+            <Link to="/seller/orders" className="order-detail-back-button">
+        Quay lại
+      </Link>
+      <div className="order-detail-container">
       <h1>Chi tiết đơn hàng #{order.id}</h1>
       <p><strong>Khách hàng:</strong> {customer ? customer.name : "Không xác định"}</p>
+      <p><strong>Địa chỉ giao hàng:</strong> {order.address}</p>
+      <p><strong>Số điện thoại:</strong> {order.phone}</p>
+      <p><strong>Hình thức thanh toán:</strong> {order.payment_method}</p>
       <p><strong>Tổng tiền:</strong> {order.total_price.toLocaleString()}₫</p>
       <p><strong>Trạng thái:</strong> {order.status}</p>
       <p><strong>Ngày đặt:</strong> {order.created_at}</p>
@@ -41,6 +48,7 @@ const OrderDetailPage = () => {
         <ul className="order-detail-product-list">
           {detailsWithProductName.map((item, index) => (
             <li key={index}>
+              <img src={products.find((p) => p.id === item.product_id)?.images[0]} alt={item.productName} className="order-detail-product-image" />
               <span>{item.productName}</span>
               <span>{item.quantity} x {item.price.toLocaleString()}₫</span>
             </li>
@@ -49,10 +57,10 @@ const OrderDetailPage = () => {
       ) : (
         <p>Đơn hàng này không có sản phẩm nào.</p>
       )}
+      </div>
 
-      <Link to="/seller/orders" className="order-detail-back-button">
-        Quay lại
-      </Link>
+
+
     </div>
   );
 };

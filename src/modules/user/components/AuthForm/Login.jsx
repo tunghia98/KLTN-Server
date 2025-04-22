@@ -119,7 +119,7 @@ function Login({ isOpen, onClose, onSwitchToRegister }) {
           <p style={{ marginTop: "1rem", textAlign: "center" }}>
             Chưa có tài khoản?{" "}
             <a
-              href="#"
+              href="/register"
               onClick={(e) => {
                 e.preventDefault();
                 onClose();

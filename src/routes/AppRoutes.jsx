@@ -26,7 +26,11 @@ import ManagementLayout from "../layouts/ManagementLayout.jsx"; // Đảm bảo 
 import OrdersManagementPage from "../modules/seller/pages/Orders/OrdersManagementPage.jsx";
 import ProductsManagementPage from "../modules/seller/pages/Products/ProductsManagementPage.jsx";
 import OrderDetailPage from "../modules/seller/pages/Orders/OrderManagementDetailPage.jsx";
-
+import EditProductPage from "../modules/seller/pages/Products/EditProductPage.jsx";
+import RevenueManagementPage from "../modules/seller/pages/Revenue/RevenueManagementPage.jsx";
+import { useState } from "react";
+import PromotionsManagementPage from "../modules/seller/pages/Promotion/PromotionsManagementPage.jsx";
+import ShippingManagementPage from "../modules/seller/pages/Shipping/ShippingManagementPage.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
   
@@ -34,7 +38,7 @@ const AppRoutes = () => {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Homepage />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Homepage />} />
       <Route path="/register" element={<Homepage />} />
       <Route path="/terms-of-service" element={<TermsOfServicePage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
@@ -86,6 +90,46 @@ const AppRoutes = () => {
         </PrivateRoute>
         }
       />
+      <Route
+        path="/seller/products/edit/:productId"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <EditProductPage />
+            </ManagementLayout>
+          </PrivateRoute> 
+        }
+        />
+        <Route
+        path="/seller/revenue"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <RevenueManagementPage/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+        />
+        <Route
+        path="/seller/promotions"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <PromotionsManagementPage/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+        />
+        <Route
+        path="/seller/delivery"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <ShippingManagementPage/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+        />
 {/* ADMIN */}
       
       <Route
