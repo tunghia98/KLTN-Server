@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { sellers, userAccounts } from "../../../../data/data.js"; // Thêm dữ liệu người dùng
 import { useUser } from "../../../../contexts/UserContext.jsx";  // Import component Popup
 
-function Login({ isOpen, onClose, onSwitchToRegister }) {
+function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
   const [email, setEmail] = useState(""); // Thay "username" bằng "email"
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -64,6 +64,9 @@ function Login({ isOpen, onClose, onSwitchToRegister }) {
       } else if (role === "seller") {
         navigate("/seller/dashboard");
       } else {
+        if(isReady===true){
+          navigate("/onboarding");
+        }else
         navigate("/");
       }
   

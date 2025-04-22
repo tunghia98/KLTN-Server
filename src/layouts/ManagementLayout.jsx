@@ -24,16 +24,20 @@ function ManagementLayout({ children }) {
     } else if (user?.role === "seller") {
       return (
         <>
-          <li><Link to="/seller/orders" className="block hover:text-blue-500">Đơn hàng</Link></li>
-          <li><Link to="/seller/products" className="block hover:text-blue-500">Sản phẩm</Link></li>
-          <li><Link to="/seller/revenue">Doanh thu</Link></li>
-          <li><Link to="/seller/delivery">Vận chuyển</Link></li>
-          <li><Link to="/seller/promotions">Vi phạm & cảnh báo</Link></li>
-          <li><Link to="/seller/promotions">Phương thức thanh toán</Link></li>
-          <li><Link to="/seller/promotions">Đánh giá</Link></li>
-          <li><Link to="/seller/promotions">Hỗ trợ</Link></li>
-          <li><Link to="/seller/promotions">Tư vấn</Link></li>
+          <>
+            <li><Link to="/seller/orders" className="block hover:text-blue-500">Đơn hàng</Link></li>
+            <li><Link to="/seller/products" className="block hover:text-blue-500">Sản phẩm</Link></li>
+            <li><Link to="/seller/revenue">Doanh thu</Link></li>
+            <li><Link to="/seller/delivery">Vận chuyển</Link></li>
+            <li><Link to="/seller/promotions">Khuyến mãi</Link></li>
+            <li><Link to="/seller/payment">Phương thức thanh toán</Link></li>
+            <li><Link to="/seller/review">Đánh giá</Link></li>
+            <li><Link to="/seller/promotions">Vi phạm & cảnh báo</Link></li>
+            <li><Link to="/seller/chat">Tư vấn</Link></li>
+            <li><Link to="/seller/promotions">Hỗ trợ</Link></li></>
+          
         </>
+        
       );
     }
     return null;
@@ -51,6 +55,7 @@ function ManagementLayout({ children }) {
       </aside>
 
       <div className="main-content">
+      <ManagementHeader />
         {children}
       </div>
     </div>

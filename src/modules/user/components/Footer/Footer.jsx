@@ -1,4 +1,4 @@
-import React,{useStat} from 'react';
+import React,{useState} from 'react';
 import logo from "../../../../assets/logo-footer.png";
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../../../contexts/UserContext';
@@ -6,16 +6,28 @@ import Login from "../AuthForm/Login.jsx"
 import './Footer.css';
 
 function Footer() {
+    const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
     const { isLoggedIn } = useUser();
     const handleClick = () => {
         if (isLoggedIn) {
           navigate("/onboarding");
         } else {
-          navigate("/login");
+            setIsOpen(true);
         }
       };
     return (
+            <>
+            <Login
+                isOpen={isOpen}
+                onClose={() => setIsOpen(false)}
+                onSwitchToRegister={() => {
+                    setIsOpen(false);
+                    navigate("/register");
+                }}
+                isReady={true}
+            />
+            
         <footer>
             <div className="footer-detail">
                 <div className="footer-grid-container">
@@ -62,7 +74,9 @@ function Footer() {
                 </div>
             </div>
         </footer>
+        </>
     );
+    
 }
 
 export default Footer;

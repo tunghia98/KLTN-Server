@@ -49,8 +49,6 @@
   /* Main content area */
   .main-content {
     margin-left: 0rem; /* Chừa khoảng cho sidebar */
-    margin-top: 4rem; /* Chừa khoảng cho header */
-    padding: 1.5rem;
     flex: 1;
     background-color: #f7fafc;
   }

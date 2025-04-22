@@ -31,6 +31,9 @@ import RevenueManagementPage from "../modules/seller/pages/Revenue/RevenueManage
 import { useState } from "react";
 import PromotionsManagementPage from "../modules/seller/pages/Promotion/PromotionsManagementPage.jsx";
 import ShippingManagementPage from "../modules/seller/pages/Shipping/ShippingManagementPage.jsx";
+import ProductPromoted from "../modules/seller/pages/Promotion/ProductPromoted.jsx";
+import ProductReviewsPage from "../modules/seller/pages/ProductReview/ProductReviewPage.jsx";
+import ChatPage from "../modules/seller/pages/Chat/ChatPage.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
   
@@ -126,6 +129,26 @@ const AppRoutes = () => {
           <PrivateRoute allowedRoles={['seller', 'admin']}>
             <ManagementLayout>
               <ShippingManagementPage/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+        />
+        <Route
+        path="/seller/review"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <ProductReviewsPage/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+        />
+        <Route
+        path="/seller/chat"
+        element={
+          <PrivateRoute allowedRoles={['seller', 'admin']}>
+            <ManagementLayout>
+              <ChatPage/>
             </ManagementLayout>
           </PrivateRoute>
         }

@@ -85,18 +85,6 @@ const UserProfile = () => {
         </div>
       </div>
 
-      <div className="membership-section">
-        <h2 className="tab-title">🏅 Thành viên & Ưu đãi</h2>
-        <div className="profile-card">
-          <div className="profile-content">
-            <div>Cấp độ: <strong>Khách hàng thân thiết</strong></div>
-            <ul>
-              <li>🎁 Giảm 10% cho đơn hàng trên 2 triệu.</li>
-              <li>🎁 Freeship toàn quốc cho đơn từ 1.500.000₫.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
 
       <div className="text-right mt-8">
         <button className="btn-danger" onClick={handleLogout}>Đăng xuất</button>
