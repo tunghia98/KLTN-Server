@@ -9,18 +9,46 @@ function Register({ isOpen, onClose, onSwitchToLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
-
+  const [phoneNumber, setPhoneNumber] = useState("");
   if (!isOpen) return null;
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-    if (password !== confirmPass) {
-      alert("Mật khẩu không khớp!");
-      return;
-    }
-    console.log("Đăng ký:", { username, email, password });
-    onClose();
-  };
+    const handleRegister = async (e) => {
+        e.preventDefault();
+
+        if (password !== confirmPass) {
+            alert("Mật khẩu không khớp!");
+            return;
+        }
+
+        try {
+            const response = await fetch("https://kltn.azurewebsites.net/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    userName: username,
+                    phoneNumber: phoneNumber, // Nếu bạn không cần, để trống hoặc cho nhập thêm field
+                    password: password,
+                    confirmPassword: confirmPass,
+                }),
+            });
+
+            if (response.ok) {
+                alert("Đăng ký thành công!");
+                onClose();
+                onSwitchToLogin(); // chuyển sang login
+            } else {
+                const errorText = await response.text();
+                alert("Đăng ký thất bại: " + errorText);
+            }
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+            alert("Đã xảy ra lỗi khi đăng ký!");
+        }
+    };
+
 
   return ReactDOM.createPortal(
     <Popup isOpen={isOpen} onClose={onClose} title="Đăng ký tài khoản">
@@ -32,6 +60,10 @@ function Register({ isOpen, onClose, onSwitchToLogin }) {
         <div className="form-group">
           <label>Email</label>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div className="form-group">
+            <label>Số điện thoại</label>
+            <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
         </div>
         <div className="form-group">
           <label>Mật khẩu</label>
