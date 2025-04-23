@@ -33,8 +33,8 @@ function ProductPromoted({ onClose, onApply }) {
     };
 
     return (
-        <div className='popup-overlay'>
-            <div className='popup-content'>
+        <div className='promoted-popup-overlay'>
+            <div className='promoted-popup-content'>
                 <button className='close-btn' onClick={onClose}>X</button>
                 <h1 className="title">Tất cả sản phẩm</h1>
 

@@ -1,4 +1,4 @@
-.popup-overlay {
+.promoted-popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   align-items: center;
 }
 
-.popup-content {
+.promoted-popup-content {
   background: #fff;
   width: 90%;
   max-width: 1200px;
