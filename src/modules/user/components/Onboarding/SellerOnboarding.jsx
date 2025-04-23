@@ -5,16 +5,30 @@ import "./SellerOnboarding.css";
 
 const steps = [
   "Thiết lập shop",
-  "Thêm sản phẩm",
   "Địa chỉ lấy hàng",
-  "Vận chuyển",
-  "Tài khoản ngân hàng",
+  "Thông tin thanh toán",
+  "Hoàn tất",
 ];
 
 export default function SellerOnboarding() {
   const [step, setStep] = useState(0);
+  const [shopName, setShopName] = useState(""); // Thêm state cho tên shop
+  const [isChecked, setIsChecked] = useState(false); // Quản lý trạng thái checkbox
+  const [isCompleted, setIsCompleted] = useState(false); // Quản lý trạng thái hoàn tất
+  const [error, setError] = useState(""); // Thêm state cho thông báo lỗi
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, steps.length - 1));
+  const nextStep = () => {
+    // Kiểm tra tên shop ở bước 1
+    if (step === 0 && !shopName.trim()) {
+      setError("Tên shop không được để trống!");
+      return;
+    } else {
+      setError(""); // Nếu tên shop hợp lệ, xóa lỗi
+    }
+
+    setStep((s) => Math.min(s + 1, steps.length - 1));
+  };
+
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
   const { isLoggedIn } = useUser();
@@ -22,6 +36,20 @@ export default function SellerOnboarding() {
     // Nếu chưa đăng nhập, redirect đến trang login
     return <Navigate to="/login" />;
   }
+
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+  };
+
+  const handleComplete = () => {
+    if (isChecked) {
+      setIsCompleted(true);
+      alert("Hoàn tất đăng ký!");
+    } else {
+      alert("Vui lòng đồng ý các điều khoản trước khi hoàn tất.");
+    }
+  };
+
   return (
     <div className="onboarding-container">
       <h2 className="onboarding-title">Đăng ký bán hàng</h2>
@@ -41,36 +69,54 @@ export default function SellerOnboarding() {
         {step === 0 && (
           <div>
             <label>Tên shop</label>
-            <input type="text" placeholder="Nhập tên shop" />
+            <input
+              type="text"
+              placeholder="Nhập tên shop"
+              value={shopName}
+              onChange={(e) => setShopName(e.target.value)}
+            />
+            {error && <p className="error-message">{error}</p>} {/* Hiển thị lỗi nếu có */}
           </div>
         )}
         {step === 1 && (
-          <div>
-            <label>Tên sản phẩm</label>
-            <input type="text" placeholder="Sản phẩm đầu tiên" />
+          <div className="address-form">
+            <label>Thành phố / Tỉnh</label>
+            <input type="text" placeholder="Nhập tỉnh/thành phố" />
+            <label>Quận / Huyện</label>
+            <input type="text" placeholder="Nhập quận/huyện" />
+            <label>Phường / Xã</label>
+            <input type="text" placeholder="Nhập phường/xã" />
+            <label>Số nhà, tên đường</label>
+            <input type="text" placeholder="123 đường Lê Lợi..." />
           </div>
         )}
         {step === 2 && (
-          <div>
-            <label>Địa chỉ lấy hàng</label>
-            <input type="text" placeholder="Ví dụ: 123, Xã Y, Tỉnh Z" />
+          <div className="bank-info-form">
+            <label>Ngân hàng</label>
+            <input type="text" placeholder="Ví dụ: Vietcombank, BIDV, MB Bank..." />
+            <label>Số tài khoản</label>
+            <input type="text" placeholder="Nhập số tài khoản ngân hàng" />
           </div>
         )}
         {step === 3 && (
-          <div>
-            <label>Chọn đơn vị vận chuyển</label>
-            <select>
-              <option>GHN</option>
-              <option>GHTK</option>
-              <option>J&T Express</option>
-              <option>Shopee Xpress</option>
-            </select>
-          </div>
-        )}
-        {step === 4 && (
-          <div>
-            <label>Tài khoản ngân hàng</label>
-            <input type="text" placeholder="123456789 - Vietcombank" />
+          <div className="completion-form">
+            <h3>Hoàn tất đăng ký bán hàng</h3>
+            <p>
+              Để hoàn tất đăng ký bán hàng trên sàn, bạn cần đọc và đồng ý với{" "}
+              <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">
+                các điều khoản và cam kết của sàn
+              </a>.
+            </p>
+
+            <div className="checkbox-container">
+              <input
+                type="checkbox"
+                id="terms-checkbox"
+                checked={isChecked}
+                onChange={handleCheckboxChange}
+              />
+              <label htmlFor="terms-checkbox">Tôi đã đọc các điều khoản và hoàn tất đăng ký</label>
+            </div>
           </div>
         )}
       </div>
@@ -82,7 +128,7 @@ export default function SellerOnboarding() {
         {step < steps.length - 1 ? (
           <button onClick={nextStep}>Tiếp theo</button>
         ) : (
-          <button onClick={() => alert("Hoàn tất đăng ký!")}>Hoàn tất</button>
+          <button onClick={handleComplete} disabled={!isChecked}>Hoàn tất</button>
         )}
       </div>
     </div>
