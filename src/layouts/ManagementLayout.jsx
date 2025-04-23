@@ -32,9 +32,8 @@ function ManagementLayout({ children }) {
             <li><Link to="/seller/promotions">Khuyến mãi</Link></li>
             <li><Link to="/seller/payment">Phương thức thanh toán</Link></li>
             <li><Link to="/seller/review">Đánh giá</Link></li>
-            <li><Link to="/seller/promotions">Vi phạm & cảnh báo</Link></li>
             <li><Link to="/seller/chat">Tư vấn</Link></li>
-            <li><Link to="/seller/promotions">Hỗ trợ</Link></li></>
+            <li><Link to="/seller/support">Hỗ trợ</Link></li></>
           
         </>
         

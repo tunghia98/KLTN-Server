@@ -1,0 +1,71 @@
+/* SellerProductMiniCard.css */
+
+/* Container của mỗi sản phẩm */
+.seller-product-mini-card {
+  display: flex;
+  align-items: center;
+  width: 220px; /* Tăng chiều rộng của ô sản phẩm */
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+  margin: 10px;
+  overflow: hidden;
+  flex-shrink: 0; /* Ngăn không cho ô bị co lại */
+}
+
+/* Hiệu ứng khi hover lên sản phẩm */
+.seller-product-mini-card:hover {
+  transform: translateY(-3px); /* Di chuyển lên nhẹ */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Ảnh sản phẩm */
+.mini-product-image {
+  width: 70px; /* Tăng kích thước ảnh */
+  height: 70px; /* Tăng kích thước ảnh */
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 12px; /* Khoảng cách giữa ảnh và thông tin */
+}
+
+/* Thông tin sản phẩm */
+.mini-product-info {
+  flex-grow: 1; /* Chiếm không gian còn lại */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: calc(100% - 80px); /* Đảm bảo thông tin không bị tràn ra ngoài */
+}
+
+/* Tên sản phẩm */
+.mini-product-info h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #333;
+  height: 40px; /* Giới hạn chiều cao tên */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Dấu ba chấm khi tên quá dài */
+  white-space: normal; /* Cho phép xuống dòng */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Giới hạn tối đa 2 dòng */
+  -webkit-box-orient: vertical;
+}
+
+/* Giá sản phẩm */
+.mini-product-info p {
+  font-size: 14px;
+  color: #3182ce;
+  margin-top: 4px;
+}
+
+/* Layout của sản phẩm trong một hàng */
+.product-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* 4-5 sản phẩm trên mỗi hàng */
+  gap: 20px; /* Khoảng cách giữa các sản phẩm */
+  margin-top: 20px;
+}

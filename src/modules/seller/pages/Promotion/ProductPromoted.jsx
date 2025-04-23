@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './ProductPromoted.css';
 import { products } from '../../../../data/data';
+import SellerProductMiniCard from '../../components/Products/SellerProductMiniCard.jsx'; // Đường dẫn đến component ProductMiniCard
 
 function ProductPromoted({ onClose, onApply }) {
     const sampleProducts = products.filter(product => product.sellerId === 1);
@@ -49,16 +50,11 @@ function ProductPromoted({ onClose, onApply }) {
                     {filteredProducts.map(product => {
                         const isSelected = selectedProducts.some(p => p.id === product.id);
                         return (
-                            <div
-                                key={product.id}
-                                className={`product-card ${isSelected ? 'selected' : ''}`}
-                                onClick={() => toggleProduct(product)}
-                            >
-                                <div>
-                                    <h2 className="product-name">{product.name}</h2>
-                                    <p className="product-price">{product.price.toLocaleString()}₫</p>
-                                </div>
-                            </div>
+                            <SellerProductMiniCard 
+                            product={product} 
+                            isSelected={isSelected} 
+                            onClick={() => toggleProduct(product)} 
+                            />
                         );
                     })}
                 </div>

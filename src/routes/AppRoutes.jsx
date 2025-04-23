@@ -32,7 +32,7 @@ import { useState } from "react";
 import PromotionsManagementPage from "../modules/seller/pages/Promotion/PromotionsManagementPage.jsx";
 import ShippingManagementPage from "../modules/seller/pages/Shipping/ShippingManagementPage.jsx";
 import ProductPromoted from "../modules/seller/pages/Promotion/ProductPromoted.jsx";
-import ProductReviewsPage from "../modules/seller/pages/ProductReview/ProductReviewPage.jsx";
+import SellerReviewsPage from "../modules/seller/pages/ProductReview/SellerReviewPage.jsx";
 import ChatPage from "../modules/seller/pages/Chat/ChatPage.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
@@ -138,7 +138,7 @@ const AppRoutes = () => {
         element={
           <PrivateRoute allowedRoles={['seller', 'admin']}>
             <ManagementLayout>
-              <ProductReviewsPage/>
+              <SellerReviewsPage/>
             </ManagementLayout>
           </PrivateRoute>
         }
