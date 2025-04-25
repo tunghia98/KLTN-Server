@@ -1,0 +1,39 @@
+.seller-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .seller-container h2 {
+    margin-bottom: 16px;
+  }
+  
+  .seller-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .seller-table th,
+  .seller-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .seller-table th {
+    background-color: #f8f8f8;
+  }
+  
+  .seller-table button {
+    padding: 4px 8px;
+    margin: 0 2px;
+    cursor: pointer;
+    border: none;
+    background-color: #1890ff;
+    color: white;
+    border-radius: 4px;
+  }
+  
+  .seller-table button:hover {
+    background-color: #096dd9;
+  }
+  

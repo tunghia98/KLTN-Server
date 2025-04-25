@@ -1,0 +1,35 @@
+.website-customization-container {
+    padding: 20px;
+  }
+  
+  .website-customization-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  input[type="file"] {
+    margin-bottom: 10px;
+  }
+  
+  .uploaded-logo,
+  .uploaded-background {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+  }
+  
+  input[type="color"] {
+    margin-top: 10px;
+  }
+  
+  .save-button {
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .save-button:hover {
+    background-color: #218838;
+  }
+  

@@ -1,0 +1,72 @@
+.user-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .user-container h2 {
+    margin-bottom: 16px;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .user-table th,
+  .user-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .user-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .user-table button {
+    margin: 0 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  
+  .user-table .delete {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    width: 300px;
+    border-radius: 8px;
+  }
+  
+  .modal-content h3 {
+    margin-bottom: 12px;
+  }
+  
+  .modal-content input {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  

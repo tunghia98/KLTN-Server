@@ -16,10 +16,6 @@ import ThreadDetailPage from '../modules/user/pages/Forum/ThreadDetailPage.jsx';
 import UserInfoPage from "../modules/user/pages/UserInfoPage/UserInfoPage.jsx";
 import { useUser } from "../contexts/UserContext";
 import PrivateRoute from "../components/PrivateRoute.jsx";
-import ManageUsers from "../modules/admin/pages/ManageUsers.jsx";
-import ApproveSellers from "../modules/admin/pages/ApproveSellers.jsx";
-import ManageForum from "../modules/admin/pages/ManageForum.jsx";
-import EditLogo from "../modules/admin/pages/EditLogo.jsx";
 import SellerOnboarding from "../modules/user/components/Onboarding/SellerOnboarding.jsx";
 import Login from "../modules/user/components/AuthForm/Login.jsx";
 import ManagementLayout from "../layouts/ManagementLayout.jsx"; // Đảm bảo dùng chung layout
@@ -34,6 +30,15 @@ import ShippingManagementPage from "../modules/seller/pages/Shipping/ShippingMan
 import ProductPromoted from "../modules/seller/pages/Promotion/ProductPromoted.jsx";
 import SellerReviewsPage from "../modules/seller/pages/ProductReview/SellerReviewPage.jsx";
 import ChatPage from "../modules/seller/pages/Chat/ChatPage.jsx";
+import UserManagement from "../modules/admin/pages/UserManagement/UserManagement.jsx";
+import SellerManagement from "../modules/admin/pages/SellerManagement/SellerManagement.jsx";
+import TransactionManagement from "../modules/admin/pages/TransactionManagement/TransactionManagement.jsx";
+import StatisticsDashboard from "../modules/admin/pages/StatisticsDashboard/StatisticsDashboard.jsx";
+import AccessControlSettings from "../modules/admin/pages/AccessControl/AccessControlSettings.jsx";
+import ViolationManagement from "../modules/admin/pages/ViolationManagement/ViolationManagement.jsx";
+import SupportRequestManagement from "../modules/admin/pages/SupportRequestManagement/SupportRequestManagement.jsx";
+import SupportChannelManagement from "../modules/admin/pages/SupportChannelManagement/SupportChannelManagement.jsx";
+import WebsiteCustomization from "../modules/admin/pages/WebsiteCustomization/WebsiteCustomization.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
   
@@ -57,7 +62,7 @@ const AppRoutes = () => {
       <Route
         path="/seller/dashboard"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout/>
           </PrivateRoute>
         }
@@ -65,7 +70,7 @@ const AppRoutes = () => {
       <Route 
         path="/seller/orders" 
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <OrdersManagementPage>
               </OrdersManagementPage>
@@ -76,7 +81,7 @@ const AppRoutes = () => {
       <Route 
         path="/seller/orders/:orderId" 
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <OrderDetailPage/>
             </ManagementLayout>
@@ -86,7 +91,7 @@ const AppRoutes = () => {
       <Route 
         path="/seller/products"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
           <ManagementLayout>
             <ProductsManagementPage />
           </ManagementLayout>
@@ -96,7 +101,7 @@ const AppRoutes = () => {
       <Route
         path="/seller/products/edit/:productId"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <EditProductPage />
             </ManagementLayout>
@@ -106,7 +111,7 @@ const AppRoutes = () => {
         <Route
         path="/seller/revenue"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <RevenueManagementPage/>
             </ManagementLayout>
@@ -116,7 +121,7 @@ const AppRoutes = () => {
         <Route
         path="/seller/promotions"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <PromotionsManagementPage/>
             </ManagementLayout>
@@ -126,7 +131,7 @@ const AppRoutes = () => {
         <Route
         path="/seller/delivery"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <ShippingManagementPage/>
             </ManagementLayout>
@@ -136,7 +141,7 @@ const AppRoutes = () => {
         <Route
         path="/seller/review"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <SellerReviewsPage/>
             </ManagementLayout>
@@ -146,7 +151,7 @@ const AppRoutes = () => {
         <Route
         path="/seller/chat"
         element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
+          <PrivateRoute allowedRoles={['seller']}>
             <ManagementLayout>
               <ChatPage/>
             </ManagementLayout>
@@ -164,57 +169,96 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
-      <Route 
-        path="/seller/products"
-        element={
-          <PrivateRoute allowedRoles={['seller', 'admin']}>
-          <ManagementLayout>
-            <ProductsManagementPage />
-          </ManagementLayout>
-        </PrivateRoute>
-        }
-      />
-
       <Route
-        path="/admin/manage-users"
+        path="/admin/users"
         element={
           <PrivateRoute allowedRoles={['admin']}>
             <ManagementLayout>
-              <ManageUsers />
+              <UserManagement/>
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-      <Route
-        path="/admin/approve-sellers"
+            <Route
+        path="/admin/sellers"
         element={
           <PrivateRoute allowedRoles={['admin']}>
             <ManagementLayout>
-              <ApproveSellers />
+              <SellerManagement/>
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-      <Route
-        path="/admin/manage-forum"
+            <Route
+        path="/admin/transaction"
         element={
           <PrivateRoute allowedRoles={['admin']}>
             <ManagementLayout>
-              <ManageForum />
+              <TransactionManagement/>
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-      <Route
-        path="/admin/edit-avatar"
+            <Route
+        path="/admin/statistics"
         element={
           <PrivateRoute allowedRoles={['admin']}>
             <ManagementLayout>
-              <EditLogo />
+              <StatisticsDashboard/>
             </ManagementLayout>
           </PrivateRoute>
         }
       />
+            <Route
+        path="/admin/access-control"
+        element={
+          <PrivateRoute allowedRoles={['admin']}>
+            <ManagementLayout>
+              <AccessControlSettings/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
+            <Route
+        path="/admin/violation"
+        element={
+          <PrivateRoute allowedRoles={['admin']}>
+            <ManagementLayout>
+              <ViolationManagement/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
+            <Route
+        path="/admin/support-request"
+        element={
+          <PrivateRoute allowedRoles={['admin']}>
+            <ManagementLayout>
+              <SupportRequestManagement/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
+            <Route
+        path="/admin/support-channel"
+        element={
+          <PrivateRoute allowedRoles={['admin']}>
+            <ManagementLayout>
+              <SupportChannelManagement/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
+            <Route
+        path="/admin/customization"
+        element={
+          <PrivateRoute allowedRoles={['admin']}>
+            <ManagementLayout>
+              <WebsiteCustomization/>
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />  
 
       {/* Seller Onboarding Route */}
       <Route path="/onboarding" element={<SellerOnboarding />} />

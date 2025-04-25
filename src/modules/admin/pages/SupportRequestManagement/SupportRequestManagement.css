@@ -1,0 +1,33 @@
+.support-request-container {
+    padding: 20px;
+  }
+  
+  .support-request-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .support-request-table th, .support-request-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .search-input {
+    margin-bottom: 20px;
+    padding: 8px;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  button {
+    padding: 6px 12px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    opacity: 0.8;
+  }
+  

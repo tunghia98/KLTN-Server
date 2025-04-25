@@ -1,0 +1,52 @@
+.violation-container {
+    padding: 20px;
+    font-family: sans-serif;
+  }
+  
+  .violation-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .violation-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .violation-table th,
+  .violation-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .violation-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .actions button {
+    margin: 0 4px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .actions button:hover {
+    opacity: 0.9;
+  }
+  
+  .actions button:nth-child(1) {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .actions button:nth-child(2) {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .actions button:nth-child(3) {
+    background-color: #6c757d;
+    color: white;
+  }
+  

@@ -1,0 +1,54 @@
+.access-control {
+    padding: 20px;
+    font-family: sans-serif;
+  }
+  
+  .admin-list ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .admin-list li {
+    padding: 8px 12px;
+    background: #f0f0f0;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+  
+  .admin-list li:hover {
+    background: #ddd;
+  }
+  
+  .admin-list li.active {
+    background: #4caf50;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .permission-settings {
+    margin-top: 20px;
+  }
+  
+  .permission-settings label {
+    display: block;
+    margin: 8px 0;
+    font-weight: 500;
+  }
+  
+  .permission-settings button {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #007bff;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .permission-settings button:hover {
+    background: #0056b3;
+  }
+  
