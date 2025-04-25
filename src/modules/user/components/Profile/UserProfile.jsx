@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../../contexts/UserContext.jsx";
 import { useNavigate } from "react-router-dom";
+import UserInfoForm from "./UserInfoForm";
+import AddressList from "./AddressList";
+import AddressForm from "./AddressForm";
 import "./UserProfile.css";
 
 const UserProfile = () => {
@@ -8,104 +11,208 @@ const UserProfile = () => {
     const navigate = useNavigate();
 
     const [userInfo, setUserInfo] = useState(null);
-    const [addresses, setAddresses] = useState([
-        { id: 1, text: "Số 10, Ấp Bình Minh, Xã Hòa Phú, Củ Chi, TP. HCM", default: true },
-        { id: 2, text: "123 Đường Lý Thường Kiệt, Quận 10, TP. HCM", default: false },
-        { id: 3, text: "Thôn 4, Xã Ea Bar, Buôn Đôn, Đắk Lắk", default: false },
-    ]);
+    const [previewAvatar, setPreviewAvatar] = useState(null);
+    const [editingAddress, setEditingAddress] = useState(null);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phoneNumber: "",
+        birthDate: "",
+        gender: "",
+        avatarFile: null,
+    });
 
-    const [orders] = useState([
-        { id: "AGRI1023", date: "12/04/2025", status: "Đã giao", total: 1200000 },
-        { id: "AGRI0987", date: "05/04/2025", status: "Đang giao", total: 650000 },
-        { id: "AGRI0932", date: "22/03/2025", status: "Đã hủy", total: 450000 },
-    ]);
+    const [addresses, setAddresses] = useState([]);
+    const [showAddressForm, setShowAddressForm] = useState(false);
+    const [form, setForm] = useState({
+        province: "",
+        district: "",
+        ward: "",
+        street: "",
+    });
+    const handleEditAddress = (addr) => {
+        setForm({
+            street: addr.street,
+            ward: addr.ward,
+            district: addr.district,
+            province: addr.province,
+        });
+        setEditingAddress(addr.id);
+        setShowAddressForm(true);
+    };
+
+
+    const fetchUser = async () => {
+        try {
+            const res = await fetch("https://kltn.azurewebsites.net/api/Users/me", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            });
+
+            if (!res.ok) throw new Error("Không lấy được thông tin người dùng");
+
+            const data = await res.json();
+            setUserInfo(data);
+            setFormData({
+                name: data.name || "",
+                email: data.email || "",
+                phoneNumber: data.phoneNumber || "",
+                birthDate: data.birthDate?.substring(0, 10) || "",
+                gender: data.gender || "",
+                avatarFile: null,
+            });
+        } catch (err) {
+            console.error(err);
+            logout();
+            navigate("/login");
+        }
+    };
+
+    const fetchAddresses = async () => {
+        try {
+            const res = await fetch("https://kltn.azurewebsites.net/api/addresses/user", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            });
+
+            if (!res.ok) throw new Error("Không lấy được địa chỉ");
+
+            const data = await res.json();
+            setAddresses(data);
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi khi tải địa chỉ");
+        }
+    };
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await fetch("https://kltn.azurewebsites.net/api/Users/me", {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                    },
-                });
-
-                if (!res.ok) throw new Error("Không lấy được thông tin người dùng");
-
-                const data = await res.json();
-                setUserInfo(data);
-            } catch (err) {
-                console.error(err);
-                logout();
-                navigate("/login");
-            }
-        };
-
         fetchUser();
-    }, [logout, navigate]);
+        fetchAddresses();
+    }, []);
 
     const handleLogout = () => {
         logout();
         navigate("/");
     };
 
+    const handleProfileSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("accessToken");
+
+        await fetch("https://kltn.azurewebsites.net/api/users/profile", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                name: formData.name,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+                birthDate: formData.birthDate,
+                gender: formData.gender,
+            }),
+        });
+
+        if (formData.avatarFile) {
+            const uploadForm = new FormData();
+            uploadForm.append("file", formData.avatarFile);
+            await fetch("https://kltn.azurewebsites.net/api/users/upload-avatar", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: uploadForm,
+            });
+        }
+
+        alert("Đã cập nhật thông tin!");
+        fetchUser();
+    };
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData({ ...formData, avatarFile: file });
+            setPreviewAvatar(URL.createObjectURL(file));
+        }
+    };
+
+    const handleAddressSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("accessToken");
+
+        if (editingAddress) {
+            // Nếu đang sửa
+            await fetch(`https://kltn.azurewebsites.net/api/addresses/${editingAddress}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    street: form.street,
+                    ward: form.ward,
+                    district: form.district,
+                    province: form.province,
+                }),
+            });
+            alert("Đã cập nhật địa chỉ thành công!");
+        } else {
+            // Nếu thêm mới
+            await fetch("https://kltn.azurewebsites.net/api/addresses/user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    street: form.street,
+                    ward: form.ward,
+                    district: form.district,
+                    province: form.province,
+                }),
+            });
+            alert("Đã thêm địa chỉ thành công!");
+        }
+
+        await fetchAddresses(); // Reload danh sách
+        setForm({ city: "", district: "", ward: "", street: "" });
+        setEditingAddress(null); // Reset lại editing mode
+        setShowAddressForm(false);
+    };
+
+
     return (
         <div className="profile-container">
             <h1 className="profile-title">👤 Thông Tin Cá Nhân</h1>
-            <div className="profile-card">
-                <div className="profile-content">
-                    <div><strong>Họ tên:</strong> {userInfo?.userName || "..."}</div>
-                    <div><strong>Số điện thoại:</strong> {userInfo?.phoneNumber || "..."}</div>
-                    <div><strong>Email:</strong> {userInfo?.email || "..."}</div>
-                    <div><strong>Ngày sinh:</strong> {userInfo?.birthDate || "Chưa cập nhật"}</div>
-                    <button className="btn">Sửa thông tin</button>
+
+            <div className="profile-form-wrapper">
+                <div className="profile-form-container">
+                    <UserInfoForm
+                        formData={formData}
+                        setFormData={setFormData}
+                        handleSubmit={handleProfileSubmit}
+                        handleAvatarChange={handleAvatarChange}
+                        previewAvatar={previewAvatar}
+                        userInfo={userInfo}
+                    />
                 </div>
             </div>
 
-            <div className="tabs">
-                <input type="radio" name="tab" id="tab-addresses" defaultChecked />
-                <label htmlFor="tab-addresses">Địa chỉ giao hàng</label>
-
-                <input type="radio" name="tab" id="tab-orders" />
-                <label htmlFor="tab-orders">Đơn hàng</label>
-
-                <div className="tab-content" id="addresses">
-                    <h2 className="tab-title">🚚 Địa chỉ giao hàng</h2>
-                    {addresses.map((address) => (
-                        <div key={address.id} className="address-card">
-                            <div>
-                                {address.text}{" "}
-                                {address.default && <span className="default-label">(Mặc định)</span>}
-                            </div>
-                            <button className="btn-outline">Chỉnh sửa</button>
-                        </div>
-                    ))}
-                    <button className="btn mt-4">➕ Thêm địa chỉ mới</button>
-                </div>
-
-                <div className="tab-content" id="orders">
-                    <h2 className="tab-title">🛒 Đơn hàng gần đây</h2>
-                    <table className="order-table">
-                        <thead>
-                            <tr>
-                                <th>Mã đơn</th>
-                                <th>Ngày đặt</th>
-                                <th>Trạng thái</th>
-                                <th>Tổng tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orders.map((order) => (
-                                <tr key={order.id}>
-                                    <td>#{order.id}</td>
-                                    <td>{order.date}</td>
-                                    <td>{order.status}</td>
-                                    <td>{order.total.toLocaleString()}₫</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button className="btn-outline mt-4">Xem tất cả đơn hàng</button>
-                </div>
+            <div className="address-section-container">
+                <AddressList addresses={addresses}
+                    onAddClick={() => setShowAddressForm(true)}
+                    handleEditAddress={handleEditAddress} />
+                {showAddressForm && (
+                    <AddressForm
+                        form={form}
+                        setForm={setForm}
+                        onSubmit={handleAddressSubmit}
+                    />
+                )}
             </div>
 
             <div className="text-right mt-8">

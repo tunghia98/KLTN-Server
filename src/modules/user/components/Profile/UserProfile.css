@@ -125,3 +125,55 @@ input[type="radio"]:checked + label + .tab-content {
 .mt-8 {
   margin-top: 32px;
 }
+/*
+    User
+*/
+.user-info-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.avatar-preview-container {
+    width: 180px;
+    text-align: center;
+}
+
+.avatar-preview {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.edit-form {
+    flex: 1;
+    max-width: 500px;
+}
+
+/*
+    Address
+*/
+.address-section-container {
+    display: flex;
+    gap: 40px;
+    margin-top: 2rem;
+    align-items: flex-start;
+}
+
+.address-list {
+    flex: 1;
+}
+
+.address-form {
+    width: 40%;
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 5px #ddd;
+}
