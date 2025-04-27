@@ -1,0 +1,182 @@
+.comment-section {
+    margin-top: 50px;
+  }
+  
+  .comment-section h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .comment-list {
+    margin-bottom: 30px;
+  }
+  
+  .comment-item {
+    background: #f8f8f8;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .comment-author {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #666;
+  }
+  
+  .comment-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-size: 16px;
+  }
+  
+  .comment-form button {
+    margin-top: 10px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .comment-form button:hover {
+    background-color: #0d62d1;
+  }
+  .replies {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+  
+  .reply-item {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+  }
+  
+  .comment-item {
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  
+  .comment-author {
+    font-weight: bold;
+  }
+  
+  .comment-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-size: 16px;
+  }
+  
+  .submit-comment-button {
+    background-color: #28a745;
+  }
+  
+  .submit-comment-button:hover {
+    background-color: #218838;
+  }
+  /* CSS cho phần bình luận */
+.comment-item {
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    position: relative;
+  }
+  
+  /* CSS cho ô nhập trả lời */
+  .reply-form {
+    margin-top: 10px;
+  }
+  
+  .reply-form textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  
+  .submit-reply-button {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .submit-reply-button:hover {
+    background-color: #218838;
+  }
+  
+  /* CSS cho các bình luận trả lời */
+  .replies {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+  
+  .reply-item {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+  }
+  
+  /* Nút like cho bình luận */
+  .like-button, .reply-button, .submit-comment-button {
+    background-color: #1a73e8;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .like-button {
+    background-color: #1a73e8;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+  .like-button:hover {
+    background-color: #0d62d1;
+  }
+  
+  /* Thay đổi giao diện khi đã like */
+  .like-button.liked {
+    background-color: #ff4081;
+  }
+  
+  .like-button.liked:hover {
+    background-color: #e30061;
+  }
+  
+  .like-button:hover, .reply-button:hover, .submit-comment-button:hover {
+    background-color: #0d62d1;
+  }
+  

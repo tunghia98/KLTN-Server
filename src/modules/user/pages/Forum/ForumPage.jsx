@@ -1,25 +1,27 @@
-import LastestQuestion from "../../components/Forum/LastestThread.jsx";
-import PopularQuestion from "../../components/Forum/PopularThread.jsx";
-import AllQuestions from "../../components/Forum/AllThread.jsx"; 
-function ForumPage(){
+import LastestThreads from "../../components/Forum/LastestThread.jsx";
+import PopularThreads from "../../components/Forum/PopularThread.jsx";
+import AllThread from "../../components/Forum/AllThread.jsx"; 
+import "../../components/Forum/Forum.css";
+
+function ForumPage() {
   return (
-    <div>
-      <h1>Diễn đàn Nông Nghiệp</h1>
+    <div className="forum-page">
+      <h1 className="forum-main-title">🌾 Diễn Đàn Nông Nghiệp 🌾</h1>
 
-      <div className="forum-sections">
-        <section>
-          <LastestQuestion />
-        </section>
+      <div className="forum-layout">
+        {/* Sidebar */}
+        <div className="forum-sidebar">
+          <LastestThreads />
+          <PopularThreads />
+        </div>
 
-        <section>
-          <PopularQuestion />
-        </section>
-
-        <section>
-          <AllQuestions />
-        </section>
+        {/* Main Content */}
+        <div className="forum-content">
+          <AllThread />
+        </div>
       </div>
     </div>
   );
-};
+}
+
 export default ForumPage;
