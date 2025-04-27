@@ -5,6 +5,7 @@ import UserInfoForm from "./UserInfoForm";
 import AddressList from "./AddressList";
 import AddressForm from "./AddressForm";
 import "./UserProfile.css";
+import OrderHistory from "../OrderHistory/OrderHistory.jsx";
 
 const UserProfile = () => {
     const { logout } = useUser();
@@ -214,6 +215,7 @@ const UserProfile = () => {
                     />
                 )}
             </div>
+            <OrderHistory/>
 
             <div className="text-right mt-8">
                 <button className="btn-danger" onClick={handleLogout}>Đăng xuất</button>
