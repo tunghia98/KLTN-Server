@@ -47,28 +47,35 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
       const payload = JSON.parse(atob(data.accessToken.split(".")[1]));
       const userId = payload["userId"];
       const username = payload["username"];
-      const role = payload["role"]; // Đúng định dạng bạn tạo
-  
-      const loggedInUser = { userId, username, role };
-  
-      setUser(loggedInUser);
+        let role = "";
+        const rolea = payload["role"]; // Đúng định dạng bạn tạo
+        if (rolea.includes("buyer"))
+            role = "buyer";
+        if (rolea.includes("seller"))
+            role = "seller";
+        if (rolea.includes("admin"))
+            role = "admin";
+        const decodedUser = { userId, username, role };
+        setUser(decodedUser);
+        localStorage.setItem("user", JSON.stringify(decodedUser));
       if (rememberMe) {
-        localStorage.setItem("user", JSON.stringify(loggedInUser));
+          localStorage.setItem("user", JSON.stringify(decodedUser));
       }
   
       alert(`Chào mừng ${username}!`);
   
       // Điều hướng theo role
-      if (role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (role === "seller") {
-        navigate("/seller/dashboard");
-      } else {
-        if(isReady===true){
-          navigate("/onboarding");
-        }else
-        navigate("/");
-      }
+        if (role.includes("admin")) {
+            navigate("/admin/dashboard");
+        } else if (role.includes("seller")) {
+            navigate("/seller/dashboard");
+        } else {
+            if (isReady === true) {
+                navigate("/onboarding");
+            } else {
+                navigate("/");
+            }
+        }
   
       onClose();
   
