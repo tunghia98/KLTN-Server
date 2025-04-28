@@ -32,6 +32,10 @@ function ProductPromoted({ onClose, onApply }) {
         onClose();  // Đóng popup sau khi áp dụng
     };
 
+    const handleSelectProduct = (product) => {
+        toggleProduct(product); // Khi chọn sản phẩm, thêm vào danh sách selectedProducts
+    };
+
     return (
         <div className='promoted-popup-overlay'>
             <div className='promoted-popup-content'>
@@ -50,10 +54,11 @@ function ProductPromoted({ onClose, onApply }) {
                     {filteredProducts.map(product => {
                         const isSelected = selectedProducts.some(p => p.id === product.id);
                         return (
-                            <SellerProductMiniCard 
-                            product={product} 
-                            isSelected={isSelected} 
-                            onClick={() => toggleProduct(product)} 
+                            <SellerProductMiniCard
+                                key={product.id}
+                                product={product}
+                                fromPromotion={true} // Đánh dấu là sản phẩm từ trang promotion
+                                onClick={handleSelectProduct}  // Gọi hàm chọn sản phẩm
                             />
                         );
                     })}
