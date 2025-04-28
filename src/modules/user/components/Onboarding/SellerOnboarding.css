@@ -136,3 +136,57 @@
   font-size: 14px;
   margin-top: 10px;
 }
+.address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Khoảng cách đều nhau giữa các input */
+    margin-top: 20px;
+}
+
+    .address--form label {
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .address--form input {
+        padding: 10px 0px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: white; /* Thêm dòng này */
+        box-shadow: none; /* Thêm dòng này */
+    }
+
+    .address--form input:focus {
+        outline: none;
+        border-color: #4096ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+.bank-info-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+    .bank-info-form label {
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .bank-info-form input {
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background-color: white;
+        font-size: 14px;
+        box-shadow: none;
+    }
+
+        .bank-info-form input:focus {
+            outline: none;
+            border-color: #4096ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+
