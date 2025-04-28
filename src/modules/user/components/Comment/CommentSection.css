@@ -179,4 +179,72 @@
   .like-button:hover, .reply-button:hover, .submit-comment-button:hover {
     background-color: #0d62d1;
   }
-  
+  /* Các button bình thường */
+.like-button,
+.reply-button,
+.submit-comment-button,
+.submit-reply-button {
+  padding: 6px 12px;
+  margin-right: 8px;
+  margin-top: 4px;
+  border: none;
+  background-color: #3498db;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.like-button:hover,
+.reply-button:hover,
+.submit-comment-button:hover,
+.submit-reply-button:hover {
+  background-color: #2980b9;
+}
+
+/* Button khi đã like */
+.like-button.liked {
+  background-color: #e74c3c;
+}
+
+/* Khi nút bị disabled */
+.like-button:disabled,
+.reply-button:disabled,
+.submit-comment-button:disabled,
+.submit-reply-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  pointer-events: none; /* Không cho hover */
+}
+
+/* Form bình luận */
+.comment-form textarea,
+.reply-form textarea {
+  width: 100%;
+  min-height: 60px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Bình luận */
+.comment-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Các câu trả lời */
+.replies {
+  margin-top: 8px;
+  padding-left: 16px;
+  border-left: 2px solid #ddd;
+}
+
+.reply-item {
+  margin-bottom: 8px;
+}
