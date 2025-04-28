@@ -1,75 +1,107 @@
+/* Container chứa toàn bộ phần giao diện */
 .shipping-container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  .shipping-card {
-    display: flex;
-    flex-direction: column;
-  }
-  .shipping-title {
-    font-size: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-  .shipping-field {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-  }
-  .shipping-field label {
-    margin-bottom: 5px;
-    font-weight: 500;
-  }
-  .shipping-field input,
-  .shipping-field select {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Tạo kiểu cho card */
+.shipping-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* Tiêu đề của card */
+.shipping-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Kiểu cho bảng */
+.shipping-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+/* Kiểu cho các tiêu đề cột */
+.shipping-table th {
+  background-color: #f4f4f4;
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Kiểu cho các ô trong bảng */
+.shipping-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+/* Kiểu cho ô input trong bảng */
+.shipping-table input,
+.shipping-table select {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+/* Kiểu cho các nút thao tác */
+.btn-save,
+.btn-add-row {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.btn-save:hover,
+.btn-add-row:hover {
+  background-color: #0056b3;
+}
+
+/* Kiểu cho nút xóa trong bảng */
+.shipping-table button {
+  padding: 6px 10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.shipping-table button:hover {
+  background-color: #c82333;
+}
+
+/* Cải thiện khoảng cách giữa các dòng */
+.shipping-table td, .shipping-table th {
+  text-align: center;
+}
+
+/* Điều chỉnh cho giao diện responsive */
+@media (max-width: 768px) {
+  .shipping-table th, .shipping-table td {
+    font-size: 12px;
     padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
   }
-  .shipping-save {
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+
+  .btn-save,
+  .btn-add-row {
+    font-size: 14px;
+    padding: 8px 12px;
   }
-  .shipping-save:hover {
-    background-color: #0056b3;
-  }
-  .cost-details table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  .cost-details th, .cost-details td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-  
-  .input-field {
-    width: 100%;
-    padding: 6px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .remove-row-btn {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .remove-row-btn:hover {
-    background-color: darkred;
-  }
-  
+}

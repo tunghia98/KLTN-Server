@@ -1,93 +1,146 @@
 import React, { useState } from 'react';
+import './ShippingConfig.css'; // Đảm bảo import file CSS
 
 const ShippingConfig = () => {
-  const [length, setLength] = useState('');
-  const [width, setWidth] = useState('');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [distance, setDistance] = useState('');
-  const [shippingMethod, setShippingMethod] = useState('manual');
-  const [apiKey, setApiKey] = useState('');
+  const [shippingConfigs, setShippingConfigs] = useState([
+    { id: 1, minWeight: '', maxWeight: '', distance: '', fee: '', region: '', size: '', shippingMethod: 'manual' },
+  ]);
+  const [savedConfigs, setSavedConfigs] = useState([]); // Dữ liệu lưu lại sau khi chỉnh sửa
+
+  const handleChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedConfigs = [...shippingConfigs];
+    updatedConfigs[index][name] = value;
+    setShippingConfigs(updatedConfigs);
+  };
+
+  const handleAddRow = () => {
+    setShippingConfigs([
+      ...shippingConfigs,
+      { id: shippingConfigs.length + 1, minWeight: '', maxWeight: '', distance: '', fee: '', region: '', size: '', shippingMethod: 'manual' },
+    ]);
+  };
+
+  const handleDeleteRow = (index) => {
+    const updatedConfigs = shippingConfigs.filter((_, i) => i !== index);
+    setShippingConfigs(updatedConfigs);
+  };
+
+  const handleSaveRow = (index) => {
+    const rowToSave = shippingConfigs[index]; // Lấy row hiện tại
+    setSavedConfigs([...savedConfigs, rowToSave]); // Lưu vào bảng hiển thị
+  };
+
+  const handleSaveConfig = () => {
+    console.log('Saved Shipping Configs:', savedConfigs);
+  };
 
   return (
-    <div className="container p-4">
-      <div className="card">
-        <div className="card-content">
-          <h2 className="title">Cấu hình vận chuyển</h2>
+    <div className="shipping-container">
+      <div className="shipping-card">
+        <div className="shipping-card-content">
+          <h2 className="shipping-title">Cấu hình phí vận chuyển</h2>
 
-          <div className="field">
-            <label>Chiều dài (cm)</label>
-            <input 
-              type="number" 
-              value={length} 
-              onChange={(e) => setLength(e.target.value)} 
-              placeholder="VD: 30"
-            />
-          </div>
+          {/* Bảng chỉnh sửa */}
+          <h3>Bảng chỉnh sửa</h3>
+          <table className="shipping-table">
+            <thead>
+              <tr>
+                <th>Khối lượng tối đa (kg)</th>
+                <th>Kích thước tối đa (cm)</th>
+                <th>Bán kính tối đa (km)</th>
+                <th>Phí vận chuyển (VND)</th>
+                <th>Phương thức vận chuyển</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shippingConfigs.map((config, index) => (
+                <tr key={config.id}>
+                  <td>
+                    <input
+                      type="text"
+                      name="minWeight"
+                      value={config.minWeight}
+                      onChange={(e) => handleChange(index, e)}
+                      placeholder="VD: 0"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="size"
+                      value={config.size}
+                      onChange={(e) => handleChange(index, e)}
+                      placeholder="VD: 30x20x15"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="distance"
+                      value={config.distance}
+                      onChange={(e) => handleChange(index, e)}
+                      placeholder="VD: 10"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="fee"
+                      value={config.fee}
+                      onChange={(e) => handleChange(index, e)}
+                      placeholder="VD: 30000"
+                    />
+                  </td>
 
-          <div className="field">
-            <label>Chiều rộng (cm)</label>
-            <input 
-              type="number" 
-              value={width} 
-              onChange={(e) => setWidth(e.target.value)} 
-              placeholder="VD: 20"
-            />
-          </div>
+                  <td>
+                    <select
+                      name="shippingMethod"
+                      value={config.shippingMethod}
+                      onChange={(e) => handleChange(index, e)}
+                    >
+                      <option value="manual">Đơn vị vận chuyển</option>
+                      <option value="GHN">Đơn vị vận tải</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button onClick={() => handleDeleteRow(index)}>Xóa</button>
+                    <button onClick={() => handleSaveRow(index)}>Lưu</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          <div className="field">
-            <label>Chiều cao (cm)</label>
-            <input 
-              type="number" 
-              value={height} 
-              onChange={(e) => setHeight(e.target.value)} 
-              placeholder="VD: 15"
-            />
-          </div>
+          <button className="btn-add-row" onClick={handleAddRow}>Thêm dòng</button>
 
-          <div className="field">
-            <label>Khối lượng (kg)</label>
-            <input 
-              type="number" 
-              value={weight} 
-              onChange={(e) => setWeight(e.target.value)} 
-              placeholder="VD: 2.5"
-            />
-          </div>
+          {/* Bảng hiển thị các cấu hình đã lưu */}
+          <h3>Bảng hiển thị cấu hình đã lưu</h3>
+          <table className="shipping-table">
+            <thead>
+              <tr>
+                <th>Khối lượng tối đa (kg)</th>
+                <th>Kích thước tối đa (cm)</th>
+                <th>Bán kính tối đa (km)</th>
+                <th>Phí vận chuyển (VND)</th>
+                <th>Phương thức vận chuyển</th>
+              </tr>
+            </thead>
+            <tbody>
+              {savedConfigs.map((config, index) => (
+                <tr key={index}>
+                  <td>{config.minWeight}</td>
+                  <td>{config.size}</td>
+                  <td>{config.distance}</td>
+                  <td>{config.fee}</td>
+                  <td>{config.shippingMethod === 'manual' ? 'Đơn vị vận chuyển' : 'Đơn vị vận tải'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          <div className="field">
-            <label>Khoảng cách giao hàng (km)</label>
-            <input 
-              type="number" 
-              value={distance} 
-              onChange={(e) => setDistance(e.target.value)} 
-              placeholder="VD: 10"
-            />
-          </div>
-
-          <div className="field">
-            <label>Phương thức vận chuyển</label>
-            <select value={shippingMethod} onChange={(e) => setShippingMethod(e.target.value)}>
-              <option value="manual">Tự tính phí</option>
-              <option value="GHN">GHN</option>
-              <option value="ViettelPost">ViettelPost</option>
-              <option value="J&T">J&T</option>
-            </select>
-          </div>
-
-          {shippingMethod !== 'manual' && (
-            <div className="field">
-              <label>Nhập API Key ({shippingMethod})</label>
-              <input 
-                type="text" 
-                value={apiKey} 
-                onChange={(e) => setApiKey(e.target.value)} 
-                placeholder="Nhập API Key"
-              />
-            </div>
-          )}
-
-          <button className="btn">Lưu cấu hình</button>
+          <button className="btn-save" onClick={handleSaveConfig}>Lưu tất cả cấu hình</button>
         </div>
       </div>
     </div>
