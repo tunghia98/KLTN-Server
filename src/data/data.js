@@ -1,6 +1,11 @@
 import toSlug from "../utils/toSlug.js";
 export const categories = [
-  { id: 1, name: "Hạt giống", slug: "hat-giong", img: "./logo.png" },
+    {
+        id: 1,
+        name: "Hạt giống",
+        slug: "hat-giong",
+        img: "./logo.png"
+    },
   {
     id: 2,
     name: "Phân Bón & Hóa Chất Nông Nghiệp",

@@ -8,6 +8,7 @@ const steps = [
     "Địa chỉ lấy hàng",
     "Thông tin thanh toán",
     "Hoàn tất",
+    "Thanh toán",
 ];
 
 export default function SellerOnboarding() {
@@ -50,6 +51,7 @@ export default function SellerOnboarding() {
     const [street, setStreet] = useState("");
     const [bankName, setBankName] = useState("");
     const [bankAccount, setBankAccount] = useState("");
+    const [hasPaid, setHasPaid] = useState(false); // kiểm tra đã thanh toán
     const prevStep = () => setStep((s) => Math.max(s - 1, 0));
     const { isLoggedIn } = useUser();
     if (!isLoggedIn) {
@@ -65,7 +67,7 @@ export default function SellerOnboarding() {
             return;
         }
 
-        const baseUrl = "https://localhost:7135"; // Cố định domain API
+        const baseUrl = "https://kltn.azurewebsites.net"; // Cố định domain API
         const userId = localStorage.getItem("userId");
         try {
             // 1. Gửi yêu cầu tạo shop
@@ -274,19 +276,48 @@ export default function SellerOnboarding() {
                   <label htmlFor="terms-checkbox">Tôi đã đọc các điều khoản và hoàn tất đăng ký</label>
                 </div>
             </div>
-            )}
+
+                )}
+                {step === 4 && (
+                    <div className="payment-step">
+                        <h3>Thanh toán phí đăng ký bán hàng</h3>
+                        <p>Bạn cần thanh toán <strong>20.000đ</strong> để hoàn tất đăng ký bán hàng.</p>
+
+                        {!hasPaid ? (
+                            <div>
+                                {/* TODO: Tích hợp ví thanh toán hoặc hướng dẫn chuyển khoản */}
+                                <p>Quét mã QR để thanh toán:</p>
+                                <img src="/sample-qr.png" alt="QR code" style={{ width: 200, margin: '20px 0' }} />
+                                <button onClick={() => setHasPaid(true)}>Tôi đã thanh toán</button>
+                            </div>
+                        ) : (
+                            <div>
+                                <p>✅ Bạn đã xác nhận thanh toán.</p>
+                                <button onClick={handleComplete}>Hoàn tất</button>
+                            </div>
+                        )}
+                    </div>
+                )}
         </div>
 
-        <div className="buttons">
-            <button onClick={prevStep} disabled={step === 0}>
-                Quay lại
-            </button>
-            {step < steps.length - 1 ? (
-            <button onClick={nextStep}>Tiếp theo</button>
-            ) : (
-            <button onClick={handleComplete} disabled={!isChecked}>Hoàn tất</button>
-            )}
-        </div>
+            <div className="buttons">
+                <button onClick={prevStep} disabled={step === 0}>
+                    Quay lại
+                </button>
+
+                {step < steps.length - 1 ? (
+                    <button onClick={nextStep}>Tiếp theo</button>
+                ) : (
+                    <>
+                        {!hasPaid ? (
+                            <button disabled>Vui lòng thanh toán</button> // Chưa thanh toán thì không cho bấm
+                        ) : (
+                            <button onClick={handleComplete}>Hoàn tất</button> // Đã thanh toán mới cho bấm hoàn tất
+                        )}
+                    </>
+                )}
+            </div>
+
         </div>
     );
 }

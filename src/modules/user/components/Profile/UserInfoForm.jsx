@@ -11,7 +11,7 @@ const UserInfoForm = ({ formData, setFormData, handleSubmit, handleAvatarChange,
             src={
               previewAvatar ||
               (userInfo?.avatarUrl
-                ? `https://localhost:7135/api/Users/avatar/${userInfo.avatarUrl}`
+                                ? `https://kltn.azurewebsites.net/api/Users/avatar/${userInfo.avatarUrl}`
                 : `/default-avatar.png`)
             }
             alt="Avatar Preview"
