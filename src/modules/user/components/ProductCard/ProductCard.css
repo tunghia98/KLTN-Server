@@ -43,3 +43,10 @@
     -webkit-line-clamp: 2; /* số dòng muốn hiển thị */
     -webkit-box-orient: vertical;
 }
+.btn-add-product{
+    width: 30%;
+    border-radius: 10px;
+    background-color: #457d58;
+    font-size: larger;
+    text-align: center;
+}

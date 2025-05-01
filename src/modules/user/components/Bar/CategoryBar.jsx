@@ -1,34 +1,44 @@
 import React, { useState } from "react";
-import toSlug from "../../../../utils/toSlug.js";
-import { useNavigate } from "react-router-dom";
 import "./Bar.css";
 
-function CategoryBar({ categories, setSelectedCategoryIndex }) {
-  const [selectedCategoryIndex, setSelectedCategoryIndexState] = useState(0);
-  const navigate = useNavigate();
+const CategoryBar = ({ categories, onCategoryClick }) => {
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
 
   if (!categories || !Array.isArray(categories) || categories.length === 0) {
     return <p>Không có dữ liệu danh mục sản phẩm.</p>;
   }
-  const handleClick = () => {
-    // Điều hướng đến trang tất cả sản phẩm theo danh mục
-    navigate(`/products/${categories.slug}`);
-  }
+
+  const handleCategoryClick = (index) => {
+    // Cập nhật selectedCategoryIndex khi người dùng click vào danh mục
+    setSelectedCategoryIndex(index);
+    // Gọi onCategoryClick từ bên ngoài để hiển thị sản phẩm tương ứng
+    if (onCategoryClick) {
+      onCategoryClick(index);
+    }
+  };
+
   return (
     <div className="category-navbar">
       <h1>DANH MỤC SẢN PHẨM</h1>
       <div className="categories-navbar-detail">
         {categories.map((category, index) => {
-          const path = `/products/${category.slug}`; // tạo path riêng từng danh mục
-
           return (
             <div className="category-detail" key={index}>
-              <img className="category-thumb" src={`/${category.img}`} alt={category.name} />
+              <img
+                className="category-thumb"
+                src={`/${category.img}`}
+                alt={category.name}
+              />
               <h4 className="category-title">
                 <a
-                  href={path}
-                  className={`category-name ${selectedCategoryIndex === index ? "active" : ""}`}
-                  onClick={() => handleClick()}
+                  href="#"
+                  className={`category-name ${
+                    selectedCategoryIndex === index ? "active" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault(); // Ngăn chặn hành động mặc định của thẻ <a>
+                    handleCategoryClick(index); // Gọi handleCategoryClick
+                  }}
                 >
                   {category.name}
                 </a>
@@ -39,6 +49,6 @@ function CategoryBar({ categories, setSelectedCategoryIndex }) {
       </div>
     </div>
   );
-}
+};
 
 export default CategoryBar;

@@ -35,26 +35,26 @@
 .category-name{
     text-decoration: none;
 }
-.brand-bar {
+.seller-bar {
     padding: 2rem;
     text-align: center;
     background-color: #457d58;
   }
   
-  .brand-title {
+  .seller-title {
     font-size: 2rem;
     margin-bottom: 1.5rem;
     color: #f6f6e9;
   }
   
-  .brand-list {
+  .seller-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
     justify-items: center;
   }
   
-  .brand-card {
+  .seller-card {
     background-color: #f8f8f8;
     border-radius: 12px;
     padding: 1rem;
@@ -64,7 +64,7 @@
     transition: transform 0.2s;
   }
   
-  .brand-card:hover {
+  .seller-card:hover {
     transform: scale(1.03);
     background-color: #e0f7e9;
   }

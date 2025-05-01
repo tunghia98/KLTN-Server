@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../../../contexts/UserContext.jsx";
-import { useCart } from "../../../../contexts/CartContext.jsx";  // Import useCart hook
+import { useCart } from "../../../../contexts/CartContext.jsx";
 import SimilarProduct from "../SimilarProduct/SimilarProduct.jsx";
 import RatingProduct from "../Rating/RatingProduct.jsx";
 import RatingShop from "../Rating/RatingShop.jsx";
 import Button from "../../../../components/Common/Button.jsx";
 import formatVND from "../../../../utils/format.js";
+import toSlug from "../../../../utils/toSlug.js";
 import "./ProductDetail.css";
 
 function ProductDetail({ product, seller }) {
-  const user = useUser(); // Lấy thông tin người dùng từ context
-  const { name, price, description, images, discount } = product;
+  const user = useUser();
+  const { name, price, description, images = [], discount, id } = product;
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();  // Get addToCart function from context
+  const { addToCart } = useCart();
   const productSellCounter = 10;
   const [showDiscount, setShowDiscount] = useState(false);
   const [regularPrice, setRegularPrice] = useState(null);
@@ -36,8 +37,8 @@ function ProductDetail({ product, seller }) {
 
   const handleBuyNow = () => {
     const cartItem = { ...product, quantity };
-    addToCart(cartItem);  // Add product to cart
-    navigate(`/checkout`, { state: { cartItems: [cartItem] } });  // Navigate to checkout page with cart item
+    addToCart(cartItem);
+    navigate(`/checkout`, { state: { cartItems: [cartItem] } });
   };
 
   const handleAddToCart = () => {
@@ -46,13 +47,15 @@ function ProductDetail({ product, seller }) {
     alert("Đã thêm vào giỏ hàng");
   };
 
-  const [selectedImage, setSelectedImage] = useState(images[0]);
+  const [selectedImage, setSelectedImage] = useState(images[0] || "");
   const [hoverImage, setHoverImage] = useState(null);
   const displayImage = hoverImage || selectedImage;
 
-  if (!user) {
-    return <div>Đang tải thông tin người dùng...</div>;
-  }
+  // Tạo path SEO-friendly
+  const productSlug = `${product?.id}-${toSlug(product?.name)}`;
+  const sellerSlug = `${seller?.id}-${toSlug(seller?.name)}`;
+  const path = `/products/${productSlug}`;
+  const sellerPath=`/sellers/${sellerSlug}`
 
   return (
     <div className="product-detail">
@@ -91,7 +94,7 @@ function ProductDetail({ product, seller }) {
                 <p className="product-discount">-{discount}%</p>
                 {regularPrice !== null && (
                   <p className="product-regular-price">
-                    {formatVND(regularPrice.toFixed(2))}
+                    {formatVND(Number(regularPrice.toFixed(2)))}
                   </p>
                 )}
               </>
@@ -109,7 +112,7 @@ function ProductDetail({ product, seller }) {
 
           <div className="delivery-to">
             <p>Giao đến</p>
-            <span>{user ? user.address : "Đang tải..."}</span>
+            <span>{user?.address || "Đang tải..."}</span>
           </div>
 
           <div className="delivery-fee">
@@ -129,9 +132,9 @@ function ProductDetail({ product, seller }) {
 
       <div className="product-detail-transactions">
         <div className="product-supply">
-          <img src={seller.avatar} alt={seller.name} />
+          <img src={seller?.avatar || ""} alt={seller?.name || "Shop"} />
           <div className="supply-information">
-            <Link to="/seller">{seller.name}</Link>
+            <Link to={sellerPath}>{seller?.name || "Shop"}</Link>
             <div className="supply-rating-and-sold">
               <RatingShop value={3.8} count={105} size={24} />
               <span>{productSellCounter} sản phẩm</span>
@@ -150,7 +153,7 @@ function ProductDetail({ product, seller }) {
 
         <button className="buy-now" onClick={handleBuyNow}>Mua ngay</button>
         <button className="add-to-cart" onClick={handleAddToCart}>Thêm vào giỏ hàng</button>
-        <SimilarProduct />
+        <SimilarProduct category={product.category} />
       </div>
 
       <div className="product-description">

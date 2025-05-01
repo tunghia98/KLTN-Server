@@ -41,7 +41,6 @@ import SupportChannelManagement from "../modules/admin/pages/SupportChannelManag
 import WebsiteCustomization from "../modules/admin/pages/WebsiteCustomization/WebsiteCustomization.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
-  
   return (
     <Routes>
       {/* Public Routes */}
@@ -56,8 +55,8 @@ const AppRoutes = () => {
       <Route path="/profile" element={<UserInfoPage />} />
       <Route path="/forum" element={<ForumPage />} />
       <Route path="/forum/thread/:title" element={<ThreadDetailPage />} />
-      <Route path="/seller/:sellername" element={<SellerInfoPage />} />
-
+      <Route path="/sellers/:sellerSlug" element={<SellerInfoPage />} />
+      <Route path="/products/:productSlug" element={<ProductDetailPage />} />
       {/* Seller and Admin Routes using ManagementLayout */}
       <Route
         path="/seller/dashboard"
