@@ -2,11 +2,32 @@
     position: relative;
     padding-bottom: 50px;
 }
-.category-products h2 {
-  background-color: #457d58;
-  padding:20px;
-  color:#f6f6e9;
+.category-label-tag {
+  position: relative;
+  display: inline-block;
+  background-color: #1565c0;
+  color: white;
+  padding: 12px 24px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  border-radius: 4px 0 0 4px;
 }
+
+/* Tạo hình tam giác đuôi */
+.category-label-tag::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -20px; /* khoảng cách tam giác lệch ra ngoài */
+  width: 0;
+  height: 0;
+  border-top: 24px solid transparent;
+  border-bottom: 24px solid transparent;
+  border-left: 20px solid #1565c0; /* màu giống background */
+}
+
+
 .filter-group-category-product{
     box-sizing: border-box;
     padding:10px 25px 10px 25px;

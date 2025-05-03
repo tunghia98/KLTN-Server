@@ -86,11 +86,11 @@ const Homepage = () => {
       {/* Navbar phân loại */}
       <CategoryBar
         categories={categories}
+        products={products}
         onCategoryClick={handleCategoryClick}
       />
 
       {/* Hiển thị sản phẩm bán chạy */}
-
       {selectedCategory && (
         <div className="homepage-category-products">
           <CategoryProducts
@@ -102,8 +102,6 @@ const Homepage = () => {
         </div>
       )}
       <SellerBar />
-
-      {/* Hiển thị sản phẩm theo danh mục được chọn */}
     </div>
   );
 };

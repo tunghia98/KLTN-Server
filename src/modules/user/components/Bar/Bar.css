@@ -1,6 +1,5 @@
 .category-navbar{
     height: max-content;
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,3 +67,244 @@
     transform: scale(1.03);
     background-color: #e0f7e9;
   }
+  .category-navbar {
+    padding: 20px;
+  }
+  
+  .category-tags-container {
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 8px;
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .category-tags-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+  
+  .category-tag {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 2px solid #e0e0e0;
+    background-color: #fafafa;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .category-tag:hover {
+    background-color: #f0f8ff;
+    border-color: #90caf9;
+    color: #1976d2;
+  }
+  
+  .category-tag.active {
+    background-color: #1976d2;
+    color: #fff;
+    border-color: #1976d2;
+  }
+  
+  .see-more-button {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 30px;
+    background-color: #fff;
+    color: #1976d2;
+    border: 2px dashed #90caf9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .see-more-button:hover {
+    background-color: #e3f2fd;
+  }
+  .category-tag {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 14px 24px;
+    border-radius: 6px; /* nhẹ, không bo tròn kiểu pill */
+    border: 2px solid #e0e0e0;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .category-tag:hover {
+    background-color: #e3f2fd;
+    border-color: #64b5f6;
+    color: #1565c0;
+  }
+  
+  .category-tag.active {
+    background-color: #1565c0;
+    color: #fff;
+    border-color: #1565c0;
+  }
+  .see-more-button {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 20px;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #1565c0;
+    border: 2px dashed #64b5f6;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .see-more-button:hover {
+    background-color: #e3f2fd;
+  }
+  .category-navbar {
+    margin-bottom: 24px;
+  }
+  
+  .category-navbar h1 {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .category-tags-wrapper-container {
+    position: relative;
+  }
+  
+  .category-tags-wrapper.expanded {
+    max-height: 1000px; /* Chiều cao đủ chứa toàn bộ */
+  }
+  
+  .category-tag {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 14px 24px;
+    border-radius: 6px;
+    border: 2px solid #e0e0e0;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .category-tag:hover {
+    background-color: #e3f2fd;
+    border-color: #64b5f6;
+    color: #1565c0;
+  }
+  
+  .category-tag.active {
+    background-color: #1565c0;
+    color: #fff;
+    border-color: #1565c0;
+  }
+  
+  .see-more-button {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #1565c0;
+    border: 2px dashed #64b5f6;
+    cursor: pointer;
+    transition: margin-top 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .see-more-button:hover {
+    background-color: #e3f2fd;
+  }
+ /* Container cho toàn bộ thanh menu danh mục */
+.category-navbar {
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Đảm bảo container có thể mở rộng tối đa */
+  box-sizing: border-box;
+  height: auto; /* Đảm bảo container có thể tự động mở rộng */
+  max-height: none; /* Loại bỏ giới hạn chiều cao */
+}
+
+/* Tiêu đề danh mục */
+.category-navbar h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Container chứa các thẻ danh mục */
+.category-tags-wrapper-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Đảm bảo không có giới hạn max-width */
+}
+
+.category-tags-wrapper {
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+  width: 100%; /* Điều này đảm bảo các thẻ có thể chạy ra ngoài nếu cần */
+  max-width: none; /* Loại bỏ max-width nếu có */
+  justify-content: space-between;
+}
+
+/* Định dạng cho từng thẻ danh mục */
+.category-tag {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  flex-grow: 0; /* Đảm bảo không tự động mở rộng */
+}
+
+.category-tag:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.category-tag.active {
+  background-color: #2e7d32; /* Màu nền cho thẻ được chọn */
+}
+
+/* Nút "Xem thêm" */
+.see-more-button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 10px;
+}
+
+.see-more-button:hover {
+  background-color: #1976d2;
+  transform: scale(1.05);
+}
+
+.see-more-button:focus {
+  outline: none;
+}

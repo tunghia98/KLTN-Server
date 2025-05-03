@@ -21,7 +21,7 @@ const CategoryProducts = ({ category, products }) => {
 
   return (
     <div className="category-products">
-      <h2>{category.name}</h2>
+      <div className="category-label-tag">{category.name}</div>
       <div className="product-list">
         {limitedProducts.length > 0 ? (
           limitedProducts.map((product) => (
