@@ -56,7 +56,8 @@ const AppRoutes = () => {
       <Route path="/forum" element={<ForumPage />} />
       <Route path="/forum/thread/:title" element={<ThreadDetailPage />} />
       <Route path="/sellers/:sellerSlug" element={<SellerInfoPage />} />
-      <Route path="/products/:productSlug" element={<ProductDetailPage />} />
+          <Route path="/products/:productSlug" element={<ProductDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
       {/* Seller and Admin Routes using ManagementLayout */}
       <Route
         path="/seller/dashboard"

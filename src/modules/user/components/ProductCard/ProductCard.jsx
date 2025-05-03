@@ -13,7 +13,7 @@ const ProductCard = ({ product, categoryName, index }) => {
 
   if (!product) return <p>Không có sản phẩm.</p>;
 
-  const productLink = `/product/${toSlug(product.name)}`;
+  const productLink = `/products/${product.id+"-"+toSlug(product.name)}`;
 
   const handleAddToCart = () => {
     console.log(user);  // Kiểm tra user trong console
@@ -32,11 +32,11 @@ const ProductCard = ({ product, categoryName, index }) => {
 
   return (
     <div className="product-card">
-      <img
-        src={product.images[0]}
-        alt={product.name}
-        className="card-img"
-      />
+          <img
+              src={product.images?.[0]?.imageUrl || "/abc.jpg"}
+              alt={product.name}
+              className="card-img"
+          />
 
       <h3 className="card-title">
         <Link

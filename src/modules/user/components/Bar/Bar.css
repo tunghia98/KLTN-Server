@@ -308,3 +308,57 @@
 .see-more-button:focus {
   outline: none;
 }
+.category-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+    gap: 16px;
+    font-size: 16px;
+}
+
+.pagination-btn {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .pagination-btn:hover:not(:disabled) {
+        background-color: #218838;
+    }
+
+    .pagination-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+.pagination-info {
+    font-weight: 500;
+}
+.category-bar-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    width: 100%; /* 👈 THÊM DÒNG NÀY */
+}
+
+.category-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.category-search-input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 220px;
+}
+

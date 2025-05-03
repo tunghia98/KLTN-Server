@@ -282,16 +282,16 @@ export const sellers = [
 ];
 
 export const bestsellers = [
-  { productId: 1 },
-  { productId: 2 },
-  { productId: 3 },
-  { productId: 4 },
-  { productId: 5 },
-  { productId: 6 },
-  { productId: 7 },
-  { productId: 8 },
-  { productId: 9 },
-  { productId: 10 },
+  { productId: 11 },
+  { productId: 12 },
+  { productId: 13 },
+  { productId: 14 },
+  { productId: 15 },
+  { productId: 16 },
+  { productId: 17 },
+  { productId: 18 },
+  { productId: 19 },
+  { productId: 20 },
 ];
 export const orders = [
   {
