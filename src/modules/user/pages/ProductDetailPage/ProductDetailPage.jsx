@@ -14,9 +14,25 @@ function ProductDetailPage() {
 
   const fetchProduct = async (productId, productSlug) => {
     try {
-      const res = await fetch(`https://kltn.azurewebsites.net/api/Products/${productId}`);
-      const data = await res.json();
-      console.log(data);
+        const res = await fetch(`https://kltn.azurewebsites.net/api/Products/${productId}`);
+        if (!res.ok) throw new Error("Không tìm thấy sản phẩm");
+        const data = await res.json();
+        const imagesRes = await fetch("https://kltn.azurewebsites.net/api/product-images/list-by-products", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify([productId]), // chỉ 1 ID
+        });
+
+        const imagesData = await imagesRes.json();
+
+        // Gộp ảnh vào sản phẩm
+        const productWithImages = {
+            ...data,
+            imageUrls: imagesData[data.id]?.map((img) => img.imageUrl) || [],
+        };
+        setProduct(productWithImages);
       // if (!res.ok) throw new Error("Không thể tải sản phẩm");
       // const data = await res.json();
       
@@ -29,7 +45,6 @@ function ProductDetailPage() {
 
       if (!data) throw new Error("Không tìm thấy sản phẩm");
       fetchSeller(data.shopId);
-      console.log(product);
     } catch (err) {
       setError(err.message);
     }
@@ -40,7 +55,6 @@ function ProductDetailPage() {
       const res = await fetch("https://kltn.azurewebsites.net/api/Shops");
       if (!res.ok) throw new Error("Không thể tải nhà cung cấp");
       const data = await res.json();
-
       const foundSeller = data.find((s) => s.id === sellerId);
       if (!foundSeller) throw new Error("Không tìm thấy nhà cung cấp");
       setSeller(foundSeller);

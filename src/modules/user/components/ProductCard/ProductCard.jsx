@@ -7,7 +7,6 @@ import { useCart } from "../../../../contexts/CartContext";
 const ProductCard = ({ product, categoryName, index }) => {
   const navigate = useNavigate(); // để chuyển hướng khi mua
   const { fetchCartFromBackend } = useCart();
-    console.log(product);
   if (!product) return <p>Không có sản phẩm.</p>;
 
   const productLink = `/products/${product.id+"-"+toSlug(product.name)}`;

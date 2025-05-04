@@ -15,7 +15,7 @@ function ProductDetail({ product, seller }) {
   const { name, price, description, images = [], discount, id } = product;
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+    const { fetchCartFromBackend } = useCart();
   const productSellCounter = 10;
   const [showDiscount, setShowDiscount] = useState(false);
     const [regularPrice, setRegularPrice] = useState(null);
@@ -34,17 +34,81 @@ function ProductDetail({ product, seller }) {
   const increaseQuantity = () => setQuantity((prev) => Math.min(prev + 1, 100));
   const decreaseQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
 
-  const handleBuyNow = () => {
-    const cartItem = { ...product, quantity };
-    addToCart(cartItem);
-    navigate(`/checkout`, { state: { cartItems: [cartItem] } });
-  };
+    const handleBuyNow = async () => {
+        const accessToken = localStorage.getItem("accessToken");
 
-  const handleAddToCart = () => {
-    const cartItem = { ...product, quantity };
-    addToCart(cartItem);
-    alert("Đã thêm vào giỏ hàng");
-  };
+        if (!accessToken) {
+            alert("Vui lòng đăng nhập để mua sản phẩm.");
+            navigate("/login");
+            return;
+        }
+
+        try {
+            // Thêm sản phẩm vào giỏ hàng
+            const res = await fetch("https://kltn.azurewebsites.net/api/Cart/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    productId: product.id,
+                    quantity: quantity,  // Sử dụng quantity của sản phẩm
+                }),
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text);
+            }
+
+            // Lấy dữ liệu giỏ hàng sau khi thêm sản phẩm
+            await fetchCartFromBackend();
+
+            // Chuyển hướng đến trang thanh toán và gửi thông tin giỏ hàng
+            navigate(`/checkout`, { state: { cartItems: [{ ...product, quantity }] } });
+
+            alert("✅ Đã thêm vào giỏ hàng và chuyển đến thanh toán!");
+        } catch (err) {
+            console.error("Lỗi thêm giỏ hàng:", err.message);
+            alert("❌ Thêm giỏ hàng thất bại.");
+        }
+    };
+
+
+    const handleAddToCart = async () => {
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (!accessToken) {
+            alert("Vui lòng đăng nhập để thêm vào giỏ hàng.");
+            navigate("/login");
+            return;
+        }
+
+        try {
+            const res = await fetch("https://kltn.azurewebsites.net/api/Cart/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${ accessToken }`,
+              },
+        body: JSON.stringify({
+            productId: product.id,
+            quantity: 1,
+        }),
+          });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text);
+    }
+    await fetchCartFromBackend();
+    alert("✅ Đã thêm vào giỏ hàng!");
+} catch (err) {
+    console.error("Lỗi thêm giỏ hàng:", err.message);
+    alert("❌ Thêm giỏ hàng thất bại.");
+}
+  }; 
 
   const [selectedImage, setSelectedImage] = useState(images[0] || "");
   const [hoverImage, setHoverImage] = useState(null);
@@ -58,30 +122,38 @@ function ProductDetail({ product, seller }) {
 
   return (
     <div className="product-detail">
-      <div className="product-detail-img">
+          <div className="product-detail-img">
+              {/* Ảnh chính */}
               <img
                   src={
-                      product.imageUrls?.[0]
+                      hoverImage || selectedImage ||
+                      (product.imageUrls?.[0]
                           ? `https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0]}`
-                          : "https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png"
+                          : "https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png")
                   }
                   alt={product.name}
                   className="product-detail-img"
               />
-        <div className="product-detail-img-sub">
-          {images.map((img, index) => (
-            <img
-              key={index}
-              src={img}
-              alt={`${name} ${index}`}
-              onMouseEnter={() => setHoverImage(img)}
-              onMouseLeave={() => setHoverImage(null)}
-              onClick={() => setSelectedImage(img)}
-              className={`product-detail-thumbnail ${selectedImage === img ? 'active' : ''}`}
-            />
-          ))}
-        </div>
-      </div>
+
+              {/* Danh sách ảnh phụ */}
+              <div className="product-detail-img-sub">
+                  {product.imageUrls?.map((imgId, index) => {
+                      const imgUrl = `https://kltn.azurewebsites.net/api/product-images/file/${imgId}`;
+                      return (
+                          <img
+                              key={index}
+                              src={imgUrl}
+                              alt={`${product.name} ${index}`}
+                              onMouseEnter={() => setHoverImage(imgUrl)}
+                              onMouseLeave={() => setHoverImage(null)}
+                              onClick={() => setSelectedImage(imgUrl)}
+                              className={`product-detail-thumbnail ${selectedImage === imgUrl ? "active" : ""
+                                  }`}
+                          />
+                      );
+                  })}
+              </div>
+          </div>
 
       <div className="product-main-info">
         <div className="product-detail-info">
@@ -138,8 +210,15 @@ function ProductDetail({ product, seller }) {
       </div>
 
       <div className="product-detail-transactions">
-        <div className="product-supply">
-          <img src={seller?.avatar || ""} alt={seller?.name || "Shop"} />
+              <div className="product-supply">
+                  <img
+                      src={
+                          seller?.avatarUrl
+                              ? `https://kltn.azurewebsites.net/api/Shops/shop-avatar/${seller.avatarUrl}`
+                              : "https://kltn.azurewebsites.net/api/Shops/shop-avatar/default.png"
+                      }
+                      alt={seller?.name || "Shop"}
+                  />
           <div className="supply-information">
             <Link to={sellerPath}>{seller?.name || "Shop"}</Link>
             <div className="supply-rating-and-sold">

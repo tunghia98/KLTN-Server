@@ -42,7 +42,11 @@ const Payment = () => {
             cartItems.map(item => (
               <div key={item.id} className="payment-cart-item">
                 <div className="payment-cart-item-details">
-                  <img src={item.images[0]} alt={item.name} className="payment-cart-item-image" />
+                        <img
+                            src={item.images && item.images.length > 0 ? item.images[0] : "default-image.png"}
+                            alt={item.name}
+                            className="payment-cart-item-image"
+                        />
                   <div className="payment-cart-item-info">
                     <span className="payment-cart-item-name">{item.name}</span>
                     <span className="payment-cart-item-supplier">{item.supplier}</span>
