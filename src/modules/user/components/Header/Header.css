@@ -121,4 +121,18 @@ header div {
 .sub-header ul li a:hover::after{
     width: 100%;
 }
+.header-cart {
+    position: relative;
+}
+.cart-badge {
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
 

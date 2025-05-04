@@ -10,7 +10,7 @@ const SellerBar = () => {
   const fetchSellers = async () => {
     try {
       setLoadingSellers(true);
-      const res = await fetch("https://kltn.azurewebsites.net/api/shop");
+      const res = await fetch("https://kltn.azurewebsites.net/api/shops");
       if (!res.ok) throw new Error("Lỗi tải nhà bán hàng");
 
       let data = await res.json();

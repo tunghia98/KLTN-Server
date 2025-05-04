@@ -18,8 +18,7 @@ function ProductDetail({ product, seller }) {
   const { addToCart } = useCart();
   const productSellCounter = 10;
   const [showDiscount, setShowDiscount] = useState(false);
-  const [regularPrice, setRegularPrice] = useState(null);
-
+    const [regularPrice, setRegularPrice] = useState(null);
   // Cập nhật giá khi có discount
   useEffect(() => {
     if (discount === 0) {
@@ -60,7 +59,15 @@ function ProductDetail({ product, seller }) {
   return (
     <div className="product-detail">
       <div className="product-detail-img">
-        <img className="product-detail-img-main" src={displayImage} alt={name} />
+              <img
+                  src={
+                      product.imageUrls?.[0]
+                          ? `https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0]}`
+                          : "https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png"
+                  }
+                  alt={product.name}
+                  className="product-detail-img"
+              />
         <div className="product-detail-img-sub">
           {images.map((img, index) => (
             <img

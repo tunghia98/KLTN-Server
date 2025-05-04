@@ -17,19 +17,40 @@ const Homepage = () => {
     const [loadingCategories, setLoadingCategories] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
-
+    const [currentPage, setCurrentPage] = useState(0);
     // Fetch tất cả sản phẩm
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const res = await fetch("https://kltn.azurewebsites.net/api/products");
                 if (!res.ok) throw new Error("Lỗi tải sản phẩm");
-                const data = await res.json();
-                setProducts(data);
+
+                const products = await res.json();
+                const productIds = products.map((p) => p.id);
+
+                // Lấy ảnh theo danh sách sản phẩm
+                const imagesRes = await fetch("https://kltn.azurewebsites.net/api/product-images/list-by-products", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(productIds),
+                });
+
+                const imagesData = await imagesRes.json();
+
+                // Gộp ảnh vào từng sản phẩm
+                const productsWithImages = products.map((product) => ({
+                    ...product,
+                    imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [], // trả về [] nếu không có
+                }));
+
+                setProducts(productsWithImages);
             } catch (err) {
-                console.error("Lỗi khi lấy sản phẩm:", err);
+                console.error("Lỗi khi lấy sản phẩm:", err.message);
             }
         };
+
         fetchProducts();
     }, []);
 
@@ -76,13 +97,21 @@ const Homepage = () => {
             <CategoryBar
                 categories={categories}
                 products={products}
-                onCategoryClick={(index, category) => setSelectedCategory(category)}
+                onCategoryClick={(index, category) => {
+                    setSelectedCategory(category);
+                    setCurrentPage(0); // ✅ reset trang về đầu khi đổi danh mục
+                }}
                 selectedCategory={selectedCategory}
             />
 
             {selectedCategory && (
                 <div className="homepage-category-products">
-                    <CategoryProducts category={selectedCategory} products={filteredProducts} />
+                    <CategoryProducts
+                        category={selectedCategory}
+                        products={filteredProducts}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                    />
                 </div>
             )}
             <SellerBar />

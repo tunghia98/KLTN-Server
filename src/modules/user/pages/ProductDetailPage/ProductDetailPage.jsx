@@ -28,7 +28,6 @@ function ProductDetailPage() {
       // );
 
       if (!data) throw new Error("Không tìm thấy sản phẩm");
-      setProduct(data);
       fetchSeller(data.shopId);
       console.log(product);
     } catch (err) {

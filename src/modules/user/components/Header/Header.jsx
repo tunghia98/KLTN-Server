@@ -7,12 +7,13 @@ import Register from "../AuthForm/Register"; // Import Register
 import logo from "../../../../assets/logo-2-gra.png";
 import "./Header.css";
 import { useUser } from "../../../../contexts/UserContext.jsx";
-
+import { useCart } from "../../../../contexts/CartContext";
 function Header() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
   const { user, setUser } = useUser();
-  
+    const { cartItems } = useCart();
+    const totalProducts = cartItems.length;
   // Hàm chuyển qua trang đăng ký từ đăng nhập
   const handleSwitchToRegister = () => {
     setLoginOpen(false);   // Đóng Login Popup
@@ -60,12 +61,13 @@ function Header() {
             </div>
           </li>
 
-          <li>
-            <div className="header-cart">
-              <FontAwesomeIcon icon={faShoppingCart} className="icon-cart" />
-              <span><Link to="/cart">Giỏ hàng</Link></span>
-            </div>
-          </li>
+                  <li>
+                      <div className="header-cart">
+                          <FontAwesomeIcon icon={faShoppingCart} className="icon-cart" />
+                          <span><Link to="/cart">Giỏ hàng</Link></span>
+                          {totalProducts > 0 && <span className="cart-badge">{totalProducts}</span>}
+                      </div>
+                  </li>
           {user ? (
                           <li>
                           <div className="header-logout">

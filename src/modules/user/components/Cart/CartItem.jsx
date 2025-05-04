@@ -3,12 +3,12 @@ import "./Cart.css";
 import QuantitySelector from "../../../../components/Common/QuantitySelector.jsx";
 
 const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onToggleCheckAll  }) => {
-  if (!item) return null;
+    if (!item) return null;
 
   return (
     <div className="cart-item grid-item">
       <input type="checkbox" className="cart-item-checkbox"   checked={item.checked}
-  onChange={() => onToggleCheck(item.id)} />
+              onChange={() => onToggleCheck(item.productId)} />
 
       <div className="cart-item-img-container">
               <img
@@ -26,8 +26,8 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onTog
       <div className="cart-item-quantity">
         <QuantitySelector
           quantity={item.quantity}
-          onIncrease={() => onIncrease(item.id)}
-          onDecrease={() => onDecrease(item.id)}
+                  onIncrease={() => onIncrease(item.productId)}
+                  onDecrease={() => onDecrease(item.productId)}
         />
       </div>
 
@@ -36,7 +36,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onTog
       </div>
 
       <div>
-        <button className="cart-item-remove" onClick={() => onRemove(item.id)}>
+              <button className="cart-item-remove" onClick={() => onRemove(item.productId)}>
           Xóa
         </button>
       </div>

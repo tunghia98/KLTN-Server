@@ -23,14 +23,18 @@ const CartPage = () => {
       <h2>Giỏ hàng</h2>
       <div className="cart-page-main">
         <div className="cart-page-left">
-          <CartList
-            products={cartItems}
-            onIncrease={(id) => updateQuantity(id, cartItems.find(item => item.id === id).quantity + 1)}
-            onDecrease={(id) => updateQuantity(id, Math.max(1, cartItems.find(item => item.id === id).quantity - 1))}
-            onRemove={removeFromCart}
-            onToggleCheck={toggleChecked}
-            onToggleCheckAll={toggleCheckAll}
-          />
+                  <CartList
+                      products={cartItems}
+                      onIncrease={(id) =>
+                          updateQuantity(id, cartItems.find(item => item.productId === id).quantity + 1)
+                      }
+                      onDecrease={(id) =>
+                          updateQuantity(id, Math.max(1, cartItems.find(item => item.productId === id).quantity - 1))
+                      }
+                      onRemove={removeFromCart}
+                      onToggleCheck={toggleChecked}
+                      onToggleCheckAll={toggleCheckAll}
+                  />
         </div>
 
         <div className="cart-page-right">
