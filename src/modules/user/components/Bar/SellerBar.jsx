@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { products } from "../../../../data/data";
+import { useNavigate } from "react-router-dom";
 import toSlug from "../../../../utils/toSlug"; // Import hàm toSlug nếu có
 import "./Bar.css";
 
 const SellerBar = () => {
   const [sellers, setSellers] = useState([]);
   const [loadingSellers, setLoadingSellers] = useState(false);
+  const navigate = useNavigate();
+  const handleOnClick=(seller)=>{
+    navigate(`/sellers/${seller.id}-${toSlug(seller.name)}`);
 
+  }
   const fetchSellers = async () => {
     try {
       setLoadingSellers(true);
@@ -39,7 +43,7 @@ const SellerBar = () => {
           <p>Đang tải nhà bán hàng...</p>
         ) : (
           sellers.map((seller, index) => (
-            <div key={index} className="seller-card">
+            <div key={index} className="seller-card" onClick={() => handleOnClick(seller)}>
               <h3>{seller.name}</h3>
               {/* <p>
                 {

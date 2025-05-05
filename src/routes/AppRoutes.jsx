@@ -39,6 +39,9 @@ import ViolationManagement from "../modules/admin/pages/ViolationManagement/Viol
 import SupportRequestManagement from "../modules/admin/pages/SupportRequestManagement/SupportRequestManagement.jsx";
 import SupportChannelManagement from "../modules/admin/pages/SupportChannelManagement/SupportChannelManagement.jsx";
 import WebsiteCustomization from "../modules/admin/pages/WebsiteCustomization/WebsiteCustomization.jsx";
+import CreateThreadPage from "../modules/user/pages/Forum/CreateThreadPage.jsx";
+import CreateNewThread from "../modules/user/components/Forum/CreateNewThread.jsx";
+import MainLayout from "../layouts/MainLayout.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
   return (
@@ -55,10 +58,11 @@ const AppRoutes = () => {
       <Route path="/profile" element={<UserInfoPage />} />
       <Route path="/forum" element={<ForumPage />} />
       <Route path="/forum/thread/:title" element={<ThreadDetailPage />} />
-      <Route path="/sellers/:sellerSlug" element={<SellerInfoPage />} />
+      <Route path="/sellers/:sellerSlug" element={<MainLayout><SellerInfoPage /></MainLayout>} />
           <Route path="/products/:productSlug" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/forum/create" element={<CreateNewThread />} />
       {/* Seller and Admin Routes using ManagementLayout */}
       <Route
         path="/seller/dashboard"

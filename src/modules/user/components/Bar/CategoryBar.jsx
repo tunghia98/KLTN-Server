@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Bar.css";
 
 const CategoryBar = ({ categories, products, onCategoryClick, selectedCategory }) => {
-    const ITEMS_PER_PAGE = 8;
+    const ITEMS_PER_PAGE = 15;
     const [currentPage, setCurrentPage] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
 
