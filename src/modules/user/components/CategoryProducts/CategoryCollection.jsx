@@ -1,4 +1,5 @@
 import React from "react";
+import "./Collections.css";
 
 const cropTypes = [
   "Hạt giống",
@@ -36,8 +37,6 @@ const CategoryCollection = ({ selectedCrops, setSelectedCrops }) => {
 
   return (
     <div className="filter-group filter-group-category-product">
-      <div className="filter-title">Danh mục sản phẩm</div>
-
       {selectedCrops.length > 0 && (
         <div className="selected-filters">
           <div className="selected-title">
