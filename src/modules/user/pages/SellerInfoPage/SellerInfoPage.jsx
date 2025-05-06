@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import Pagination from "../../../../components/Pagination/Pagination";
 import "./SellerInfoPage.css";
-
+import { Autocomplete, TextField } from "@mui/material";
 const SellerPage = () => {
   const { sellerSlug } = useParams();
   const [seller, setSeller] = useState(null);
@@ -40,36 +40,44 @@ const SellerPage = () => {
     }
   };
 
-  // Fetch Products of Seller
-  const fetchSellerProducts = async () => {
-    try {
-      const res = await fetch(`https://kltn.azurewebsites.net/api/Products?shopId=${sellerId}`);
-      if (!res.ok) throw new Error("Không thể tải sản phẩm");
-      const data = await res.json();
-      if (!data) throw new Error("Không có sản phẩm");
-      setSellerProducts(data);
-      setFilteredProducts(data);  // Initialize filtered products
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    const fetchSellerProducts = async () => {
+        try {
+            const [productRes, categoryRes] = await Promise.all([
+                fetch(`https://kltn.azurewebsites.net/api/Products/by-shop/${sellerId}`),
+                fetch(`https://kltn.azurewebsites.net/api/Categories/by-shop/${sellerId}`), // 🔥 gọi API mới
+            ]);
 
+            if (!productRes.ok || !categoryRes.ok) throw new Error("Không thể tải dữ liệu");
+
+            const productData = await productRes.json();
+            const categoryData = await categoryRes.json();
+
+            setSellerProducts(productData);
+            setFilteredProducts(productData);
+
+            const uniqueBrands = [...new Set(productData.map((p) => p.brand))];
+            setBrands(uniqueBrands);
+            setCategories(categoryData.map(c => c.name)); // lấy tên danh mục
+        } catch (err) {
+            setError(err.message);
+        }
+    };
   // Fetch Brands and Categories from Products
-  const fetchBrandsAndCategories = () => {
-    const uniqueBrands = [...new Set(sellerProducts.map((product) => product.brand))];
-    const uniqueCategories = [...new Set(sellerProducts.map((product) => product.category))];  // Extract categories
-    setBrands(uniqueBrands);
-    setCategories(uniqueCategories);  // Set categories
-  };
+  //const fetchBrandsAndCategories = () => {
+  //  const uniqueBrands = [...new Set(sellerProducts.map((product) => product.brand))];
+  //  const uniqueCategories = [...new Set(sellerProducts.map((product) => product.category))];  // Extract categories
+  //  setBrands(uniqueBrands);
+  //  setCategories(uniqueCategories);  // Set categories
+  //};
 
   useEffect(() => {
     fetchSeller(sellerId);
     fetchSellerProducts();
   }, [sellerId]);
 
-  useEffect(() => {
-    fetchBrandsAndCategories();
-  }, [sellerProducts]);
+  //useEffect(() => {
+  //  fetchBrandsAndCategories();
+  //}, [sellerProducts]);
 
   // Handle Filter Changes
   const handleCategoryFilterChange = (e) => {
@@ -97,9 +105,9 @@ const SellerPage = () => {
     let filtered = [...sellerProducts];
 
     // Lọc theo danh mục (category)
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((product) => product.category === selectedCategory);
-    }
+      if (selectedCategory !== "all") {
+          filtered = filtered.filter((product) => product.categoryName === selectedCategory);
+      }
 
     // Lọc theo từ khóa tìm kiếm
     if (searchKeyword.trim() !== "") {
@@ -150,23 +158,39 @@ const SellerPage = () => {
       <div className="filters">
         <div className="filter-item">
           <label htmlFor="category">Lọc theo danh mục: </label>
-          <select id="category" value={selectedCategory} onChange={handleCategoryFilterChange}>
-            <option value="all">Tất cả danh mục</option>
-            {categories.map((category, index) => (
-              <option key={index} value={category}>{category}</option>
-            ))}
-          </select>
+                  <div className="filter-item">
+                      <label htmlFor="category">Lọc theo danh mục: </label>
+                      <Autocomplete
+                          options={[{ label: "Tất cả danh mục", value: "all" }, ...categories.map(c => ({ label: c, value: c }))]}
+                          getOptionLabel={(option) => option.label}
+                          value={{ label: selectedCategory === "all" ? "Tất cả danh mục" : selectedCategory, value: selectedCategory }}
+                          onChange={(event, newValue) => {
+                              setSelectedCategory(newValue ? newValue.value : "all");
+                          }}
+                          renderInput={(params) => (
+                              <TextField {...params} label="Chọn danh mục" variant="outlined" size="small" />
+                          )}
+                          style={{ width: 250 }}
+                      />
+                  </div>
+
         </div>
 
-        <div className="filter-item">
-          <label htmlFor="brand">Lọc theo nhãn hiệu: </label>
-          <select id="brand" value={selectedBrand} onChange={handleBrandFilterChange}>
-            <option value="all">Tất cả nhãn hiệu</option>
-            {brands.map((brand, index) => (
-              <option key={index} value={brand}>{brand}</option>
-            ))}
-          </select>
-        </div>
+              <div className="filter-item">
+                  <label htmlFor="brand">Lọc theo nhãn hiệu: </label>
+                  <Autocomplete
+                      options={[{ label: "Tất cả nhãn hiệu", value: "all" }, ...brands.map(b => ({ label: b, value: b }))]}
+                      getOptionLabel={(option) => option.label}
+                      value={{ label: selectedBrand === "all" ? "Tất cả nhãn hiệu" : selectedBrand, value: selectedBrand }}
+                      onChange={(event, newValue) => {
+                          setSelectedBrand(newValue ? newValue.value : "all");
+                      }}
+                      renderInput={(params) => (
+                          <TextField {...params} label="Chọn nhãn hiệu" variant="outlined" size="small" />
+                      )}
+                      style={{ width: 250 }}
+                  />
+              </div>
 
         <div className="filter-item">
           <label htmlFor="sort">Sắp xếp: </label>

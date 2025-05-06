@@ -1,127 +1,166 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import ProductCard from "../../components/ProductCard/ProductCard";
+import Pagination from "../../../../components/Pagination/Pagination";
+import "./ProductPage.css"; // Dùng lại CSS đẹp
 import { useParams } from "react-router-dom";
-import "./ProductPage.css";
-import ProductList from "../../components/ProductList/ProductList.jsx";
-import ProductFilter from "../../components/ProductFilter/ProductFilter.jsx";
-import Pagination from "../../../../components/Pagination/Pagination.jsx";
-import { products, categories, sellers } from "../../../../data/data.js";
-
+import { Autocomplete, TextField } from "@mui/material";
 function ProductPage() {
-  const { categorySlug } = useParams();
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 15;
+    const { categorySlug } = useParams();
+    const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [selectedBrand, setSelectedBrand] = useState("all");
+    const [selectedSort, setSelectedSort] = useState("default");
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 12;
 
-  const category = categories.find((cat) => cat.slug === categorySlug);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [productRes, categoryRes] = await Promise.all([
+                    fetch("https://kltn.azurewebsites.net/api/Products"),
+                    fetch("https://kltn.azurewebsites.net/api/Categories/used"),
+                ]);
 
-  useEffect(() => {
-    let initialProducts;
+                const productData = await productRes.json();
+                const categoryData = await categoryRes.json();
 
-    if (categorySlug && category) {
-      // Nếu có categorySlug và tìm được danh mục
-      initialProducts = products.filter(
-        (product) => product.categoryId === category.id
-      );
-    } else if (!categorySlug) {
-      // Nếu không có categorySlug → hiển thị toàn bộ
-      initialProducts = products;
-    } else {
-      // Nếu có categorySlug nhưng không khớp → không có sản phẩm
-      initialProducts = [];
-    }
+                setProducts(productData);
+                setFilteredProducts(productData);
+                setCategories(categoryData);
 
-    setFilteredProducts(initialProducts);
-    setCurrentPage(1);
-  }, [categorySlug, category]);
+                // Lấy danh sách brand duy nhất
+                const uniqueBrands = [...new Set(productData.map(p => p.brand))];
+                setBrands(uniqueBrands);
+            } catch (err) {
+                console.error("Lỗi khi gọi API:", err);
+            }
+        };
 
-  const handleFilter = ({
-    crops,
-    brands,
-    sellers: sellerNames,
-    cities,
-    priceRange,
-  }) => {
-    let filtered;
+        fetchData();
+    }, []);
 
-    if (category) {
-      filtered = products.filter(
-        (product) => product.categoryId === category.id
-      );
-    } else {
-      filtered = products;
-    }
+    useEffect(() => {
+        let filtered = [...products];
 
-    if (crops.length > 0) {
-      filtered = filtered.filter((product) => crops.includes(product.name));
-    }
+        if (selectedCategory !== "all") {
+            filtered = filtered.filter((product) => product.categoryName === selectedCategory);
+        }
 
-    if (brands.length > 0) {
-      filtered = filtered.filter((product) => brands.includes(product.brand));
-    }
 
-    if (sellerNames.length > 0) {
-      const selectedSellerIds = sellers
-        .filter((s) => sellerNames.includes(s.name))
-        .map((s) => s.id);
-      filtered = filtered.filter((product) =>
-        selectedSellerIds.includes(product.sellerId)
-      );
-    }
+        if (selectedBrand !== "all") {
+            filtered = filtered.filter((product) => product.brand === selectedBrand);
+        }
 
-    if (cities.length > 0) {
-      const selectedSellerIdsByCity = sellers
-        .filter((s) => cities.includes(s.city))
-        .map((s) => s.id);
-      filtered = filtered.filter((product) =>
-        selectedSellerIdsByCity.includes(product.sellerId)
-      );
-    }
+        if (searchKeyword.trim() !== "") {
+            filtered = filtered.filter((product) =>
+                product.name.toLowerCase().includes(searchKeyword.toLowerCase())
+            );
+        }
 
-    if (priceRange && priceRange.length === 2) {
-      filtered = filtered.filter(
-        (product) =>
-          product.price >= priceRange[0] && product.price <= priceRange[1]
-      );
-    }
+        if (selectedSort === "bestseller") {
+            filtered.sort((a, b) => b.sold - a.sold);
+        } else if (selectedSort === "price-high") {
+            filtered.sort((a, b) => b.price - a.price);
+        } else if (selectedSort === "price-low") {
+            filtered.sort((a, b) => a.price - b.price);
+        }
 
-    setFilteredProducts(filtered);
-    setCurrentPage(1);
-  };
+        setFilteredProducts(filtered);
+        setCurrentPage(1);
+    }, [selectedCategory, selectedBrand, selectedSort, searchKeyword, products]);
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
+    const indexOfLast = currentPage * productsPerPage;
+    const indexOfFirst = indexOfLast - productsPerPage;
+    const current = filteredProducts.slice(indexOfFirst, indexOfLast);
 
-  return (
-    <div className="product-page">
-      <h1 className="page-title">
-        {categorySlug
-          ? category
-            ? `Danh mục: ${category.name}`
-            : "Danh mục không tồn tại"
-          : "Tất cả sản phẩm"}
-      </h1>
-      <div className="product-page-content">
-        <div className="product-page-filter">
-          <ProductFilter onFilter={handleFilter} />
-        </div>
-        <div className="product-page-list-and-pagination">
-          <ProductList products={currentProducts} />
-          <div className="product-page-pagination">
+    return (
+        <div className="seller-page">
+            <h1 className="page-title">
+                {categorySlug ? `Danh mục: ${categorySlug}` : "Tất cả sản phẩm"}
+            </h1>
+
+            <div className="filters">
+                <div className="filter-item">
+                    <label htmlFor="category">Lọc theo danh mục:</label>
+                    <Autocomplete
+                        options={[{ label: "Tất cả danh mục", value: "all" }, ...categories.map(c => ({ label: c.name, value: c.name }))]}
+                        getOptionLabel={(option) => option.label}
+                        value={{ label: selectedCategory === "all" ? "Tất cả danh mục" : selectedCategory, value: selectedCategory }}
+                        onChange={(event, newValue) => {
+                            setSelectedCategory(newValue ? newValue.value : "all");
+                        }}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Chọn danh mục" variant="outlined" size="small" />
+                        )}
+                        style={{ width: 250 }}
+                    />
+                </div>
+
+                <div className="filter-item">
+                    <label htmlFor="brand">Lọc theo nhãn hiệu:</label>
+                    <Autocomplete
+                        options={[{ label: "Tất cả nhãn hiệu", value: "all" }, ...brands.map(b => ({ label: b, value: b }))]}
+                        getOptionLabel={(option) => option.label}
+                        value={{ label: selectedBrand === "all" ? "Tất cả nhãn hiệu" : selectedBrand, value: selectedBrand }}
+                        onChange={(event, newValue) => {
+                            setSelectedBrand(newValue ? newValue.value : "all");
+                        }}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Chọn nhãn hiệu" variant="outlined" size="small" />
+                        )}
+                        style={{ width: 250 }}
+                    />
+                </div>
+
+                <div className="filter-item">
+                    <label htmlFor="sort">Sắp xếp:</label>
+                    <select
+                        id="sort"
+                        value={selectedSort}
+                        onChange={(e) => setSelectedSort(e.target.value)}
+                    >
+                        <option value="default">Chọn sắp xếp</option>
+                        <option value="bestseller">Bán chạy nhất</option>
+                        <option value="price-high">Giá cao đến thấp</option>
+                        <option value="price-low">Giá thấp đến cao</option>
+                    </select>
+                </div>
+
+                <div className="search-bar">
+                    <input
+                        type="text"
+                        placeholder="Tìm sản phẩm theo tên..."
+                        value={searchKeyword}
+                        onChange={(e) => setSearchKeyword(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            <div className="seller-products">
+                <h2>Sản phẩm đang bán</h2>
+                <div className="product-grid">
+                    {current.length === 0 ? (
+                        <p>Không có sản phẩm nào phù hợp</p>
+                    ) : (
+                        current.map((product) => (
+                            <ProductCard key={product.id} product={product} />
+                        ))
+                    )}
+                </div>
+            </div>
+
             <Pagination
-              currentPage={currentPage}
-              totalItems={filteredProducts.length}
-              itemsPerPage={productsPerPage}
-              onPageChange={setCurrentPage}
+                currentPage={currentPage}
+                totalItems={filteredProducts.length}
+                itemsPerPage={productsPerPage}
+                onPageChange={setCurrentPage}
             />
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default ProductPage;

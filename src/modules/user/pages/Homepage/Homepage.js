@@ -59,7 +59,7 @@ const Homepage = () => {
         const fetchCategories = async () => {
             try {
                 setLoadingCategories(true);
-                const res = await fetch("https://kltn.azurewebsites.net/api/categories");
+                const res = await fetch("https://kltn.azurewebsites.net/api/categories/used");
                 if (!res.ok) throw new Error("Lỗi tải danh mục");
                 let data = await res.json();
                 data = data.map((item) => ({
