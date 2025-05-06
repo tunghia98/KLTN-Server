@@ -1,4 +1,5 @@
 import React from "react";
+import "./Collections.css";
 
 const BrandCollection = ({ selectedBrands = [], setSelectedBrands }) => {
   const brands = ["VinEco", "TH", "Dalat Farm", "Organic Việt", "Satra"];
@@ -16,7 +17,6 @@ const BrandCollection = ({ selectedBrands = [], setSelectedBrands }) => {
 
   return (
     <div className="filter-group filter-group-brand">
-      <div className="filter-title">Thương hiệu</div>
 
       {Array.isArray(selectedBrands) && selectedBrands.length > 0 && (
         <div className="selected-filters">

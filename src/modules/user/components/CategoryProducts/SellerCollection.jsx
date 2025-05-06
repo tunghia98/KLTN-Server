@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./Collections.css";
 const SellerCollection = ({ selectedSellers, setSelectedSellers }) => {
   const sellers = ["Nguyễn Văn A", "Trần Thị B", "HTX Nông sản C", "Nông dân D"];
 
@@ -16,8 +16,6 @@ const SellerCollection = ({ selectedSellers, setSelectedSellers }) => {
 
   return (
     <div className="filter-group filter-group-brand">
-      <div className="filter-title">Người bán</div>
-
       {selectedSellers.length > 0 && (
         <div className="selected-filters">
           <div className="selected-title">

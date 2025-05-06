@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import Pagination from "../../../../components/Pagination/Pagination";
 import "./SellerInfoPage.css";
 
 const SellerPage = () => {
@@ -11,9 +12,17 @@ const SellerPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [brands, setBrands] = useState([]);
-  const [selectedPrice, setSelectedPrice] = useState("default");
+  const [categories, setCategories] = useState([]);  // New state for categories
+  const [selectedCategory, setSelectedCategory] = useState("all");  // New state for selected category
   const [selectedBrand, setSelectedBrand] = useState("all");
   const [selectedSort, setSelectedSort] = useState("default");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const [sellerId, ...sellerNameArray] = sellerSlug.split("-");
   const sellerNameSlug = sellerNameArray.join("-");
@@ -45,10 +54,12 @@ const SellerPage = () => {
     }
   };
 
-  // Fetch Brands from Products
-  const fetchBrands = () => {
+  // Fetch Brands and Categories from Products
+  const fetchBrandsAndCategories = () => {
     const uniqueBrands = [...new Set(sellerProducts.map((product) => product.brand))];
+    const uniqueCategories = [...new Set(sellerProducts.map((product) => product.category))];  // Extract categories
     setBrands(uniqueBrands);
+    setCategories(uniqueCategories);  // Set categories
   };
 
   useEffect(() => {
@@ -57,12 +68,12 @@ const SellerPage = () => {
   }, [sellerId]);
 
   useEffect(() => {
-    fetchBrands();
+    fetchBrandsAndCategories();
   }, [sellerProducts]);
 
   // Handle Filter Changes
-  const handlePriceFilterChange = (e) => {
-    setSelectedPrice(e.target.value);
+  const handleCategoryFilterChange = (e) => {
+    setSelectedCategory(e.target.value);
   };
 
   const handleBrandFilterChange = (e) => {
@@ -73,59 +84,77 @@ const SellerPage = () => {
     setSelectedSort(e.target.value);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   // Apply Filters and Sorting
   useEffect(() => {
     let filtered = [...sellerProducts];
 
-    // Filter by Price
-    if (selectedPrice !== "default") {
-      filtered = filtered.filter((product) => {
-        if (selectedPrice === "high-low") {
-          return product.price >= 0; // for descending price
-        } else if (selectedPrice === "low-high") {
-          return product.price <= 1000000; // for ascending price
-        }
-        return true;
-      });
+    // Lọc theo danh mục (category)
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((product) => product.category === selectedCategory);
     }
 
-    // Filter by Brand
+    // Lọc theo từ khóa tìm kiếm
+    if (searchKeyword.trim() !== "") {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchKeyword.toLowerCase())
+      );
+    }
+
+    // Lọc theo nhãn hiệu
     if (selectedBrand !== "all") {
       filtered = filtered.filter((product) => product.brand === selectedBrand);
     }
 
-    // Sort by Selection
+    // Sắp xếp
     if (selectedSort !== "default") {
       if (selectedSort === "bestseller") {
-        filtered = filtered.sort((a, b) => b.sold - a.sold); // Bán chạy
+        filtered = filtered.sort((a, b) => b.sold - a.sold);
       }
       if (selectedSort === "price-high") {
-        filtered = filtered.sort((a, b) => b.price - a.price); // Giá cao đến thấp
+        filtered = filtered.sort((a, b) => b.price - a.price);
       }
       if (selectedSort === "price-low") {
-        filtered = filtered.sort((a, b) => a.price - b.price); // Giá thấp đến cao
+        filtered = filtered.sort((a, b) => a.price - b.price);
       }
     }
 
     setFilteredProducts(filtered);
-  }, [selectedPrice, selectedBrand, selectedSort, sellerProducts]);
+  }, [selectedCategory, selectedBrand, selectedSort, searchKeyword, sellerProducts]);
 
   return (
     <div className="seller-page">
       <div className="seller-info">
-        <h1>{seller?.name}</h1>
-        <p>Thành phố: {seller?.city}</p>
-        <p>Mô tả: Đây là trang của người bán chuyên cung cấp sản phẩm nông nghiệp chất lượng cao.</p>
-        <button className="contact-button">Tư Vấn</button>
+        <img
+          src={
+            seller?.avatarUrl
+              ? `https://kltn.azurewebsites.net/api/Shops/shop-avatar/${seller.avatarUrl}`
+              : "https://kltn.azurewebsites.net/api/Shops/shop-avatar/default.png"
+          }
+          alt={seller?.name || "Shop"}
+        />
+        <div className="seller-info-details">
+          <h3>{seller?.name}</h3>
+          <button className="contact-button">Tư Vấn</button>
+          <p>Đây là trang của người bán chuyên cung cấp sản phẩm nông nghiệp chất lượng cao.</p>
+        </div>
       </div>
 
       <div className="filters">
         <div className="filter-item">
-          <label htmlFor="price">Lọc theo giá: </label>
-          <select id="price" value={selectedPrice} onChange={handlePriceFilterChange}>
-            <option value="default">Chọn giá</option>
-            <option value="low-high">Giá thấp đến cao</option>
-            <option value="high-low">Giá cao đến thấp</option>
+          <label htmlFor="category">Lọc theo danh mục: </label>
+          <select id="category" value={selectedCategory} onChange={handleCategoryFilterChange}>
+            <option value="all">Tất cả danh mục</option>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>{category}</option>
+            ))}
           </select>
         </div>
 
@@ -148,6 +177,15 @@ const SellerPage = () => {
             <option value="price-low">Giá thấp đến cao</option>
           </select>
         </div>
+
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Tìm sản phẩm theo tên..."
+            value={searchKeyword}
+            onChange={handleSearchChange}
+          />
+        </div>
       </div>
 
       <div className="seller-products">
@@ -156,12 +194,20 @@ const SellerPage = () => {
           {filteredProducts.length === 0 ? (
             <p>Không có sản phẩm nào phù hợp với bộ lọc của bạn</p>
           ) : (
-            filteredProducts.map((product) => (
+            currentProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))
           )}
         </div>
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={filteredProducts.length}
+        itemsPerPage={productsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

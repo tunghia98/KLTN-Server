@@ -63,6 +63,7 @@ const AppRoutes = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/forum/create" element={<CreateNewThread />} />
+          <Route path="products" element={<ProductPage />} />
       {/* Seller and Admin Routes using ManagementLayout */}
       <Route
         path="/seller/dashboard"

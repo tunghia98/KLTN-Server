@@ -1,13 +1,41 @@
-.product-pagination {
-    text-align: center;
-    margin: 20px 0;
-    margin-top: auto; /* Đẩy pagination xuống dưới */
-    padding: 10px;
-    text-align: center;
-}
-
-.product-pagination button {
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-button {
     padding: 5px 10px;
     margin: 0 5px;
     cursor: pointer;
-}
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .pagination-button.disabled {
+    cursor: not-allowed;
+    background-color: #ccc;
+  }
+  
+  .pagination-number {
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .pagination-number.active {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .pagination-button:hover,
+  .pagination-number:hover {
+    background-color: #ddd;
+  }
+  

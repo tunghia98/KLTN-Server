@@ -4,27 +4,35 @@ import "./ProductPage.css";
 import ProductList from "../../components/ProductList/ProductList.jsx";
 import ProductFilter from "../../components/ProductFilter/ProductFilter.jsx";
 import Pagination from "../../../../components/Pagination/Pagination.jsx";
-import { products, bestsellers, categories, sellers } from "../../../../data/data.js";
+import { products, categories, sellers } from "../../../../data/data.js";
 
 function ProductPage() {
-  const { categorySlug } = useParams(); // 💡 Đổi tên từ categoryName thành categorySlug
+  const { categorySlug } = useParams();
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 15;
 
-  const category = categories.find((cat) => cat.slug === categorySlug); // 💡 Tìm category theo slug
+  const category = categories.find((cat) => cat.slug === categorySlug);
 
   useEffect(() => {
-    if (category) {
-      const productsInCategory = products.filter(
+    let initialProducts;
+
+    if (categorySlug && category) {
+      // Nếu có categorySlug và tìm được danh mục
+      initialProducts = products.filter(
         (product) => product.categoryId === category.id
       );
-      setFilteredProducts(productsInCategory);
+    } else if (!categorySlug) {
+      // Nếu không có categorySlug → hiển thị toàn bộ
+      initialProducts = products;
     } else {
-      setFilteredProducts([]);
+      // Nếu có categorySlug nhưng không khớp → không có sản phẩm
+      initialProducts = [];
     }
+
+    setFilteredProducts(initialProducts);
     setCurrentPage(1);
-  }, [category]);
+  }, [categorySlug, category]);
 
   const handleFilter = ({
     crops,
@@ -33,9 +41,15 @@ function ProductPage() {
     cities,
     priceRange,
   }) => {
-    let filtered = category
-      ? products.filter((product) => product.categoryId === category.id)
-      : products;
+    let filtered;
+
+    if (category) {
+      filtered = products.filter(
+        (product) => product.categoryId === category.id
+      );
+    } else {
+      filtered = products;
+    }
 
     if (crops.length > 0) {
       filtered = filtered.filter((product) => crops.includes(product.name));
@@ -74,7 +88,6 @@ function ProductPage() {
     setCurrentPage(1);
   };
 
-  // Pagination
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(
@@ -84,8 +97,12 @@ function ProductPage() {
 
   return (
     <div className="product-page">
-      <h1>
-        {category ? `Danh mục: ${category.name}` : "Danh mục không tồn tại"}
+      <h1 className="page-title">
+        {categorySlug
+          ? category
+            ? `Danh mục: ${category.name}`
+            : "Danh mục không tồn tại"
+          : "Tất cả sản phẩm"}
       </h1>
       <div className="product-page-content">
         <div className="product-page-filter">
@@ -96,7 +113,8 @@ function ProductPage() {
           <div className="product-page-pagination">
             <Pagination
               currentPage={currentPage}
-              totalPages={Math.ceil(filteredProducts.length / productsPerPage)}
+              totalItems={filteredProducts.length}
+              itemsPerPage={productsPerPage}
               onPageChange={setCurrentPage}
             />
           </div>

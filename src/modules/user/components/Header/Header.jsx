@@ -82,7 +82,17 @@ function Header() {
 
       <div className="sub-header">
         <ul>
-          <li><a>Tất cả sản phẩm</a></li>
+        {/* <li className="dropdown">
+          <span>Danh mục</span>
+          <div className="dropdown-menu">
+            {categories.map((cat) => (
+              <Link key={cat.id} to={`/products/${cat.slug}`}>
+                {cat.name}
+              </Link>
+            ))}
+          </div>
+        </li> */}
+
           <li><a>Bán chạy</a></li>
           <li><Link to="/forum">Diễn đàn</Link></li>
           <li><a>Chính sách</a></li>

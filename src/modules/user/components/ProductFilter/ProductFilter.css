@@ -1,18 +1,140 @@
+/* Reset và thiết lập cơ bản */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Bộ lọc sản phẩm */
 .product-filter {
-    width: 100%;
-    font-family: Arial, sans-serif;
-    background: #fff;
-    padding: 16px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    display:flex;
-    flex-direction: column;
-    gap:20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: auto;
+  overflow: auto;
+  width: 100%;
+  max-width: 300px;
+}
+
+/* Tiêu đề của các phần bộ lọc */
+.product-filter h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #f1f1f1;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+/* Cột bộ lọc */
+.product-filter div {
+  margin-bottom: 30px;
+}
+
+/* Bộ lọc category, brand, seller, price... */
+.product-filter > div {
+  margin-bottom: 20px;
+}
+
+/* Styling chung cho các input trong bộ lọc */
+.product-filter select,
+.product-filter input[type="text"],
+.product-filter input[type="number"],
+.product-filter input[type="checkbox"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  color: #555;
+  transition: border-color 0.3s;
+}
+
+.product-filter input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.product-filter input[type="checkbox"]:checked {
+  background-color: #ff5722;
+}
+
+/* Cải thiện trải nghiệm người dùng khi focus vào input */
+.product-filter input[type="text"]:focus,
+.product-filter input[type="number"]:focus,
+.product-filter select:focus {
+  border-color: #ff5722;
+}
+
+/* Tối ưu cho các nhóm bộ lọc có checkbox */
+.category-collection,
+.brand-collection,
+.seller-collection,
+.city-collection {
+  display: flex;
+  flex-direction: column;
+}
+
+.category-collection label,
+.brand-collection label,
+.seller-collection label,
+.city-collection label {
+  margin: 5px 0;
+}
+
+.category-collection input[type="checkbox"],
+.brand-collection input[type="checkbox"],
+.seller-collection input[type="checkbox"],
+.city-collection input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+/* Button áp dụng bộ lọc */
+.product-filter button {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff5722;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+}
+
+.product-filter button:hover {
+  background-color: #e64a19;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-filter {
+    padding: 15px;
   }
 
-  .main-filter{
-    display:flex;
-    flex-direction: column;
-    gap:10px;
+  .product-filter h3 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
   }
-  
+
+  .product-filter select,
+  .product-filter input[type="text"],
+  .product-filter input[type="number"] {
+    font-size: 0.95rem;
+  }
+
+  .product-filter button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}

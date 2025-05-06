@@ -1,0 +1,127 @@
+/* Container cho mỗi bộ lọc */
+.filter-group {
+    margin-bottom: 20px;
+  }
+  
+  /* Tiêu đề cho mỗi bộ lọc */
+  .filter-group label {
+    font-weight: bold;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  /* Danh sách các item của bộ lọc */
+  .filter-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .filter-list li {
+    margin-bottom: 10px;
+  }
+  
+  .filter-list label {
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  /* Checkbox và nhãn */
+  .filter-list input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+  }
+  
+  /* Các bộ lọc đã chọn */
+  .selected-filters {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .selected-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .selected-title strong {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .clear-all {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .selected-tags {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .selected-tags .filter-tag {
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .selected-tags .filter-tag button {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  
+  /* Các bộ lọc (sellers, crops, brands) */
+  .filter-group-brand,
+  .filter-group-category-product {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .filter-group-price {
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  /* Các bộ lọc có checkbox và nhãn */
+  .filter-group input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  
+  .filter-group input[type="checkbox"]:checked {
+    background-color: #3a8d8d;
+  }
+  
+  .filter-group button.clear-all {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .filter-group-category-product {
+    background-color: #f4f4f4;
+  }
+  
+  .filter-group-brand {
+    background-color: #f4f4f4;
+  }
+  
+  
