@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, Link } from "react-router-dom";
 import { faCircleUser, faMagnifyingGlass, faLocationDot, faShoppingCart, faArrowRightFromBracket} from "@fortawesome/free-solid-svg-icons";
@@ -8,9 +9,13 @@ import logo from "../../../../assets/logo-2-gra.png";
 import "./Header.css";
 import { useUser } from "../../../../contexts/UserContext.jsx";
 import { useCart } from "../../../../contexts/CartContext";
+import toSlug from "../../../../utils/toSlug.js"; // Import hàm toSlug
+import Dropdown from "./Dropdown.jsx";
 function Header() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [categories, setCategories] = useState([]);
   const { user, setUser } = useUser();
     const { cartItems } = useCart();
     const totalProducts = cartItems.length;
@@ -30,6 +35,7 @@ function Header() {
     localStorage.removeItem("user"); 
     setUser(null); 
   }
+  
   return (
     <header>
       <nav>
@@ -82,16 +88,10 @@ function Header() {
 
       <div className="sub-header">
         <ul>
-        {/* <li className="dropdown">
-          <span>Danh mục</span>
-          <div className="dropdown-menu">
-            {categories.map((cat) => (
-              <Link key={cat.id} to={`/products/${cat.slug}`}>
-                {cat.name}
-              </Link>
-            ))}
-          </div>
-        </li> */}
+        <li className="dropdown">
+          <a>Tất cả sản phẩm</a>
+            <Dropdown/>
+        </li>
 
           <li><a>Bán chạy</a></li>
           <li><Link to="/forum">Diễn đàn</Link></li>

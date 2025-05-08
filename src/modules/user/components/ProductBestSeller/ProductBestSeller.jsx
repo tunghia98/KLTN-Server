@@ -51,7 +51,6 @@ const ProductBestSellers = ({ bestsellers = [], products = [] }) => {
           <p>Không có sản phẩm nào</p>
         )}
       </Slider>
-      <hr className="product-category-line" />
     </div>
   );
 };

@@ -3,13 +3,16 @@
     padding: 20px;
     margin:0 auto;
     background: #f6f6e9;
+    margin-top:10px;
 }
 
 .category-items {
-    margin-top: 40px;
+    padding-top:30px;
     position: relative;
 }
-
+.category-items .slick-slide {
+    margin-top:12px;
+}
 .custom-prev-arrow, 
 .custom-next-arrow {
     position: absolute;
@@ -42,4 +45,8 @@
     background-color: grey; /* Màu */
     width: 50%; /* Chiều rộng */
     margin-top:40px;
+}
+.slick-list{
+    padding-top: 20px;
+    margin-top:20px;
 }
