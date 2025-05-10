@@ -106,6 +106,7 @@ function ProductDetail({ product, seller }) {
               />
 
               {/* Danh sách ảnh phụ */}
+              
               <div className="product-detail-img-sub">
                   {product.imageUrls?.map((imgId, index) => {
                       const imgUrl = `https://kltn.azurewebsites.net/api/product-images/file/${imgId}`;

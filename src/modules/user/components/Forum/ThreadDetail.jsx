@@ -5,12 +5,15 @@ import Login from "../AuthForm/Login"; // Import Popup Login
 import "./Forum.css";
 import CommentSection from "../Comment/CommentSection";
 
-function ThreadDetail({ thread }) {
+function ThreadDetail({ thread, category, crop, region, userwriter}) {
   const [likes, setLikes] = useState(thread.likes || 0);
   const { user } = useUser(); // lấy thông tin người dùng
   const [isLoginOpen, setIsLoginOpen] = useState(false); // Điều khiển việc mở popup login
   const navigate = useNavigate();
-
+        console.log("Category:", category);
+        console.log("Crop:", crop);
+        console.log("Region:", region);
+        console.log("User:", user);
   if (!thread) return <p className="thread-empty">Chủ đề không tồn tại.</p>;
 
   const handleLikePost = () => {
@@ -29,11 +32,11 @@ function ThreadDetail({ thread }) {
     <div className="thread-detail-container">
       <div className="thread-detail-card">
         <h1 className="thread-detail-title">{thread.title}</h1>
-        
+
         <div className="thread-detail-info">
-          <p>Phân loại: {thread.category}</p>
-          <p>Giống cây: {thread.crop}</p>
-          <p>Khu vực: {thread.region}</p>
+        <p>Phân loại: {category?.name || "Không rõ"}</p>
+        <p>Giống cây: {crop?.name || "Không rõ"}</p>
+        <p>Khu vực: {region?.name || "Không rõ"}</p>
         </div>
 
         <div className="thread-detail-meta">
@@ -49,10 +52,10 @@ function ThreadDetail({ thread }) {
         </div>
 
         <div className="thread-author-info">
-          <p>Viết bởi <strong>{thread.author || "Người dùng ẩn danh"}</strong> - {thread.date || "Không rõ ngày"}</p>
+          <p>Viết bởi: <strong>{userwriter?.name || "Người dùng ẩn danh"}</strong>- {thread.createdAt || "Không rõ ngày"}</p>
         </div>
       </div>
-      
+
       <CommentSection comments={thread.comments} />
 
       {/* Hiển thị popup login nếu chưa đăng nhập */}

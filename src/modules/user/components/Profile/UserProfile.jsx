@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../../contexts/UserContext.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import UserInfoForm from "./UserInfoForm";
 import AddressList from "./AddressList";
 import AddressForm from "./AddressForm";
 import "./UserProfile.css";
 import OrderHistory from "../OrderHistory/OrderHistory.jsx";
+import ChatList from "../../../../components/Chat/ChatList.jsx";
+import ChatContent from "../../../../components/Chat/ChatContent.jsx";
 
 const UserProfile = () => {
     const { logout } = useUser();
     const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState("user-info");
 
     const [userInfo, setUserInfo] = useState(null);
     const [previewAvatar, setPreviewAvatar] = useState(null);
@@ -31,17 +35,13 @@ const UserProfile = () => {
         ward: "",
         street: "",
     });
-    const handleEditAddress = (addr) => {
-        setForm({
-            street: addr.street,
-            ward: addr.ward,
-            district: addr.district,
-            province: addr.province,
-        });
-        setEditingAddress(addr.id);
-        setShowAddressForm(true);
-    };
 
+    const [selectedChat, setSelectedChat] = useState(null);  // Lưu trạng thái chat đã chọn
+
+    const chatList = [
+        { id: 1, name: "Shop Phân Bón Hữu Cơ", lastMessage: "Bạn cần thêm thông tin sản phẩm?" },
+        { id: 2, name: "Shop Nông Sản ABC", lastMessage: "Đơn hàng của bạn đang được xử lý." },
+    ];
 
     const fetchUser = async () => {
         try {
@@ -146,7 +146,6 @@ const UserProfile = () => {
         const token = localStorage.getItem("accessToken");
 
         if (editingAddress) {
-            // Nếu đang sửa
             await fetch(`https://kltn.azurewebsites.net/api/addresses/${editingAddress}`, {
                 method: "PUT",
                 headers: {
@@ -162,7 +161,6 @@ const UserProfile = () => {
             });
             alert("Đã cập nhật địa chỉ thành công!");
         } else {
-            // Nếu thêm mới
             await fetch("https://kltn.azurewebsites.net/api/addresses/user", {
                 method: "POST",
                 headers: {
@@ -179,47 +177,84 @@ const UserProfile = () => {
             alert("Đã thêm địa chỉ thành công!");
         }
 
-        await fetchAddresses(); // Reload danh sách
-        setForm({ city: "", district: "", ward: "", street: "" });
-        setEditingAddress(null); // Reset lại editing mode
+        await fetchAddresses();
+        setForm({ province: "", district: "", ward: "", street: "" });
+        setEditingAddress(null);
         setShowAddressForm(false);
     };
 
-
     return (
         <div className="profile-container">
-            <h1 className="profile-title">👤 Thông Tin Cá Nhân</h1>
-
-            <div className="profile-form-wrapper">
-                <div className="profile-form-container">
-                    <UserInfoForm
-                        formData={formData}
-                        setFormData={setFormData}
-                        handleSubmit={handleProfileSubmit}
-                        handleAvatarChange={handleAvatarChange}
-                        previewAvatar={previewAvatar}
-                        userInfo={userInfo}
-                    />
+            <aside className="profile-user-layout-aside">
+                <ul className="management-layout-menu-list">
+                    <li className={`profile-user-menu-item ${activeTab === "user-info" ? "active" : ""}`}>
+                        <Link to="#info" onClick={() => setActiveTab("user-info")}>Thông tin cá nhân</Link>
+                    </li>
+                    <li className={`profile-user-menu-item ${activeTab === "address" ? "active" : ""}`}>
+                        <Link to="#address" onClick={() => setActiveTab("address")}>Địa chỉ</Link>
+                    </li>
+                    <li className={`profile-user-menu-item ${activeTab === "order-history" ? "active" : ""}`}>
+                        <Link to="#order-history" onClick={() => setActiveTab("order-history")}>Lịch sử đơn hàng</Link>
+                    </li>
+                    <li>
+                        <Link to="#chat" onClick={() => setActiveTab("chat")}>Lịch sử tư vấn</Link>
+                    </li>
+                </ul>
+                <div className="text-right mt-8">
+                    <button className="btn-danger" onClick={handleLogout}>Đăng xuất</button>
                 </div>
-            </div>
+            </aside>
 
-            <div className="address-section-container">
-                <AddressList addresses={addresses}
-                    onAddClick={() => setShowAddressForm(true)}
-                    handleEditAddress={handleEditAddress} />
-                {showAddressForm && (
-                    <AddressForm
-                        form={form}
-                        setForm={setForm}
-                        onSubmit={handleAddressSubmit}
+            {activeTab === "user-info" && (
+                <div className="profile-form-wrapper">
+                    <div className="profile-form-container">
+                        <UserInfoForm
+                            formData={formData}
+                            setFormData={setFormData}
+                            handleSubmit={handleProfileSubmit}
+                            handleAvatarChange={handleAvatarChange}
+                            previewAvatar={previewAvatar}
+                            userInfo={userInfo}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {activeTab === "address" && (
+                <div className="address-section-container">
+                    <AddressList
+                        addresses={addresses}
+                        // onAddClick={() => setShowAddressForm(true)}
+                        // handleEditAddress={handleEditAddress}
                     />
-                )}
-            </div>
-            <OrderHistory/>
+                    {showAddressForm && (
+                        <AddressForm
+                            form={form}
+                            setForm={setForm}
+                            onSubmit={handleAddressSubmit}
+                        />
+                    )}
+                </div>
+            )}
 
-            <div className="text-right mt-8">
-                <button className="btn-danger" onClick={handleLogout}>Đăng xuất</button>
-            </div>
+            {activeTab === "order-history" && <OrderHistory />}
+
+            {activeTab === "chat" && (
+                <div className="chat-section-wrapper">
+                    <div className="chat-app">
+                        <div className="chat-list">
+                            <ChatList chats={chatList} onSelectChat={setSelectedChat} userRole="user" />
+                        </div>
+                        <div className="chat-content">
+                            {selectedChat ? (
+                                <ChatContent chatId={selectedChat} userRole="user" />
+                            ) : (
+                                <p>Chọn một cửa hàng để bắt đầu trò chuyện.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

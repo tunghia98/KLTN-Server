@@ -1,86 +1,100 @@
-import React, { useState} from "react";
+import React, { useState, useEffect } from "react";
 import ThreadList from "./ThreadList";
 import Pagination from "../../../../components/Pagination/Pagination";
 import "./Forum.css";
 
-function AllThreads({ categories, crops, regions }) {
-  const [category,setCategory]=useState("");
-  const [crop,setCrop]=useState("");
-  const [region,setRegion]=useState("");
-  const [threads, setThreads] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const itemsPerPage = 5; // Số lượng chủ đề mỗi trang
-  const filteredThreads = threads.filter((thread) => {
-    return (
-      (category ? thread.category === category : true) &&
-      (crop ? thread.crop === crop : true) &&
-      (region ? thread.region === region : true)
-    );
-  });
+const AllThreads = ({ allthreads, categories, crops, regions }) => {
+  const [category, setCategory] = useState(null); // categoryId (number)
+  const [crop, setCrop] = useState(null);         // cropId (number)
+  const [region, setRegion] = useState(null);     // regionId (number)
+  const [threads, setThreads] = useState(allthreads || []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  useEffect(() => {
+    setThreads(allthreads || []);
+  }, [allthreads]);
+
+  useEffect(() => {
+    filterThreads();
+  }, [category, crop, region, allthreads]);
+
+  const filterThreads = () => {
+    const filtered = allthreads.filter((thread) => {
+      return (
+        (category ? thread.categoryId === Number(category) : true) &&
+        (crop ? thread.cropId === Number(crop) : true) &&
+        (region ? thread.regionId === Number(region) : true)
+      );
+    });
+    setThreads(filtered);
+  };
+
+  const handleCategoryChange = (e) => {
+    const value = e.target.value ? Number(e.target.value) : null;
+    setCategory(value);
+    setCurrentPage(1);
+  };
+
+  const handleCropChange = (e) => {
+    const value = e.target.value ? Number(e.target.value) : null;
+    setCrop(value);
+    setCurrentPage(1);
+  };
+
+  const handleRegionChange = (e) => {
+    const value = e.target.value ? Number(e.target.value) : null;
+    setRegion(value);
+    setCurrentPage(1);
+  };
+
   const indexOfLastThread = currentPage * itemsPerPage;
   const indexOfFirstThread = indexOfLastThread - itemsPerPage;
-  const currentThreads = filteredThreads.slice(indexOfFirstThread, indexOfLastThread);
+  const currentThreads = threads.slice(indexOfFirstThread, indexOfLastThread);
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
   return (
     <div className="forum-container">
       <h2 className="forum-title">Tất Cả Chủ Đề</h2>
       <div className="filter-form">
         <label>Phân loại: </label>
-        <select onChange={(e) => setCategory(e.target.value)} value={category}>
+        <select onChange={handleCategoryChange} value={category || ""}>
           <option value="">Tất cả</option>
-          {categories.length > 0 ? (
-            categories.map((item) => (
-              <option key={item.id} value={item.name}>
-                {item.name}
-              </option>
-            ))
-          ) : (
-            <option value="">Chưa có dữ liệu</option>
-          )}
+          {categories?.map((item) => (
+            <option key={item.id} value={item.id}>{item.name}</option>
+          ))}
         </select>
 
         <label>Giống cây trồng: </label>
-        <select onChange={(e) => setCrop(e.target.value)} value={crop}>
+        <select onChange={handleCropChange} value={crop || ""}>
           <option value="">Tất cả</option>
-          {crops.length > 0 ? (
-            crops.map((item) => (
-              <option key={item.id} value={item.name}>
-                {item.name}
-              </option>
-            ))
-          ) : (
-            <option value="">Chưa có dữ liệu</option>
-          )}
+          {crops?.map((item) => (
+            <option key={item.id} value={item.id}>{item.name}</option>
+          ))}
         </select>
 
         <label>Khu vực: </label>
-        <select onChange={(e) => setRegion(e.target.value)} value={region}>
+        <select onChange={handleRegionChange} value={region || ""}>
           <option value="">Tất cả</option>
-          {regions.length > 0 ? (
-            regions.map((item) => (
-              <option key={item.id} value={item.name}>
-                {item.name}
-              </option>
-            ))
-          ) : (
-            <option value="">Chưa có dữ liệu</option>
-          )}
+          {regions?.map((item) => (
+            <option key={item.id} value={item.id}>{item.name}</option>
+          ))}
         </select>
       </div>
-      
-      <ThreadList threads={currentThreads} /> {/* Hiển thị threads của trang hiện tại */}
 
-      {/* Pagination */}
+      <ThreadList threads={currentThreads} />
+
       <Pagination
         currentPage={currentPage}
-        totalItems={filteredThreads.length}
+        totalItems={threads.length}
         itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
       />
     </div>
   );
-}
+};
 
 export default AllThreads;

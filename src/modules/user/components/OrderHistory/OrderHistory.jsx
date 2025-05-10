@@ -1,32 +1,13 @@
 import React, { useState, useEffect } from "react";
+import Popup from "../../../../../src/components/Common/Popup.jsx";
 import "./OrderHistory.css";
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showPopup, setShowPopup] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-    // const fetchOrders = async () => {
-    //     try {
-    //         const res = await fetch("https://kltn.azurewebsites.net/api/orders/user", {
-    //             headers: {
-    //                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-    //             },
-    //         });
-    //         if (!res.ok) throw new Error("Không lấy được danh sách đơn hàng");
-
-    //         const data = await res.json();
-    //         setOrders(data);
-    //     } catch (err) {
-    //         console.error(err);
-    //         alert("Lỗi khi tải đơn hàng");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchOrders();
-    // }, []);
     useEffect(() => {
         const fakeOrders = [
             {
@@ -66,13 +47,28 @@ const OrderHistory = () => {
         setTimeout(() => {
             setOrders(fakeOrders);
             setLoading(false);
-        }, 1000); // giả lập thời gian tải
+        }, 1000);
     }, []);
+
+    const handleCancelClick = (orderId) => {
+        setSelectedOrderId(orderId);
+        setShowPopup(true);
+    };
+
+    const handleConfirmCancel = () => {
+        alert(`Hủy đơn hàng thành công`);
+        setShowPopup(false);
+        setSelectedOrderId(null);
+    };
+
+    const handleClosePopup = () => {
+        setShowPopup(false);
+        setSelectedOrderId(null);
+    };
+
     if (loading) return <p>Đang tải đơn hàng...</p>;
 
-    if (orders.length === 0) {
-        return <p>Bạn chưa có đơn hàng nào.</p>;
-    }
+    if (orders.length === 0) return <p>Bạn chưa có đơn hàng nào.</p>;
 
     return (
         <div className="order-history-container">
@@ -98,9 +94,36 @@ const OrderHistory = () => {
                                 ))}
                             </ul>
                         </div>
+                        <div>
+                            <button className="btn btn-primary">Xem chi tiết</button>
+                            {order.status === "Chờ xác nhận" && (
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => handleCancelClick(order.id)}
+                                >
+                                    Hủy đơn
+                                </button>
+                            )}
+                            {order.status==="Đã giao" && (
+                                <button className="btn btn-review">
+                                    Đánh giá
+                                </button>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
+
+            {showPopup && (
+            <Popup isOpen={showPopup} onClose={handleClosePopup} title="Xác nhận hủy đơn">
+            <p>Bạn có chắc chắn muốn hủy đơn hàng <strong>{selectedOrderId}</strong> không?</p>
+            <div className="popup-actions">
+                <button className="btn btn-confirm" onClick={handleConfirmCancel}>Xác nhận</button>
+                <button className="btn btn-cancel" onClick={handleClosePopup}>Hủy</button>
+            </div>
+            </Popup>
+
+            )}
         </div>
     );
 };

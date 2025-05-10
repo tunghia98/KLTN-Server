@@ -56,7 +56,7 @@ function ManagementLayout({ children }) {
         </ul>
       </aside>
 
-      <div className="main-content">
+      <div className="management-content">
       <ManagementHeader />
         {children}
       </div>

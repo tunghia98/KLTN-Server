@@ -143,7 +143,41 @@
     font-weight: bold;
     margin-bottom: 16px;
   }
-  
+  .discount-input-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.discount-code-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.discount-code-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Apply button styling */
+.apply-discount-btn {
+  padding: 10px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.apply-discount-btn:hover {
+  background-color: #2563eb;
+}
   .discounts-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -177,19 +211,21 @@
     padding: 20px;
   }
   
-  .payment-cart-item {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-  }
+.payment-cart-item {
+  display: grid;
+  grid-template-columns: auto 150px 180px 180px; /* Hoặc bạn có thể điều chỉnh: auto 80px 100px 100px */
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
   
-  .payment-cart-item-details {
-    display: flex;
-    align-items: center;
-  }
+
+.payment-cart-item-details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
   
   .payment-cart-item-image {
     width: 80px;
@@ -205,6 +241,7 @@
   
   .payment-cart-item-name {
     font-weight: bold;
+    margin-left:10px;
   }
   
   .payment-cart-item-supplier {
@@ -267,7 +304,38 @@
     flex-direction: column;
     min-height: 500px;
 }
+.cart-item-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
 
+.payment-cart-item-info {
+  display: flex;
+  flex-direction: column;
+  max-width: 200px; /* Điều chỉnh tùy thuộc layout */
+}
+
+.payment-cart-item-name {
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.payment-cart-item-supplier {
+  font-size: 14px;
+  color: #888;
+}
+
+.payment-cart-item-quantity,
+.payment-cart-item-price,
+.payment-cart-item-total {
+  font-size: 16px;
+  text-align: left;
+}
 
  
 

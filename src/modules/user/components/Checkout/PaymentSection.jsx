@@ -146,13 +146,13 @@ const Payment = ({selectedAddressId }) => {
                   </div>
                 </div>
                 <div className="payment-cart-item-quantity">
-                  <span>Số lượng: {item.quantity}</span>
+                  <span>{item.quantity}</span>
                 </div>
                 <div className="payment-cart-item-price">
                   <span>{item.price.toLocaleString()}₫</span>
                 </div>
                 <div className="payment-cart-item-total">
-                  <span>Tổng: {(item.price * item.quantity).toLocaleString()}₫</span>
+                  <span>{(item.price * item.quantity).toLocaleString()}₫</span>
                 </div>
               </div>
             ))

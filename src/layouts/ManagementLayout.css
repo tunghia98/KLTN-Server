@@ -47,7 +47,7 @@
   }
   
   /* Main content area */
-  .main-content {
+  .management-content {
     margin-left: 0rem; /* Chừa khoảng cho sidebar */
     flex: 1;
     background-color: #f7fafc;

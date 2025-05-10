@@ -3,7 +3,7 @@ import ThreadItem from "./ThreadItem";
 import "./Forum.css";
 
 const ThreadList = ({ threads }) => {
-  if (!threads.length) return <p>Không có chủ đề nào.</p>;
+  if (!Array.isArray(threads) || threads.length === 0) return <p>Không có chủ đề nào.</p>;
 
   return (
     <div className="thread-list">
@@ -23,3 +23,4 @@ const ThreadList = ({ threads }) => {
 };
 
 export default ThreadList;
+

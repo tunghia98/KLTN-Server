@@ -57,7 +57,7 @@ const AppRoutes = () => {
       <Route path="/warranty-policy" element={<WarrantyPolicyPage />} />
       <Route path="/profile" element={<UserInfoPage />} />
       <Route path="/forum" element={<ForumPage />} />
-      <Route path="/forum/thread/:title" element={<ThreadDetailPage />} />
+      <Route path="/forum/thread/:titleSlug" element={<ThreadDetailPage />} />
       <Route path="/sellers/:sellerSlug" element={<MainLayout><SellerInfoPage /></MainLayout>} />
           <Route path="/products/:productSlug" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />

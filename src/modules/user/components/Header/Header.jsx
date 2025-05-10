@@ -37,7 +37,7 @@ function Header() {
   }
   
   return (
-    <header>
+    <header className="header">     
       <nav>
         <ul>
           <Link to="/"><img className="header-logo" src={logo} alt="Logo" /></Link>

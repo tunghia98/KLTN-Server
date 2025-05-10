@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ChatList from "../../components/Chat/ChatList.jsx";
-import ChatContent from "../../components/Chat/ChatContent.jsx";
+import ChatList from "../../../../components/Chat/ChatList.jsx";
+import ChatContent from "../../../../components/Chat/ChatContent.jsx";
 import "./ChatPage.css"; // Bạn có thể đổi tên file này thành ChatPage.css nếu cần
 
 function ChatPage() {

@@ -28,12 +28,11 @@ function ForumPage() {
     
     fetchAllThreads();
   }, []); // Chỉ chạy 1 lần khi component mount
-
   // Lấy danh mục
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-          const res = await fetch("https://kltn.azurewebsites.net/api/CategoryForums");
+          const res = await fetch("https://kltn.azurewebsites.net/api/categoryforums");
         if (!res.ok) throw new Error("Lỗi tải danh mục");
         const data = await res.json();
         setCategories(data);
@@ -91,7 +90,8 @@ function ForumPage() {
         {/* Main Content */}
         <div className="forum-content">
         <button className="forum-create-thread" onClick={handleOnClick}>Tạo bài viết</button>
-          <AllThread categories={categories} crops={crops} regions={regions}/>
+          <AllThread allthreads={threads} categories={categories} crops={crops} regions={regions}/>
+          
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
     box-sizing: border-box;
     width: 100%;
 }
+
 .header-logo{
     height: 72px;         /* Chiều cao phù hợp cho header */
     width: auto;          /* Tự co theo tỉ lệ */
@@ -12,7 +13,6 @@
 nav {
     background-color: #f6f6e9;
     padding: 10px;
-    
 }
 nav ul {
     list-style: none;
