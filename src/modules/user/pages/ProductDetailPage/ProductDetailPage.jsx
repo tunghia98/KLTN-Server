@@ -49,7 +49,32 @@ function ProductDetailPage() {
       setError(err.message);
     }
   };
+    const handleRate = async (rating) => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            alert("Vui lòng đăng nhập để đánh giá.");
+            return;
+        }
 
+        try {
+            const res = await fetch(``, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ rating }),
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+
+            alert("✅ Cảm ơn bạn đã đánh giá!");
+            // Có thể gọi lại API để load rating mới
+        } catch (err) {
+            console.error("❌ Lỗi khi gửi đánh giá:", err.message);
+            alert("Đánh giá thất bại.");
+        }
+    };
   const fetchSeller = async (sellerId) => {
     try {
       const res = await fetch("https://kltn.azurewebsites.net/api/Shops");

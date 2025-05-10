@@ -1,68 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./CheckoutPage.css";
 import OrderSummary from "../../components/Checkout/OrderSummary.jsx";
 import ShippingInfo from "../../components/Checkout/ShippingInfo.jsx";
 import Payment from "../../components/Checkout/PaymentSection.jsx";
 import Discount from "../../components/Checkout/Discount.jsx";
-
-const userInfo = {
-    name: "Nguyễn Hoàng Kiều Ngân",
-    phone: "0859763025",
-    address: "36 Trịnh Đình Thảo, P. Hòa Thạnh, Q. Tân Phú, HCM",
-};
+import { useCart } from "../../../../contexts/CartContext.jsx";
 
 const CheckoutPage = () => {
-    const [cartItems, setCartItems] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const navigate = useNavigate();
+    const { cartItems } = useCart();
+    const checkedItems = cartItems.filter((item) => item.checked);
+    const [addresses, setAddresses] = useState([]);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
+    const fetchAddresses = async () => {
+        try {
+            const res = await fetch("https://kltn.azurewebsites.net/api/addresses/user", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            });
+
+            if (!res.ok) throw new Error("Không lấy được địa chỉ");
+
+            const data = await res.json();
+            setAddresses(data);
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi khi tải địa chỉ");
+        }
+    };
 
     useEffect(() => {
-        const fetchCart = async () => {
-            const token = localStorage.getItem("accessToken");
-            if (!token) {
-                alert("Vui lòng đăng nhập để thanh toán.");
-                navigate("/login");
-                return;
-            }
+        fetchAddresses();
+    }, []);
 
-            try {
-                const res = await fetch("https://kltn.azurewebsites.net/api/Cart", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
 
-                if (!res.ok) throw new Error("Không thể lấy giỏ hàng");
 
-                const data = await res.json();
-                setCartItems(data);
-            } catch (error) {
-                console.error("Lỗi lấy giỏ hàng:", error.message);
-                alert("❌ Không thể tải giỏ hàng từ hệ thống.");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchCart();
-    }, [navigate]);
-
-    if (isLoading) return <div>Đang tải dữ liệu giỏ hàng...</div>;
-
-    if (!cartItems || cartItems.length === 0) {
-        return <div>❌ Giỏ hàng của bạn đang trống.</div>;
-    }
-
-    const totalAmount = cartItems.reduce((total, item) => {
+    const totalAmount = checkedItems.reduce((total, item) => {
         return total + item.price * item.quantity;
     }, 0);
 
     return (
         <div className="checkout-page">
-            <Payment cartItems={cartItems} className="checkout-page-payment" />
+            <Payment
+                selectedAddressId={selectedAddressId}
+                className="checkout-page-payment"
+            />
             <div className="checkout-page-right">
-                <ShippingInfo user={userInfo} className="checkout-page-shippinginfo" />
+                <ShippingInfo addresses={addresses} onAddressChange={(id) => setSelectedAddressId(id)} className="checkout-page-shippinginfo" />
                 <Discount className="checkout-page-discount" />
                 <OrderSummary total={totalAmount} cartItems={cartItems} className="checkout-page-summary" />
             </div>

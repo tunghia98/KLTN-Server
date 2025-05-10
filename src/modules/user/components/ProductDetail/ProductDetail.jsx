@@ -14,7 +14,7 @@ function ProductDetail({ product, seller }) {
   const user = useUser();
   const { name, price, description, images = [], discount, id } = product;
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState(1);
     const { fetchCartFromBackend } = useCart();
   const productSellCounter = 10;
   const [showDiscount, setShowDiscount] = useState(false);
@@ -42,37 +42,7 @@ function ProductDetail({ product, seller }) {
             navigate("/login");
             return;
         }
-
-        try {
-            // Thêm sản phẩm vào giỏ hàng
-            const res = await fetch("https://kltn.azurewebsites.net/api/Cart/add", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({
-                    productId: product.id,
-                    quantity: quantity,  // Sử dụng quantity của sản phẩm
-                }),
-            });
-
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text);
-            }
-
-            // Lấy dữ liệu giỏ hàng sau khi thêm sản phẩm
-            await fetchCartFromBackend();
-
-            // Chuyển hướng đến trang thanh toán và gửi thông tin giỏ hàng
-            navigate(`/checkout`, { state: { cartItems: [{ ...product, quantity }] } });
-
-            alert("✅ Đã thêm vào giỏ hàng và chuyển đến thanh toán!");
-        } catch (err) {
-            console.error("Lỗi thêm giỏ hàng:", err.message);
-            alert("❌ Thêm giỏ hàng thất bại.");
-        }
+        navigate(`/checkout`, { state: { cartItems: [{ ...product, quantity }] } });
     };
 
 

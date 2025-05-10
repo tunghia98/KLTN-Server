@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { FaCreditCard } from "react-icons/fa";
 import { RiBankCardFill } from "react-icons/ri";
 import { SiZalo, SiVisa } from "react-icons/si";
 import { MdOutlineQrCodeScanner } from "react-icons/md";
+import { useCart } from "../../../../contexts/CartContext.jsx";
 import './Checkout.css';
 
 const paymentMethods = [
@@ -15,23 +17,108 @@ const paymentMethods = [
   { id: "atm", label: "Thẻ ATM", icon: <FaCreditCard className="payment-icon" /> },
 ];
 
-const Payment = () => {
+const Payment = ({selectedAddressId }) => {
+    const { fetchCartFromBackend } = useCart();
   const location = useLocation();
-  const { cartItems, quantity } = location.state;
+    const [cartItems, setCartItems] = useState(location.state.cartItems);
+    const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [message, setMessage] = useState("");
-  
-  const handleConfirmPayment = () => {
-    if (selectedMethod === "cash") {
-      setMessage("Đã đặt hàng thành công, chờ người bán hàng xác nhận.");
-    } else {
-      setMessage("Thanh toán của bạn đã được xử lý!");
-    }
-  };
+    console.log(cartItems);
+    const handleConfirmPayment = async () => {
+        if (!selectedMethod) {
+            alert("Vui lòng chọn phương thức thanh toán.");
+            return;
+        }
 
-  if (!cartItems || cartItems.length === 0) {
-    return <p>Giỏ hàng của bạn hiện đang trống!</p>;
-  }
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            alert("Bạn chưa đăng nhập.");
+            return;
+        }
+
+        // 1. Nhóm các item theo shopId
+        const groupedOrders = {};
+        cartItems.forEach(item => {
+            const shopId = item.shopId;
+            if (!groupedOrders[shopId]) {
+                groupedOrders[shopId] = [];
+            }
+            groupedOrders[shopId].push(item);
+        });
+        try {
+            // 2. Gửi từng đơn theo từng shop
+            for (const shopId in groupedOrders) {
+                const items = groupedOrders[shopId];
+                const orderItems = items.map(item => ({
+                    productId: item.productId || item.id,
+                    quantity: item.quantity,
+                }));
+
+                const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+                const response = await fetch("https://kltn.azurewebsites.net/api/orders", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        shopId,
+                        items: orderItems,
+                        method: selectedMethod,
+                        totalAmount,
+                        shippingAddressId: selectedAddressId,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Lỗi khi tạo đơn hàng cho shop ${shopId}`);
+                }
+                for (const item of items) {
+                    // Kiểm tra nếu productId hợp lệ (không phải null hoặc undefined)
+                    if (!item.productId) {
+                        continue; // Bỏ qua việc xóa nếu không có productId
+                    }
+
+                    // Gửi yêu cầu xóa sản phẩm khỏi giỏ hàng
+                    const deleteResponse = await fetch(`https://kltn.azurewebsites.net/api/cart/${item.productId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                        },
+                    });
+
+                    if (!deleteResponse.ok) {
+                        throw new Error(`Lỗi khi xóa sản phẩm ${item.productId} khỏi giỏ hàng`);
+                    }
+                }
+            }
+            setCartItems([]);
+            fetchCartFromBackend();
+            setMessage("✅ Đã đặt hàng thành công cho tất cả cửa hàng!");
+            setTimeout(() => navigate("/"), 5000);
+        } catch (err) {
+            console.error(err);
+            setMessage("❌ Có lỗi xảy ra khi đặt hàng.");
+        }
+    };
+
+
+    if (!cartItems || cartItems.length === 0) {
+        return (
+            <div className="payment-container full-width-center">
+                <div className="empty-cart-box">
+                    <span className="empty-icon">🛒</span>
+                    <h3>Giỏ hàng của bạn đang trống</h3>
+                    <p>Hãy chọn một vài sản phẩm để bắt đầu mua sắm!</p>
+                    <button className="btn-primary" onClick={() => navigate("/products")}>
+                        👉 Xem sản phẩm
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
   return (
     <div className="payment-container">
@@ -43,9 +130,15 @@ const Payment = () => {
               <div key={item.id} className="payment-cart-item">
                 <div className="payment-cart-item-details">
                         <img
-                            src={item.images && item.images.length > 0 ? item.images[0] : "default-image.png"}
+                            src={
+                                item.imageUrls?.[0]
+                                    ? `https://kltn.azurewebsites.net/api/product-images/file/${item.imageUrls[0]}`
+                                    : item.imageUrl
+                                        ? `https://kltn.azurewebsites.net/api/product-images/file/${item.imageUrl}`
+                                        : "https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png"
+                            }
                             alt={item.name}
-                            className="payment-cart-item-image"
+                            className="cart-item-img"
                         />
                   <div className="payment-cart-item-info">
                     <span className="payment-cart-item-name">{item.name}</span>

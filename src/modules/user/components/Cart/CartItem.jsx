@@ -2,7 +2,7 @@ import React from "react";
 import "./Cart.css";
 import QuantitySelector from "../../../../components/Common/QuantitySelector.jsx";
 
-const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onToggleCheckAll  }) => {
+const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onToggleCheckAll }) => {
     if (!item) return null;
 
   return (
@@ -10,14 +10,18 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onTog
       <input type="checkbox" className="cart-item-checkbox"   checked={item.checked}
               onChange={() => onToggleCheck(item.productId)} />
 
-      <div className="cart-item-img-container">
+          <div className="cart-item-img-container">
               <img
-                  src={item.images?.[0] || "/images/default-product.png"}
+                  src={
+                      item.imageUrl
+                          ? `https://kltn.azurewebsites.net/api/product-images/file/${item.imageUrl}`
+                          : "https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png"
+                  }
                   alt={item.name}
                   className="cart-item-img"
               />
-        <a>{item.name}</a>
-      </div>
+              <span className="cart-item-name">{item.name}</span>
+          </div>
 
       <div className="cart-item-price">
         {item.price.toLocaleString()}đ

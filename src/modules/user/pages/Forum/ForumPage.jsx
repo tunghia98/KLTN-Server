@@ -20,12 +20,12 @@ function ForumPage() {
         const res = await fetch("https://kltn.azurewebsites.net/api/forumposts");
         if (!res.ok) throw new Error("Lỗi tải chủ đề");
         const data = await res.json();
-        setThreads(data);
+          setThreads(data);
       } catch (error) {
         console.error("Lỗi lấy chủ đề:", error);
       }
     };
-
+    
     fetchAllThreads();
   }, []); // Chỉ chạy 1 lần khi component mount
 
@@ -33,7 +33,7 @@ function ForumPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("https://kltn.azurewebsites.net/api/categorythreads");
+          const res = await fetch("https://kltn.azurewebsites.net/api/CategoryForums");
         if (!res.ok) throw new Error("Lỗi tải danh mục");
         const data = await res.json();
         setCategories(data);

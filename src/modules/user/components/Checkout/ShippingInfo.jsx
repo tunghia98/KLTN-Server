@@ -1,26 +1,68 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Checkout.css";
 import { useNavigate } from "react-router-dom";
-import { useAddress } from "../../../../contexts/AddressContext.jsx"; // đảm bảo đúng path
 
-const ShippingInfo = () => {
-  const navigate = useNavigate();
-  const { defaultAddress } = useAddress(); // Lấy từ context
+const ShippingInfo = ({ addresses = [], onAddressChange }) => {
+    const navigate = useNavigate();
+    const [selectedId, setSelectedId] = useState(addresses[0]?.id || "");
 
-  const handleClick = () => {
-    navigate("/address");
-  };
+    const formatAddress = (addr) =>
+        `${addr.street}, ${addr.ward}, ${addr.district}, ${addr.province}`;
 
-  if (!defaultAddress) return <p>Chưa có địa chỉ mặc định.</p>;
+    const handleSelectChange = (e) => {
+        const newId = e.target.value;
+        setSelectedId(newId);
+        if (onAddressChange) {
+            onAddressChange(newId);
+        }
+    };
 
-  return (
-    <div className="shipping-info">
-      <h3>Giao tới</h3>
-      <p>{defaultAddress.name} - {defaultAddress.phone}</p>
-      <p>{defaultAddress.detail}</p>
-      <button className="change-btn" onClick={handleClick}>Thay đổi</button>
-    </div>
-  );
+    useEffect(() => {
+        if (addresses.length > 0 && !selectedId) {
+            const firstId = addresses[0].id;
+            setSelectedId(firstId);
+            if (onAddressChange) {
+                onAddressChange(firstId);
+            }
+        }
+    }, [addresses, selectedId, onAddressChange]);
+
+    const handleClick = () => {
+        navigate("/profile");
+    };
+
+    const selectedAddress = addresses.find((addr) => addr.id === selectedId);
+
+    if (addresses.length === 0) {
+        return (
+            <>
+                <p>Chưa có địa chỉ giao hàng.</p>
+                <button className="change-btn" onClick={handleClick}>
+                    Thêm địa chỉ
+                </button>
+            </>
+        );
+    }
+
+    return (
+        <div className="shipping-info">
+            <h3>Giao tới</h3>
+            <select value={selectedId} onChange={handleSelectChange}>
+                {addresses.map((addr) => (
+                    <option key={addr.id} value={addr.id}>
+                        {formatAddress(addr)}
+                    </option>
+                ))}
+            </select>
+
+            {selectedAddress && (
+                <>
+                    <p>{selectedAddress.name}</p>
+                    <p>{selectedAddress.detail}</p>
+                </>
+            )}
+        </div>
+    );
 };
 
 export default ShippingInfo;

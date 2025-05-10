@@ -88,11 +88,7 @@ function Header() {
 
       <div className="sub-header">
         <ul>
-        <li className="dropdown">
-          <a>Tất cả sản phẩm</a>
-            <Dropdown/>
-        </li>
-
+          <li><Link to="/products">Tất cả sản phẩm</Link></li>
           <li><a>Bán chạy</a></li>
           <li><Link to="/forum">Diễn đàn</Link></li>
           <li><a>Chính sách</a></li>

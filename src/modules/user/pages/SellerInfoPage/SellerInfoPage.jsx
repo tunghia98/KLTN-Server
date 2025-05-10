@@ -42,22 +42,23 @@ const SellerPage = () => {
 
     const fetchSellerProducts = async () => {
         try {
-            const [productRes, categoryRes] = await Promise.all([
+            const [productRes, categoryRes, brandRes] = await Promise.all([
                 fetch(`https://kltn.azurewebsites.net/api/Products/by-shop/${sellerId}`),
-                fetch(`https://kltn.azurewebsites.net/api/Categories/by-shop/${sellerId}`), // 🔥 gọi API mới
+                fetch(`https://kltn.azurewebsites.net/api/Categories/by-shop/${sellerId}`),
+                fetch(`https://kltn.azurewebsites.net/api/Categories/brands/by-shop/${sellerId}`), // API mới
             ]);
 
-            if (!productRes.ok || !categoryRes.ok) throw new Error("Không thể tải dữ liệu");
+            if (!productRes.ok || !categoryRes.ok || !brandRes.ok)
+                throw new Error("Không thể tải dữ liệu");
 
             const productData = await productRes.json();
             const categoryData = await categoryRes.json();
+            const brandData = await brandRes.json();
 
             setSellerProducts(productData);
             setFilteredProducts(productData);
-
-            const uniqueBrands = [...new Set(productData.map((p) => p.brand))];
-            setBrands(uniqueBrands);
-            setCategories(categoryData.map(c => c.name)); // lấy tên danh mục
+            setCategories(categoryData.map(c => c.name));
+            setBrands(brandData); // Lấy danh sách brand từ API
         } catch (err) {
             setError(err.message);
         }
@@ -157,7 +158,6 @@ const SellerPage = () => {
 
       <div className="filters">
         <div className="filter-item">
-          <label htmlFor="category">Lọc theo danh mục: </label>
                   <div className="filter-item">
                       <label htmlFor="category">Lọc theo danh mục: </label>
                       <Autocomplete

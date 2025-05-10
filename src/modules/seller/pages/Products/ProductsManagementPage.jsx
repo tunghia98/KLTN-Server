@@ -148,13 +148,18 @@ function ProductManagementPage() {
                         {sellerproducts.map((product) => (
                             <tr key={product.id}>
                                 <td>
-                                    {product.imageUrls.length > 0 ? (
+                                    {product.imageUrls?.[0] ? (
                                         <img
-                                            src={`https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0]}`} alt="Ảnh sản phẩm"
+                                            src={`https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0]}`}
+                                            alt="Ảnh sản phẩm"
                                             className="product-image"
                                         />
                                     ) : (
-                                        <span>Chưa có ảnh</span>
+                                        <img
+                                            src="https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png"
+                                            alt="Ảnh mặc định"
+                                            className="product-image"
+                                        />
                                     )}
                                 </td>
                                 <td>{product.name}</td>

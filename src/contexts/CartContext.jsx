@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
-
+import { useUser } from "./UserContext";
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
-
+    const { user } = useUser();
     const accessToken = localStorage.getItem("accessToken");;
     const fetchCartFromBackend = async () => {
         if (!accessToken) return;
@@ -33,8 +33,13 @@ export const CartProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        fetchCartFromBackend();
-    }, [accessToken]);
+        if (user) {
+            fetchCartFromBackend();
+        } else {
+            setCartItems([]); // 🧹 Xoá giỏ khi user đăng xuất
+        }
+    }, [user]);
+
 
     const addToCart = async (product) => {
         if (!accessToken) return alert("Vui lòng đăng nhập.");
