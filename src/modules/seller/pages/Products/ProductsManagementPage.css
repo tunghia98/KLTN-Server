@@ -58,4 +58,23 @@
   .delete-btn:hover {
     background: #e53935;
   }
+.order-detail-product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .order-detail-product-table th,
+    .order-detail-product-table td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+.order-detail-product-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
   
