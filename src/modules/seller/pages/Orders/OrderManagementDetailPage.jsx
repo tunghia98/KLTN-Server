@@ -6,9 +6,11 @@ const OrderDetailPage = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState(null);
     const [orderItems, setOrderItems] = useState([]);
+    const [addresses, setAddresses] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const formatAddress = (addr) =>
+        addr ? `${addr.street}, ${addr.ward}, ${addr.district}, ${addr.province}` : "Địa chỉ không khả dụng";
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
@@ -44,8 +46,29 @@ const OrderDetailPage = () => {
         };
         fetchOrderDetails();
     }, [orderId]);
-    console.log(order);
-    console.log(orderItems);
+    // 👇 Tách ra useEffect riêng khi order đã được load
+    useEffect(() => {
+        const fetchAddress = async () => {
+            if (!order?.shippingAddressId) return;
+
+            try {
+                const res = await fetch(`https://kltn.azurewebsites.net/api/addresses/${order.shippingAddressId}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    },
+                });
+
+                if (!res.ok) throw new Error("Không lấy được địa chỉ");
+
+                const data = await res.json();
+                setAddresses(data);
+            } catch (err) {
+                console.error("Lỗi khi tải địa chỉ:", err);
+            }
+        };
+
+        fetchAddress();
+    }, [order?.shippingAddressId]); // 👈 dependency đầy đủ
     if (loading) return <div>Đang tải chi tiết đơn hàng...</div>;
     if (error) return <div>{error}</div>;
     if (!order) return <div>Không tìm thấy đơn hàng!</div>;
@@ -58,12 +81,12 @@ const OrderDetailPage = () => {
             <div className="order-detail-container">
                 <h1>Chi tiết đơn hàng #{order.id}</h1>
                 <p><strong>Khách hàng:</strong> {order.customer?.name || "Không xác định"}</p>
-                <p><strong>Địa chỉ giao hàng:</strong> {order.address}</p>
-                <p><strong>Số điện thoại:</strong> {order.phone}</p>
+                <p><strong>Địa chỉ giao hàng:</strong> {formatAddress(addresses)}</p>
+                <p><strong>Số điện thoại:</strong> {order.customer?.phoneNumber}</p>
                 <p><strong>Hình thức thanh toán:</strong> {order.payment ?.method}</p>
                 <p><strong>Tổng tiền:</strong> {order.totalAmount?.toLocaleString()}₫</p>
                 <p><strong>Trạng thái:</strong> {order.status}</p>
-                <p><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+                <p><strong>Ngày đặt:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
 
                 <h2>Sản phẩm trong đơn hàng</h2>
                 {orderItems.length > 0 ? (

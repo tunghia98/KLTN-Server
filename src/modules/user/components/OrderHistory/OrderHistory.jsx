@@ -4,71 +4,71 @@ import "./OrderHistory.css";
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
+    const [orderItems, setOrderItems] = useState({});
     const [loading, setLoading] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedOrderId, setSelectedOrderId] = useState(null);
+    const [expandedOrderId, setExpandedOrderId] = useState(null);
 
+    // 1️⃣ Lấy danh sách đơn của user
     useEffect(() => {
-        const fakeOrders = [
-            {
-                id: 1,
-                orderCode: "DH001",
-                createdAt: "2025-04-20T10:00:00Z",
-                status: "Đã giao",
-                totalAmount: 350000,
-                products: [
-                    { productId: 1, productName: "Phân bón hữu cơ", quantity: 2 },
-                    { productId: 2, productName: "Hạt giống cà chua", quantity: 5 },
-                ],
-            },
-            {
-                id: 2,
-                orderCode: "DH002",
-                createdAt: "2025-04-22T14:30:00Z",
-                status: "Đang giao",
-                totalAmount: 180000,
-                products: [
-                    { productId: 3, productName: "Thuốc trừ sâu sinh học", quantity: 1 },
-                ],
-            },
-            {
-                id: 3,
-                orderCode: "DH003",
-                createdAt: "2025-04-25T09:15:00Z",
-                status: "Chờ xác nhận",
-                totalAmount: 500000,
-                products: [
-                    { productId: 4, productName: "Bầu tưới cây", quantity: 3 },
-                    { productId: 5, productName: "Đất sạch trồng rau", quantity: 4 },
-                ],
-            },
-        ];
-
-        setTimeout(() => {
-            setOrders(fakeOrders);
-            setLoading(false);
-        }, 1000);
+        const fetchOrders = async () => {
+            try {
+                const res = await fetch("https://kltn.azurewebsites.net/api/orders/my-orders", {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+                });
+                if (!res.ok) throw new Error("Không thể tải đơn hàng");
+                const data = await res.json();
+                setOrders(data);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrders();
     }, []);
+
+    // 2️⃣ Khi nhấn Xem chi tiết: gọi API lấy orderItems nếu chưa có
+    const handleViewDetails = async (orderId) => {
+        if (expandedOrderId === orderId) {
+            // Thu gọn lại
+            setExpandedOrderId(null);
+            return;
+        }
+        setExpandedOrderId(orderId);
+        // Nếu chưa fetch lần nào
+        if (!orderItems[orderId]) {
+            try {
+                const res = await fetch(
+                    `https://kltn.azurewebsites.net/api/orderitems/order/${orderId}`,
+                    { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
+                );
+                if (!res.ok) throw new Error("Không tải được chi tiết sản phẩm");
+                const items = await res.json();
+                setOrderItems(prev => ({ ...prev, [orderId]: items }));
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    };
 
     const handleCancelClick = (orderId) => {
         setSelectedOrderId(orderId);
         setShowPopup(true);
     };
-
     const handleConfirmCancel = () => {
-        alert(`Hủy đơn hàng thành công`);
+        alert(`Hủy đơn hàng ${selectedOrderId} thành công`);
         setShowPopup(false);
         setSelectedOrderId(null);
     };
-
     const handleClosePopup = () => {
         setShowPopup(false);
         setSelectedOrderId(null);
     };
 
     if (loading) return <p>Đang tải đơn hàng...</p>;
-
-    if (orders.length === 0) return <p>Bạn chưa có đơn hàng nào.</p>;
+    if (!orders.length) return <p>Bạn chưa có đơn hàng nào.</p>;
 
     return (
         <div className="order-history-container">
@@ -77,25 +77,20 @@ const OrderHistory = () => {
                 {orders.map(order => (
                     <div key={order.id} className="order-card">
                         <div className="order-header">
-                            <span><strong>Mã đơn:</strong> {order.orderCode}</span>
-                            <span><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleDateString()}</span>
+                            <span><strong>Mã đơn:</strong> {order.id}</span>
+                            <span><strong>Ngày đặt:</strong> {new Date(order.orderDate).toLocaleDateString()}</span>
                         </div>
                         <div className="order-body">
                             <p><strong>Trạng thái:</strong> {order.status}</p>
                             <p><strong>Tổng tiền:</strong> {order.totalAmount.toLocaleString()}₫</p>
                         </div>
-                        <div className="order-products">
-                            <strong>Sản phẩm:</strong>
-                            <ul>
-                                {order.products.map(product => (
-                                    <li key={product.productId}>
-                                        {product.productName} x{product.quantity}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <button className="btn btn-primary">Xem chi tiết</button>
+                        <div className="order-actions">
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => handleViewDetails(order.id)}
+                            >
+                                {expandedOrderId === order.id ? "Ẩn chi tiết" : "Xem chi tiết"}
+                            </button>
                             {order.status === "Chờ xác nhận" && (
                                 <button
                                     className="btn btn-secondary"
@@ -104,25 +99,43 @@ const OrderHistory = () => {
                                     Hủy đơn
                                 </button>
                             )}
-                            {order.status==="Đã giao" && (
-                                <button className="btn btn-review">
-                                    Đánh giá
-                                </button>
+                            {order.status === "Đã giao" && (
+                                <button className="btn btn-review">Đánh giá</button>
                             )}
                         </div>
+
+                        {/* 3️⃣ Phần chi tiết sản phẩm */}
+                        {expandedOrderId === order.id && (
+                            <table className="order-detail-product-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {(orderItems[order.id] || []).map(item => (
+                                        <tr key={item.id}>
+                                            <td>{item.productName}</td>
+                                            <td>{item.quantity}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 ))}
             </div>
 
+            {/* Popup hủy đơn */}
             {showPopup && (
-            <Popup isOpen={showPopup} onClose={handleClosePopup} title="Xác nhận hủy đơn">
-            <p>Bạn có chắc chắn muốn hủy đơn hàng <strong>{selectedOrderId}</strong> không?</p>
-            <div className="popup-actions">
-                <button className="btn btn-confirm" onClick={handleConfirmCancel}>Xác nhận</button>
-                <button className="btn btn-cancel" onClick={handleClosePopup}>Hủy</button>
-            </div>
-            </Popup>
-
+                <Popup isOpen={showPopup} onClose={handleClosePopup} title="Xác nhận hủy đơn">
+                    <p>Bạn có chắc chắn muốn hủy đơn hàng <strong>{selectedOrderId}</strong> không?</p>
+                    <div className="popup-actions">
+                        <button className="btn btn-confirm" onClick={handleConfirmCancel}>Xác nhận</button>
+                        <button className="btn btn-cancel" onClick={handleClosePopup}>Hủy</button>
+                    </div>
+                </Popup>
             )}
         </div>
     );
