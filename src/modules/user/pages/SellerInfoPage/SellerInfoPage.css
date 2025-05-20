@@ -53,7 +53,7 @@
   background-color: #218838;
 }
 
-.filters {
+.seller-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;

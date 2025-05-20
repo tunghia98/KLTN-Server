@@ -1,4 +1,4 @@
-/* Container chung cho phần chủ đề */
+/* All Thread */
 .forum-container {
   font-family: Arial, sans-serif;
   margin: 20px;
@@ -6,8 +6,6 @@
   border-radius: 8px;
   background-color: #fafafa;
 }
-
-/* Tiêu đề chính */
 .forum-title {
   text-align: center;
   color: #333;
@@ -16,36 +14,7 @@
   font-weight: 600;
 }
 
-/* Form bộ lọc */
-.filter-form {
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
-}
 
-.filter-form label {
-  font-size: 1rem;
-  margin-right: 10px;
-}
-
-.filter-form select,
-.filter-select {
-  padding: 8px 12px;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  transition: all 0.3s;
-}
-
-.filter-form select:hover,
-.filter-form select:focus,
-.filter-select:hover,
-.filter-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-}
 
 /* Danh sách chủ đề */
 .thread-list {
@@ -201,28 +170,11 @@
 }
 
 /* Thread Detail */
-.thread-detail-container {
-  justify-content: space-between;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  gap: 20px;
-}
 
-.thread-detail-card {
-  background: #fff;
-  width: 100%;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
 
-.thread-detail-title {
-  font-size: 26px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-}
+
+
+
 
 .thread-detail-meta {
   display: flex;
@@ -277,78 +229,10 @@
 }
 
 /* Các component form tạo chủ đề */
-.create-thread-form input[type="text"],
-.create-thread-form select,
-.create-thread-form textarea {
-  width: 100%;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-.create-thread-form select {
-  width: calc(100% - 5px); /* Giảm bớt padding để thẻ select vừa vặn hơn */
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-  transition: all 0.3s;
-}
-.create-thread-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-between;
-}
 
-.create-thread-form label {
-  font-weight: 600;
-  margin-bottom: 6px;
-  display: block;
-  color: #333;
-}
 
-.create-thread-form > .left-column,
-.create-thread-form > .right-column {
-  flex: 1;
-  min-width: 300px;
-}
 
-.content-toolbar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-}
 
-.content-toolbar button {
-  margin-right: 10px;
-}
-
-.content-toolbar button:hover {
-  background-color: #dcdcdc;
-}
-
-.markdown-preview {
-  margin-top: 24px;
-  flex: 1;
-  overflow: hidden;
-}
-
-.preview-box {
-  padding: 16px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  min-height: 100px;
-  flex: 1;
-  overflow: auto;
-  background-color: #f4f4f4;
-  border-radius: 5px;
-}
 
 .tag-input-container {
   margin-top: 24px;
@@ -388,24 +272,11 @@
   cursor: pointer;
 }
 
-.image-upload {
-  margin-top: 24px;
-}
 
-.image-preview-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 12px;
-}
 
-.image-preview {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
+
+
+
 
 .like-button {
   margin-top: 28px;
@@ -451,6 +322,97 @@
 .checkbox-item:hover {
   background: #e0f7fa;
 }
+
+
+/* Select cho filter container */
+.filter-container select {
+  width: 180px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+}
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 600px) {
+  .filter-form {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 10px;
+  }
+
+  .filter-form select {
+    min-width: 100%;
+  }
+
+  .search-bar input {
+    max-width: 100%;
+  }
+}
+/*CreateNewThread*/
+.thread-detail-container {
+  justify-content: space-between;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 20px;
+}
+.thread-detail-card {
+  background: #fff;
+  width: 100%;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.thread-detail-title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+.create-thread-form input[type="text"],
+.create-thread-form select,
+.create-thread-form textarea {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.create-thread-form select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23777' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+.create-thread-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.create-thread-form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: #333;
+}
+
+.create-thread-form > .left-column,
+.create-thread-form > .right-column {
+  flex: 1;
+  min-width: 300px;
+}
 .create-thread-form select:hover,
 .create-thread-form select:focus {
   border-color: #007bff;
@@ -461,36 +423,39 @@
 .create-thread-form select[multiple] {
   min-height: 100px;
   padding: 12px;
-  resize: vertical; /* Cho phép kéo dài chiều cao */
+  resize: vertical;
+}
+.content-toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-/* Select cho filter container */
-.filter-container select {
-  width: 180px;
+.content-toolbar button {
   margin-right: 10px;
-  margin-bottom: 20px;
 }
 
-/* Cải thiện sự đồng nhất */
-.filter-form select,
-.filter-select {
-  padding: 8px 12px;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  outline: none;
-  transition: all 0.3s;
-}
-
-.filter-form select:hover,
-.filter-form select:focus,
-.filter-select:hover,
-.filter-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+.content-toolbar button:hover {
+  background-color: #dcdcdc;
 }
 .select-group{
   width: 20%;
+}
+.image-upload {
+  margin-top: 24px;
+}
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+.image-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ddd;
 }
 .submit-button{
   width: max-content;
@@ -503,6 +468,113 @@
   cursor: pointer;
   transition: background-color 0.3s;
 }
-.forum-create-thread{
-  float:right;
+.submit-button:hover {
+  background-color: #0056b3;
+}
+.markdown-preview-container {
+  margin-top: 24px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.preview-box {
+  padding: 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  min-height: 100px;
+  flex: 1;
+  overflow: auto;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+}
+.selected-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 4px 0;
+}
+
+.selected-item {
+  background-color: #e0f3ff;
+  color: #0077cc;
+  border: 1px solid #b3dfff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+.selected-item:hover {
+  background-color: #d0ebff;
+}
+
+/* Thêm cho phần tag badges */
+.tag-badges .mantine-Badge-root {
+  cursor: pointer;
+}
+
+
+/* Container bộ lọc */
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+/* Label trong filter */
+.filter-form label {
+  font-weight: 600;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+/* Select trong filter */
+.filter-form select {
+  min-width: 150px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.filter-form select:hover,
+.filter-form select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0,123,255,0.3);
+}
+
+/* Thanh tìm kiếm */
+.search-bar {
+  margin: 12px 0 20px;
+  text-align: right;
+}
+
+.search-bar input {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-bar input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0,123,255,0.4);
 }

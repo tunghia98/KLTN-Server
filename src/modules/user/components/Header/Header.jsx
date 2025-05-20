@@ -52,7 +52,7 @@ function Header() {
           <li>
             <div className="header-location">
               <FontAwesomeIcon icon={faLocationDot} className="icon-location" />
-              <span><a>Vị trí</a></span>
+              <span><Link to="/location-map">Vị trí</Link></span>
             </div>
           </li>
 

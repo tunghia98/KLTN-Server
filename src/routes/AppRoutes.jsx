@@ -3,7 +3,6 @@ import Homepage from "../modules/user/pages/Homepage/Homepage";
 import ProductPage from "../modules/user/pages/ProductPage/ProductPage";
 import ProductDetailPage from "../modules/user/pages/ProductDetailPage/ProductDetailPage";
 import CartPage from "../modules/user/pages/CartPage/CartPage";
-import Address from "../modules/user/pages/AddressPage/AddressPage";
 import CheckoutPage from "../modules/user/pages/CheckoutPage/CheckoutPage";
 import SellerInfoPage from "../modules/user/pages/SellerInfoPage/SellerInfoPage.jsx";
 import TermsOfServicePage from "../modules/user/pages/TermsOfServicePage.jsx";
@@ -17,14 +16,12 @@ import UserInfoPage from "../modules/user/pages/UserInfoPage/UserInfoPage.jsx";
 import { useUser } from "../contexts/UserContext";
 import PrivateRoute from "../components/PrivateRoute.jsx";
 import SellerOnboarding from "../modules/user/components/Onboarding/SellerOnboarding.jsx";
-import Login from "../modules/user/components/AuthForm/Login.jsx";
 import ManagementLayout from "../layouts/ManagementLayout.jsx"; // Đảm bảo dùng chung layout
 import OrdersManagementPage from "../modules/seller/pages/Orders/OrdersManagementPage.jsx";
 import ProductsManagementPage from "../modules/seller/pages/Products/ProductsManagementPage.jsx";
 import OrderDetailPage from "../modules/seller/pages/Orders/OrderManagementDetailPage.jsx";
 import EditProductPage from "../modules/seller/pages/Products/EditProductPage.jsx";
 import RevenueManagementPage from "../modules/seller/pages/Revenue/RevenueManagementPage.jsx";
-import { useState } from "react";
 import PromotionsManagementPage from "../modules/seller/pages/Promotion/PromotionsManagementPage.jsx";
 import ShippingManagementPage from "../modules/seller/pages/Shipping/ShippingManagementPage.jsx";
 import ProductPromoted from "../modules/seller/pages/Promotion/ProductPromoted.jsx";
@@ -39,9 +36,9 @@ import ViolationManagement from "../modules/admin/pages/ViolationManagement/Viol
 import SupportRequestManagement from "../modules/admin/pages/SupportRequestManagement/SupportRequestManagement.jsx";
 import SupportChannelManagement from "../modules/admin/pages/SupportChannelManagement/SupportChannelManagement.jsx";
 import WebsiteCustomization from "../modules/admin/pages/WebsiteCustomization/WebsiteCustomization.jsx";
-import CreateThreadPage from "../modules/user/pages/Forum/CreateThreadPage.jsx";
-import CreateNewThread from "../modules/user/components/Forum/CreateNewThread.jsx";
+import CreateNewThread from "../modules/user/components/CreateNewThread/CreateNewThread.jsx";
 import MainLayout from "../layouts/MainLayout.jsx";
+import MapPage from "../modules/user/pages/MapPage/MapPage.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
   return (
@@ -64,6 +61,7 @@ const AppRoutes = () => {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/forum/create" element={<CreateNewThread />} />
           <Route path="products" element={<ProductPage />} />
+          <Route path="/location-map" element={<MapPage/>} />
       {/* Seller and Admin Routes using ManagementLayout */}
       <Route
         path="/seller/dashboard"

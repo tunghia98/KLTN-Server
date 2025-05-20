@@ -7,11 +7,11 @@ function LatestThreads({ threads }) {
   const sortedThreads = [...threads].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
-
+  const lastestThreads = sortedThreads.slice(0, 5); // Lấy 5 chủ đề mới nhất
   return (
     <div className="latest-threads">
       <h2>Chủ Đề Mới Nhất</h2>
-      <ThreadList threads={sortedThreads} />
+      <ThreadList threads={lastestThreads} />
     </div>
   );
 }

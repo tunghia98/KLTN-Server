@@ -12,7 +12,7 @@ function ForumPage() {
   const [crops, setCrops] = useState([]);
   const [regions, setRegions] = useState([]);
   const handleOnClick = () => {
-    navigate("/forum/create", { state: { threads, crops, regions } }) // Chuyển hướng đến trang tạo bài viết
+    navigate("/forum/create") // Chuyển hướng đến trang tạo bài viết
   };
   useEffect(() => {
     const fetchAllThreads = async () => {
@@ -89,7 +89,7 @@ function ForumPage() {
 
         {/* Main Content */}
         <div className="forum-content">
-        <button className="forum-create-thread" onClick={handleOnClick}>Tạo bài viết</button>
+        <button className="forum-create-thread" onClick={handleOnClick} type="submit">Tạo bài viết</button>
           <AllThread allthreads={threads} categories={categories} crops={crops} regions={regions}/>
           
         </div>

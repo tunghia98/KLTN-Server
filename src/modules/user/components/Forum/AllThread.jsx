@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ThreadList from "./ThreadList";
 import Pagination from "../../../../components/Pagination/Pagination";
+import ForumSearchFilter from "./ForumSearchFilter";
 import "./Forum.css";
 
 const AllThreads = ({ allthreads, categories, crops, regions }) => {
@@ -9,7 +10,9 @@ const AllThreads = ({ allthreads, categories, crops, regions }) => {
   const [region, setRegion] = useState(null);     // regionId (number)
   const [threads, setThreads] = useState(allthreads || []);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const itemsPerPage = 8;
 
   useEffect(() => {
     setThreads(allthreads || []);
@@ -17,35 +20,39 @@ const AllThreads = ({ allthreads, categories, crops, regions }) => {
 
   useEffect(() => {
     filterThreads();
-  }, [category, crop, region, allthreads]);
+  }, [category, crop, region, searchKeyword, allthreads]);
 
   const filterThreads = () => {
+    const keyword = searchKeyword.toLowerCase().trim();
+
     const filtered = allthreads.filter((thread) => {
-      return (
-        (category ? thread.categoryId === Number(category) : true) &&
-        (crop ? thread.cropId === Number(crop) : true) &&
-        (region ? thread.regionId === Number(region) : true)
-      );
+      const matchesCategory = category ? thread.categoryId === Number(category) : true;
+      const matchesCrop = crop ? thread.cropId === Number(crop) : true;
+      const matchesRegion = region ? thread.regionId === Number(region) : true;
+      const matchesKeyword = keyword
+        ? (thread.title?.toLowerCase().includes(keyword))
+        : true;
+
+      return matchesCategory && matchesCrop && matchesRegion && matchesKeyword;
     });
+
     setThreads(filtered);
+    setCurrentPage(1); // Reset page when filters change
   };
 
   const handleCategoryChange = (e) => {
     const value = e.target.value ? Number(e.target.value) : null;
     setCategory(value);
-    setCurrentPage(1);
   };
 
   const handleCropChange = (e) => {
     const value = e.target.value ? Number(e.target.value) : null;
     setCrop(value);
-    setCurrentPage(1);
   };
 
   const handleRegionChange = (e) => {
     const value = e.target.value ? Number(e.target.value) : null;
     setRegion(value);
-    setCurrentPage(1);
   };
 
   const indexOfLastThread = currentPage * itemsPerPage;
@@ -59,31 +66,20 @@ const AllThreads = ({ allthreads, categories, crops, regions }) => {
   return (
     <div className="forum-container">
       <h2 className="forum-title">Tất Cả Chủ Đề</h2>
-      <div className="filter-form">
-        <label>Phân loại: </label>
-        <select onChange={handleCategoryChange} value={category || ""}>
-          <option value="">Tất cả</option>
-          {categories?.map((item) => (
-            <option key={item.id} value={item.id}>{item.name}</option>
-          ))}
-        </select>
 
-        <label>Giống cây trồng: </label>
-        <select onChange={handleCropChange} value={crop || ""}>
-          <option value="">Tất cả</option>
-          {crops?.map((item) => (
-            <option key={item.id} value={item.id}>{item.name}</option>
-          ))}
-        </select>
-
-        <label>Khu vực: </label>
-        <select onChange={handleRegionChange} value={region || ""}>
-          <option value="">Tất cả</option>
-          {regions?.map((item) => (
-            <option key={item.id} value={item.id}>{item.name}</option>
-          ))}
-        </select>
-      </div>
+      <ForumSearchFilter
+        categories={categories}
+        crops={crops}
+        regions={regions}
+        category={category}
+        crop={crop}
+        region={region}
+        searchKeyword={searchKeyword}
+        handleCategoryChange={handleCategoryChange}
+        handleCropChange={handleCropChange}
+        handleRegionChange={handleRegionChange}
+        handleSearchChange={setSearchKeyword}
+      />
 
       <ThreadList threads={currentThreads} />
 

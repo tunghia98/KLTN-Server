@@ -59,7 +59,7 @@ export default function TransactionManagement() {
     <div className="transaction-container">
       <h2>Quản lý lịch sử giao dịch</h2>
 
-      <div className="filters">
+      <div className="trans-filters">
         <input
           type="text"
           placeholder="Tìm kiếm theo mã, người dùng, sản phẩm..."

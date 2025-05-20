@@ -15,7 +15,7 @@
     padding-left: 12px;
 }
 
-.filters {
+.products-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -35,14 +35,14 @@
     }
 
     .filter-item select,
-    .search-bar input {
+    .products-search-bar input {
         padding: 8px 12px;
         border-radius: 8px;
         border: 1px solid #ccc;
         min-width: 200px;
     }
 
-.search-bar {
+.products-search-bar {
     margin-top: 8px;
 }
 
@@ -71,7 +71,7 @@
     }
 
     .filter-item select,
-    .search-bar input {
+    .products-search-bar input {
         width: 100%;
     }
 }

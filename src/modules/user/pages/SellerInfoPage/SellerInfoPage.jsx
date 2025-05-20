@@ -156,7 +156,7 @@ const SellerPage = () => {
         </div>
       </div>
 
-      <div className="filters">
+      <div className="seller-filters">
         <div className="filter-item">
                   <div className="filter-item">
                       <label htmlFor="category">Lọc theo danh mục: </label>
