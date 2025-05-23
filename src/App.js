@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes.jsx";
 import { BrowserRouter, Router } from "react-router-dom";
@@ -7,6 +7,7 @@ import Footer from "./modules/user/components/Footer/Footer.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
 import { AddressProvider } from "./contexts/AddressContext.jsx";
 import { UserProvider } from "./contexts/UserContext.jsx";
+import { SearchProvider } from "./contexts/SearchContext.jsx";
 import Login from "./modules/user/components/AuthForm/Login";
 import MainLayout from "./layouts/MainLayout.jsx";
 
@@ -16,7 +17,9 @@ function App() {
       <AddressProvider>
         <CartProvider>
           <BrowserRouter>
-            <AppWithRouter />
+                      <SearchProvider> {/* 👉 Bọc ở đây */}
+                          <AppWithRouter />
+                      </SearchProvider>
           </BrowserRouter>
         </CartProvider>
       </AddressProvider>

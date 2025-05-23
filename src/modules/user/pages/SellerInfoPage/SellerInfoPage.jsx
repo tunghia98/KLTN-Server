@@ -42,27 +42,59 @@ const SellerPage = () => {
 
     const fetchSellerProducts = async () => {
         try {
+            setLoading(true);
+
+            // 1. Fetch products, categories, brands song song
             const [productRes, categoryRes, brandRes] = await Promise.all([
                 fetch(`https://kltn.azurewebsites.net/api/Products/by-shop/${sellerId}`),
                 fetch(`https://kltn.azurewebsites.net/api/Categories/by-shop/${sellerId}`),
-                fetch(`https://kltn.azurewebsites.net/api/Categories/brands/by-shop/${sellerId}`), // API mới
+                fetch(`https://kltn.azurewebsites.net/api/Categories/brands/by-shop/${sellerId}`),
             ]);
 
-            if (!productRes.ok || !categoryRes.ok || !brandRes.ok)
+            if (!productRes.ok || !categoryRes.ok || !brandRes.ok) {
                 throw new Error("Không thể tải dữ liệu");
+            }
 
-            const productData = await productRes.json();
-            const categoryData = await categoryRes.json();
-            const brandData = await brandRes.json();
+            const products = await productRes.json();
+            const categories = await categoryRes.json();
+            const brands = await brandRes.json();
 
-            setSellerProducts(productData);
-            setFilteredProducts(productData);
-            setCategories(categoryData.map(c => c.name));
-            setBrands(brandData); // Lấy danh sách brand từ API
+            // 2. Lấy danh sách productIds để fetch ảnh
+            const productIds = products.map(p => p.id);
+
+            // 3. Fetch hình ảnh cho các productIds (POST)
+            const imagesRes = await fetch('https://kltn.azurewebsites.net/api/product-images/list-by-products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Nếu cần token, thêm header Authorization ở đây
+                },
+                body: JSON.stringify(productIds),
+            });
+
+            if (!imagesRes.ok) throw new Error("Lỗi tải hình ảnh sản phẩm");
+
+            const imagesData = await imagesRes.json();
+
+            // 4. Ghép ảnh vào từng sản phẩm
+            const productsWithImages = products.map(product => ({
+                ...product,
+                imageUrls: imagesData[product.id]?.map(img => img.imageUrl) || []
+            }));
+
+            // 5. Set state
+            setSellerProducts(productsWithImages);
+            setFilteredProducts(productsWithImages);
+            setCategories(categories.map(c => c.name));
+            setBrands(brands.map(b => b.name)); // Giả sử API trả object brand, map lấy name
         } catch (err) {
             setError(err.message);
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
+
   // Fetch Brands and Categories from Products
   //const fetchBrandsAndCategories = () => {
   //  const uniqueBrands = [...new Set(sellerProducts.map((product) => product.brand))];

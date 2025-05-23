@@ -17,34 +17,54 @@ function ProductPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productRes, categoryRes, brandRes] = await Promise.all([
-          fetch("https://kltn.azurewebsites.net/api/Products"),
-          fetch("https://kltn.azurewebsites.net/api/Categories/used"),
-          fetch("https://kltn.azurewebsites.net/api/Categories/brands"),
-        ]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [productRes, categoryRes, brandRes] = await Promise.all([
+                    fetch("https://kltn.azurewebsites.net/api/Products"),
+                    fetch("https://kltn.azurewebsites.net/api/Categories/used"),
+                    fetch("https://kltn.azurewebsites.net/api/Categories/brands"),
+                ]);
 
-        const productData = await productRes.json();
-        const categoryData = await categoryRes.json();
-        const brandData = await brandRes.json();
+                const productData = await productRes.json();
+                const categoryData = await categoryRes.json();
+                const brandData = await brandRes.json();
 
-        setProducts(productData);
-        setFilteredProducts(productData);
-        setCategories(categoryData);
-        setBrands(brandData); // Dùng brand từ API
+                // Lấy danh sách productIds
+                const productIds = productData.map((p) => p.id);
 
-        // Lấy danh sách brand duy nhất
-        const uniqueBrands = [...new Set(productData.map((p) => p.brand))];
-        setBrands(uniqueBrands);
-      } catch (err) {
-        console.error("Lỗi khi gọi API:", err);
-      }
-    };
+                // Gọi API lấy hình ảnh theo productIds
+                const imagesRes = await fetch("https://kltn.azurewebsites.net/api/product-images/list-by-products", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(productIds),
+                });
 
-    fetchData();
-  }, []);
+                const imagesData = await imagesRes.json();
+
+                // Gộp ảnh vào từng sản phẩm
+                const productsWithImages = productData.map((product) => ({
+                    ...product,
+                    imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
+                }));
+
+                setProducts(productsWithImages);
+                setFilteredProducts(productsWithImages.reverse());
+                setCategories(categoryData);
+
+                // Có thể dùng brand từ brandData hoặc trích từ products như dưới
+                const uniqueBrands = [...new Set(productsWithImages.map((p) => p.brand))];
+                setBrands(uniqueBrands);
+            } catch (err) {
+                console.error("Lỗi khi gọi API:", err);
+            }
+        };
+
+        fetchData();
+    }, []);
+
 
   useEffect(() => {
     let filtered = [...products];

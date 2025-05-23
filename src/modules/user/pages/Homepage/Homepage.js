@@ -45,7 +45,7 @@ const Homepage = () => {
                     imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [], // trả về [] nếu không có
                 }));
 
-                setProducts(productsWithImages);
+                setProducts(productsWithImages.reverse());
             } catch (err) {
                 console.error("Lỗi khi lấy sản phẩm:", err.message);
             }
