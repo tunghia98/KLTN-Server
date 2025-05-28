@@ -1,77 +1,103 @@
-#root {
-    box-sizing: border-box;
-    width: 100%;
+/* --- Base --- */
+.header-logo {
+  height: 72px;
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
 }
 
-.header-logo{
-    height: 72px;         /* Chiều cao phù hợp cho header */
-    width: auto;          /* Tự co theo tỉ lệ */
-    object-fit: contain;  /* Tránh méo ảnh */
-    display: block;
-    cursor: pointer;  
+.main-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f6f6e9;
+  padding: 10px 20px;
+  flex-wrap: wrap;
 }
-nav {
-    background-color: #f6f6e9;
-    padding: 10px;
+.main-nav div {
+  display: flex;
+  align-items: center;
+  gap: 40px;
 }
-nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
+.header-location,.header-login,.header-cart,.header-logout{
+  display: flex;
+  align-items: center;
+  gap: 10px !important;
 }
-
-nav ul li {
-    display:grid;
-    grid-template-columns: repeat(5, max-content);
-    gap:10px;
+.nav-left {
+  flex-shrink: 0;
 }
 
-nav ul li a {
-    cursor: pointer;
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  flex-wrap: wrap;
+}
+.nav-right a{
     text-decoration: none;
-    color:#272727;
-    padding: 10px 15px;
-    display: block;
+}
+.header-search {
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 30px;
+  border: 1px solid #272727;
+  height: 50px;
+  width: 600px;
 }
 
-nav ul li .header-search {
-    margin-left:50px;
-    width: 600px;
-    height: 50px;
-    display: flex;
-    background-color: #ffffff;
-    border-radius: 30px;
-    border:#272727 1px solid;
+.search-text {
+  font-size: 18px;
+  border: none;
+  outline: none;
+  padding-left: 15px;
+  width: 100%;
+  border-radius: 30px 0 0 30px;
 }
-.header-search .search-text{
-    font-size:18px;
-    outline: none;
-    border:none;
-    width : inherit;
-    border-radius: inherit;
-    padding-left:15px;
+
+.search-btn {
+  background-color: #ffffff;
+  border: none;
+  width: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
-.header-search .search-btn{
-    background-color: #ffffff;
-    cursor: pointer;
-    border:none;
-    outline: none;
-    width: 50px;
-    border-radius: 50%;
-    height: auto;
+
+.icon-location,
+.icon-cart,
+.icon-login {
+  width: 25px;
+  height: 25px;
+  color: #272727;
 }
-header div {
-    display:flex;
-    align-items: center;
-    flex-direction: row;
+
+.cart-badge {
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -10px;
+    right: -10px;
 }
-.icon-location, .icon-cart, .icon-login{
-    width: 25px;
-    height: 25px;
-    color:#272727;
+
+.header-cart {
+  position: relative;
 }
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  margin-left: auto;
+}
+
+/* --- Sub Header --- */
 .sub-header{
     display: flex;
     justify-content: space-between;
@@ -85,7 +111,7 @@ header div {
     padding: 0;
     margin: 0;
     margin-left:200px;
-    
+    align-items:center;
 }
 .sub-header ul li{
     /* border-right: #333 1px solid; */
@@ -124,20 +150,42 @@ header div {
 .sub-header ul li a:hover::after{
     width: 100%;
 }
-.header-cart {
-    position: relative;
-}
-.cart-badge {
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 50%;
-  position: absolute;
-  top: -5px;
-  right: -5px;
-}
 
-.dropdown {
-    position: relative; /* để .dropdown-menu định vị theo */
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .header-search {
+    width: 70%;
+  }
+
+  .nav-right {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-right.open {
+    display: flex;
+  }
+
+  .sub-header ul {
+    flex-direction: column;
+    background-color: #7d9b76;
+    padding: 10px 20px;
+  }
+
+  .sub-header {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .sub-header.open {
+    display: flex;
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
 }

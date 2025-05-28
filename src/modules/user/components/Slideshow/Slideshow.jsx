@@ -1,48 +1,74 @@
-import "./Slideshow.css";
 import React, { useState, useEffect } from "react";
-
+import "./Slideshow.css";
+import slide1 from "../../../../assets/slideshow/slide1.png";
 function Slideshow() {
-    const [index, setIndex] = useState(1);
+  const [index, setIndex] = useState(1);
+  const totalSlides = 5;
+  const slides = [slide1, slide1, slide1, slide1, slide1]; // Giả sử có 5 ảnh giống nhau
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIndex((prevIndex) => (prevIndex >= 5 ? 1 : prevIndex + 1));
-        }, 2000); // Chuyển slide mỗi 2 giây
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex >= totalSlides ? 1 : prevIndex + 1));
+    }, 10000); // tăng lên 4000ms = 4 giây
 
-        return () => clearInterval(interval); // Dọn dẹp interval khi unmount
-    }, []);
+    return () => clearInterval(interval);
+  }, []);
 
-    return (
-        <div className="slideshow">
-            <div className="slider">
-            {/* Radio Buttons */}
-            <input type="radio" name="radio-btn" id="radio1" checked={index === 1} readOnly />
-            <input type="radio" name="radio-btn" id="radio2" checked={index === 2} readOnly />
-            <input type="radio" name="radio-btn" id="radio3" checked={index === 3} readOnly />
-            <input type="radio" name="radio-btn" id="radio4" checked={index === 4} readOnly />
-            <input type="radio" name="radio-btn" id="radio5" checked={index === 5} readOnly />
+  const prevSlide = () => {
+    setIndex((prev) => (prev === 1 ? totalSlides : prev - 1));
+  };
 
-            {/* Khu vực chứa slides */}
-            <div className="slides" style={{ marginLeft: `${-(index - 1) * 100}%`, transition: "0.5s ease-in-out" }}>
-                <div className="slide"><img src="/photo1.jpg" alt="Slide 1" /></div>
-                <div className="slide"><img src="/logo192.png" alt="Slide 2" /></div>
-                <div className="slide"><img src="/photo1.jpg" alt="Slide 3" /></div>
-                <div className="slide"><img src="/photo1.jpg" alt="Slide 4" /></div>
-                <div className="slide"><img src="/photo1.jpg" alt="Slide 5" /></div>
+  const nextSlide = () => {
+    setIndex((prev) => (prev === totalSlides ? 1 : prev + 1));
+  };
+
+  return (
+    <div className="slideshow">
+      <div className="slider">
+        {/* Radio Buttons */}
+        {[1, 2, 3, 4, 5].map((num) => (
+          <input
+            key={num}
+            type="radio"
+            name="radio-btn"
+            id={`radio${num}`}
+            checked={index === num}
+            readOnly
+          />
+        ))}
+
+        {/* Slides */}
+        <div className="slides">
+            {slides.map((src, idx) => (
+                <div className="slide" key={idx}>
+                <img src={src} alt={`Slide ${idx + 1}`} />
+                </div>
+            ))}
             </div>
 
-            {/* Navigation Buttons */}
-            <div className="navigation-manual">
-                <label htmlFor="radio1" className="manual-btn" onClick={() => setIndex(1)}></label>
-                <label htmlFor="radio2" className="manual-btn" onClick={() => setIndex(2)}></label>
-                <label htmlFor="radio3" className="manual-btn" onClick={() => setIndex(3)}></label>
-                <label htmlFor="radio4" className="manual-btn" onClick={() => setIndex(4)}></label>
-                <label htmlFor="radio5" className="manual-btn" onClick={() => setIndex(5)}></label>
-            </div>
+        {/* Navigation buttons */}
+        <button className="custom-prev-arrow" onClick={prevSlide}>
+          ‹
+        </button>
+        <button className="custom-next-arrow" onClick={nextSlide}>
+          ›
+        </button>
+
+        {/* Manual navigation dots replaced by numbers */}
+        <div className="navigation-manual">
+          {[1, 2, 3, 4, 5].map((btnNum) => (
+            <label
+              key={btnNum}
+              htmlFor={`radio${btnNum}`}
+              className={`manual-btn ${index === btnNum ? "active" : ""}`}
+              onClick={() => setIndex(btnNum)}
+            >
+              {btnNum}
+            </label>
+          ))}
         </div>
-        </div>
-        
-    );
+      </div>
+    </div>
+  );
 }
-
 export default Slideshow;

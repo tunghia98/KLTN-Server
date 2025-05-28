@@ -1,113 +1,140 @@
 import React, { useState } from "react";
-import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, Link } from "react-router-dom";
-import { faCircleUser, faMagnifyingGlass, faLocationDot, faShoppingCart, faArrowRightFromBracket} from "@fortawesome/free-solid-svg-icons";
-import Login from "../AuthForm/Login"; 
-import Register from "../AuthForm/Register"; // Import Register
+import {
+  faCircleUser,
+  faMagnifyingGlass,
+  faLocationDot,
+  faShoppingCart,
+  faArrowRightFromBracket,
+  faBars
+} from "@fortawesome/free-solid-svg-icons";
+import Login from "../AuthForm/Login";
+import Register from "../AuthForm/Register";
 import logo from "../../../../assets/logo-2-gra.png";
 import "./Header.css";
 import { useUser } from "../../../../contexts/UserContext.jsx";
 import { useCart } from "../../../../contexts/CartContext";
-import toSlug from "../../../../utils/toSlug.js"; // Import hàm toSlug
-import Dropdown from "./Dropdown.jsx";
+
 function Header() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
-  const [loadingCategories, setLoadingCategories] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const { user, setUser } = useUser();
-    const { cartItems } = useCart();
-    const totalProducts = cartItems.length;
-  // Hàm chuyển qua trang đăng ký từ đăng nhập
+  const { cartItems } = useCart();
+  const totalProducts = cartItems.length;
+
   const handleSwitchToRegister = () => {
-    setLoginOpen(false);   // Đóng Login Popup
-    setRegisterOpen(true);  // Mở Register Popup
+    setLoginOpen(false);
+    setRegisterOpen(true);
   };
 
-  // Hàm chuyển qua trang đăng nhập từ đăng ký
   const handleSwitchToLogin = () => {
-    setRegisterOpen(false);  // Đóng Register Popup
-    setLoginOpen(true);      // Mở Login Popup
+    setRegisterOpen(false);
+    setLoginOpen(true);
   };
+
   const handleLogout = () => {
-    localStorage.removeItem("accessToken"); 
-    localStorage.removeItem("user"); 
-    setUser(null); 
-  }
-  
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
   return (
-    <header className="header">     
-      <nav>
-        <ul>
-          <Link to="/"><img className="header-logo" src={logo} alt="Logo" /></Link>
-          <li>
-            <div className="header-search">
-              <input type="text" className="search-text" />
-              <span type="submit" className="search-btn">
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-              </span>
-            </div>
-          </li>
-          <li>
-            <div className="header-location">
-              <FontAwesomeIcon icon={faLocationDot} className="icon-location" />
-              <span><Link to="/location-map">Vị trí</Link></span>
-            </div>
-          </li>
+    <header className="header">
+      {/* Main Nav */}
+      <nav className="main-nav">
+        <div className="nav-left">
+          <Link to="/">
+            <img className="header-logo" src={logo} alt="Logo" />
+          </Link>
+        </div>
 
-          <li>
-            <div className="header-login">
-              <FontAwesomeIcon icon={faCircleUser} className="icon-login" />
-              {user ? (
-                <span><Link to="/profile">Thông tin</Link></span>
-              ) : (
-                <span><Link to="/login" onClick={() => setLoginOpen(true)}>Đăng nhập</Link></span>
-              )}
+        <button
+          className="mobile-menu-toggle"
+          onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+
+        <div className={`nav-right ${isMobileMenuOpen ? "open" : ""}`}>
+          <div className="header-search">
+            <input type="text" className="search-text" />
+            <span className="search-btn">
+              <FontAwesomeIcon icon={faMagnifyingGlass} />
+            </span>
+          </div>
+
+          <div className="header-location">
+            <FontAwesomeIcon icon={faLocationDot} className="icon-location" />
+            <Link to="/location-map">Vị trí</Link>
+          </div>
+
+          <div className="header-login">
+            <FontAwesomeIcon icon={faCircleUser} className="icon-login" />
+            {user ? (
+              <Link to="/profile">Thông tin</Link>
+            ) : (
+              <Link to="/login" onClick={() => setLoginOpen(true)}>
+                Đăng nhập
+              </Link>
+            )}
+          </div>
+
+          <div className="header-cart">
+            <FontAwesomeIcon icon={faShoppingCart} className="icon-cart" />
+            <Link to="/cart">Giỏ hàng</Link>
+            {totalProducts > 0 && (
+              <span className="cart-badge">{totalProducts}</span>
+            )}
+          </div>
+
+          {user && (
+            <div className="header-logout">
+              <FontAwesomeIcon
+                icon={faArrowRightFromBracket}
+                className="icon-cart"
+              />
+              <Link to="/" onClick={handleLogout}>
+                Đăng xuất
+              </Link>
             </div>
-          </li>
-
-                  <li>
-                      <div className="header-cart">
-                          <FontAwesomeIcon icon={faShoppingCart} className="icon-cart" />
-                          <span><Link to="/cart">Giỏ hàng</Link></span>
-                          {totalProducts > 0 && <span className="cart-badge">{totalProducts}</span>}
-                      </div>
-                  </li>
-          {user ? (
-                          <li>
-                          <div className="header-logout">
-                            <FontAwesomeIcon icon={faArrowRightFromBracket} className="icon-cart" />
-                            <span><Link to="/" onClick={handleLogout}>Đăng xuất</Link></span>
-                          </div>
-                        </li>
-              ) : null}
-
-        </ul>
+          )}
+        </div>
       </nav>
 
-      <div className="sub-header">
+      {/* Submenu */}
+      <div className={`sub-header ${isMobileMenuOpen ? "open" : ""}`}>
         <ul>
-          <li><Link to="/products">Tất cả sản phẩm</Link></li>
-          <li><a>Bán chạy</a></li>
-          <li><Link to="/forum">Diễn đàn</Link></li>
-          <li><a>Chính sách</a></li>
-          <li><a>Liên hệ</a></li>
+          <li>
+            <Link to="/products">Tất cả sản phẩm</Link>
+          </li>
+          <li>
+            <a>Bán chạy</a>
+          </li>
+          <li>
+            <Link to="/forum">Diễn đàn</Link>
+          </li>
+          <li>
+            <a>Chính sách</a>
+          </li>
+          <li>
+            <a>Liên hệ</a>
+          </li>
         </ul>
       </div>
 
-      {/* Mở Login Popup */}
+      {/* Login/Register popup */}
       <Login
         isOpen={isLoginOpen}
         onClose={() => setLoginOpen(false)}
-        onSwitchToRegister={handleSwitchToRegister} // Truyền hàm chuyển qua đăng ký
+        onSwitchToRegister={handleSwitchToRegister}
       />
-
-      {/* Mở Register Popup */}
       <Register
         isOpen={isRegisterOpen}
         onClose={() => setRegisterOpen(false)}
-        onSwitchToLogin={handleSwitchToLogin} // Truyền hàm chuyển qua đăng nhập
+        onSwitchToLogin={handleSwitchToLogin}
       />
     </header>
   );

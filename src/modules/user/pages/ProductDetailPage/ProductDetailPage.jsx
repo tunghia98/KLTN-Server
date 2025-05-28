@@ -11,7 +11,7 @@ function ProductDetailPage() {
   const [error, setError] = useState(null);
   const [productId, ...productNameArray] = productSlug.split("-");
   const productNameSlug = productNameArray.join("-");
-
+  const [sellerAddress, setSellerAddress] = useState(null);
   const fetchProduct = async (productId, productSlug) => {
     try {
         const res = await fetch(`https://kltn.azurewebsites.net/api/Products/${productId}`);
@@ -87,7 +87,25 @@ function ProductDetailPage() {
       setError(err.message);
     }
   };
+  const fetchSellerAddress = async (sellerId) => {
+    try {
+      const res = await fetch(`https://kltn.azurewebsites.net/api/addresses/Shop/${sellerId}`);
+      if (!res.ok) throw new Error("Không lấy được địa chỉ");
+      const data = await res.json();
+      setSellerAddress(data[0]); // ✅ lấy địa chỉ đầu tiên
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi khi tải địa chỉ");
+    }
+  };
 
+    useEffect(() => {
+  if (seller?.id) {
+    fetchSellerAddress(seller.id);
+  }
+}, [seller]);
+useEffect(() => {
+}, [sellerAddress]);
   useEffect(() => {
     const loadProductAndSeller = async () => {
       if (!productSlug) return;
@@ -111,7 +129,7 @@ function ProductDetailPage() {
 
   return (
     <div>
-      <ProductDetail product={product} seller={seller} />
+      <ProductDetail product={product} seller={seller} sellerAddress={sellerAddress} />
     </div>
   );
 }

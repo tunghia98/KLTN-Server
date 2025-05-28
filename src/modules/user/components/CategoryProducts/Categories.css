@@ -5,7 +5,7 @@
 .category-label-tag {
   position: relative;
   display: inline-block;
-  background-color: #1565c0;
+  background-color: #28a745;
   color: white;
   padding: 12px 24px;
   font-size: 20px;
@@ -24,7 +24,7 @@
   height: 0;
   border-top: 24px solid transparent;
   border-bottom: 24px solid transparent;
-  border-left: 20px solid #1565c0; /* màu giống background */
+  border-left: 20px solid #28a745; /* màu giống background */
 }
 
 

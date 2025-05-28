@@ -2,7 +2,7 @@ import "./SimilarProduct.css";
 function SimilarProduct(){
     return(
         <div className="similar-product">
-                    <label className="product-detail-title">Sản phẩm thường được mua kèm</label>
+                    <label className="product-detail-title">Sản phẩm tương tự</label>
                     <div className="similar-product-list">
                         {[...Array(9)].map((_, i) => (
                             <div key={i} className="similar-product-list">
@@ -11,7 +11,7 @@ function SimilarProduct(){
                                     <p>Tên sản phẩm tương tự</p>
                                     <div className="similar-product-price-trans">
                                         <span>Giá tiền</span>
-                                        <button>+</button>
+                                        <button className="">+</button>
                                     </div>
 
                                 </div>

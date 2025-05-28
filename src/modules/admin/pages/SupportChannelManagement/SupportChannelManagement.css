@@ -2,13 +2,13 @@
     padding: 20px;
   }
   
-  .chatbot-config textarea {
+.chatbot-config textarea {
     width: 100%;
     height: 100px;
     margin: 10px 0;
   }
   
-  button {
+.chatbot-config button {
     padding: 8px 15px;
     background-color: #007bff;
     color: white;
@@ -16,7 +16,7 @@
     cursor: pointer;
   }
   
-  button:hover {
+.chatbot-config button:hover {
     background-color: #0056b3;
   }
   

@@ -50,3 +50,31 @@
     padding-top: 20px;
     margin-top:20px;
 }
+.best-seller-item {
+  position: relative;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.top-number {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  color: #000000;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid #457d58;
+  background-color: #f2ae1c;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.best-seller-item:hover .top-number {
+  background-color: #7b3911;
+  color: #ffffff;
+  transform: translateY(-15px) scale(1.1);
+  box-shadow: 0 0 10px rgba(242, 174, 28, 0.6);
+}
+

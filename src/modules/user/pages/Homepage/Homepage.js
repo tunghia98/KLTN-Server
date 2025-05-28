@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ProductBestSellers from "../../components/ProductBestSeller/ProductBestSeller.jsx";
 import Slideshow from "../../components/Slideshow/Slideshow.jsx";
-import { sellers, bestsellers } from "../../../../data/data.js";
 import CategoryBar from "../../components/Bar/CategoryBar.jsx";
 import CategoryProducts from "../../components/CategoryProducts/CategoryProducts";
 import SellerBar from "../../components/Bar/SellerBar.jsx";
@@ -11,112 +10,130 @@ import "./Homepage.css";
 import toSlug from "../../../../utils/toSlug.js";
 
 const Homepage = () => {
-    const [categories, setCategories] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState({ id: 0, name: "Tất cả danh mục" });
-    const [loadingCategories, setLoadingCategories] = useState(true);
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [currentPage, setCurrentPage] = useState(0);
-    // Fetch tất cả sản phẩm
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const res = await fetch("https://kltn.azurewebsites.net/api/products");
-                if (!res.ok) throw new Error("Lỗi tải sản phẩm");
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState({
+    id: 0,
+    name: "Tất cả danh mục",
+  });
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [bestsellers, setBestsellers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  // Fetch tất cả sản phẩm
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("https://kltn.azurewebsites.net/api/products");
+        if (!res.ok) throw new Error("Lỗi tải sản phẩm");
 
-                const products = await res.json();
-                const productIds = products.map((p) => p.id);
+        const products = await res.json();
 
-                // Lấy ảnh theo danh sách sản phẩm
-                const imagesRes = await fetch("https://kltn.azurewebsites.net/api/product-images/list-by-products", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(productIds),
-                });
+        // Lấy top 10 sản phẩm bán chạy nhất (giả sử theo soldQuantity)
+        const topSellingProducts = [...products]
+          .sort((a, b) => b.quantity - a.quantity)
+          .slice(0, 10);
+        setBestsellers(topSellingProducts);
+        console.log("Top selling products:", topSellingProducts);
+        const productIds = topSellingProducts.map((p) => p.id);
 
-                const imagesData = await imagesRes.json();
+        // Lấy ảnh theo danh sách sản phẩm
+        const imagesRes = await fetch(
+          "https://kltn.azurewebsites.net/api/product-images/list-by-products",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(productIds),
+          }
+        );
 
-                // Gộp ảnh vào từng sản phẩm
-                const productsWithImages = products.map((product) => ({
-                    ...product,
-                    imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [], // trả về [] nếu không có
-                }));
+        const imagesData = await imagesRes.json();
 
-                setProducts(productsWithImages.reverse());
-            } catch (err) {
-                console.error("Lỗi khi lấy sản phẩm:", err.message);
-            }
-        };
+        // Gộp ảnh vào từng sản phẩm
+        const productsWithImages = topSellingProducts.map((product) => ({
+          ...product,
+          imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
+        }));
 
-        fetchProducts();
-    }, []);
+        setProducts(productsWithImages);
+      } catch (err) {
+        console.error("Lỗi khi lấy sản phẩm:", err.message);
+      }
+    };
 
-    // Fetch danh mục
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                setLoadingCategories(true);
-                const res = await fetch("https://kltn.azurewebsites.net/api/categories/used");
-                if (!res.ok) throw new Error("Lỗi tải danh mục");
-                let data = await res.json();
-                data = data.map((item) => ({
-                    ...item,
-                    slug: item.slug ? item.slug : toSlug(item.name),
-                }));
-                setCategories(data);
-            } catch (error) {
-                console.error("Lỗi tải danh mục:", error);
-            } finally {
-                setLoadingCategories(false);
-            }
-        };
-        fetchCategories();
-    }, []);
+    fetchProducts();
+  }, []);
 
-    // Cuộn lên khi thay đổi path
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [location.pathname]);
+  // Fetch danh mục
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const res = await fetch(
+          "https://kltn.azurewebsites.net/api/categories/used"
+        );
+        if (!res.ok) throw new Error("Lỗi tải danh mục");
+        let data = await res.json();
+        data = data.map((item) => ({
+          ...item,
+          slug: item.slug ? item.slug : toSlug(item.name),
+        }));
+        setCategories(data);
+      } catch (error) {
+        console.error("Lỗi tải danh mục:", error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-    const filteredProducts =
-        selectedCategory?.id === 0
-            ? products
-            : products.filter((product) => product.categoryId === selectedCategory.id);
+  // Cuộn lên khi thay đổi path
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
-    return (
-        <div className="homepage">
-            <Slideshow />
-            <div className="homepage-product">
-                <h1 className="title">TOP SẢN PHẨM BÁN CHẠY</h1>
-                <ProductBestSellers bestsellers={bestsellers} products={products} />
-            </div>
+  const filteredProducts =
+    selectedCategory?.id === 0
+      ? products
+      : products.filter(
+          (product) => product.categoryId === selectedCategory.id
+        );
 
-            <CategoryBar
-                categories={categories}
-                products={products}
-                onCategoryClick={(index, category) => {
-                    setSelectedCategory(category);
-                    setCurrentPage(0); // ✅ reset trang về đầu khi đổi danh mục
-                }}
-                selectedCategory={selectedCategory}
-            />
+  return (
+    <div className="homepage">
+      <Slideshow />
+      <div className="homepage-product">
+        <h1 className="title">TOP SẢN PHẨM BÁN CHẠY</h1>
+        <ProductBestSellers bestsellers={bestsellers} />
+      </div>
 
-            {selectedCategory && (
-                <div className="homepage-category-products">
-                    <CategoryProducts
-                        category={selectedCategory}
-                        products={filteredProducts}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                    />
-                </div>
-            )}
-            <SellerBar />
+      <CategoryBar
+        categories={categories}
+        products={products}
+        onCategoryClick={(index, category) => {
+          setSelectedCategory(category);
+          setCurrentPage(0); // ✅ reset trang về đầu khi đổi danh mục
+        }}
+        selectedCategory={selectedCategory}
+      />
+
+      {selectedCategory && (
+        <div className="homepage-category-products">
+          <CategoryProducts
+            category={selectedCategory}
+            products={filteredProducts}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
-    );
+      )}
+      <SellerBar />
+    </div>
+  );
 };
 
 export default Homepage;

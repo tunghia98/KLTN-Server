@@ -1,31 +1,49 @@
-// components/Rating.jsx
 import { Star } from "lucide-react";
-import "./Rating.css"
+import "./Rating.css";
 
 export default function Rating({ value = 0, count = 0, size = 20, onRate }) {
-    const fullStars = Math.floor(value);
-    const hasHalf = value - fullStars >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+  const fullStars = Math.floor(value);
+  const decimalPart = value - fullStars;
+  const hasHalf = decimalPart >= 0.25 && decimalPart < 0.75;
+  const totalStars = 5;
 
-    const handleClick = (index) => {
-        if (onRate) {
-            onRate(index + 1);
-        }
-    };
+  const handleClick = (index) => {
+    if (onRate) {
+      onRate(index + 1);
+    }
+  };
 
-    return (
-        <div className="flex items-center space-x-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                    key={i}
-                    size={size}
-                    onClick={() => handleClick(i)}
-                    className={
-                        i < value ? "fill-yellow-400 text-yellow-400 cursor-pointer" : "text-gray-300 cursor-pointer"
-                    }
-                />
-            ))}
-            <span className="ml-2 text-sm text-gray-600">({count})</span>
-        </div>
-    );
+  return (
+    <div className="rating-container">
+      {Array.from({ length: totalStars }).map((_, i) => {
+        const isFull = i < fullStars;
+        const isHalf = i === fullStars && hasHalf;
+
+        return (
+          <div
+            key={i}
+            className="star-wrapper"
+            onClick={() => handleClick(i)}
+            style={{ width: size, height: size, cursor: onRate ? "pointer" : "default" }}
+          >
+            {/* Background empty star */}
+            <Star size={size} className="star-icon empty" />
+
+            {/* Filled or half star */}
+            {(isFull || isHalf) && (
+              <div
+                className={`star-overlay ${isHalf ? "half" : "full"}`}
+                style={{ width: isHalf ? size / 2 : size, height: size }}
+              >
+                <Star size={size} className="star-icon filled" />
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <span className="rating-text">
+        ({value.toFixed(1)}/5 - {count} đánh giá)
+      </span>
+    </div>
+  );
 }

@@ -10,7 +10,7 @@ import formatVND from "../../../../utils/format.js";
 import toSlug from "../../../../utils/toSlug.js";
 import "./ProductDetail.css";
 
-function ProductDetail({ product, seller }) {
+function ProductDetail({ product, seller, sellerAddress }) {
   const user = useUser();
   const { name, price, description, images = [], discount, id } = product;
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ function ProductDetail({ product, seller }) {
     const { fetchCartFromBackend } = useCart();
   const productSellCounter = 10;
   const [showDiscount, setShowDiscount] = useState(false);
+  const [userAddress, setUserAddress] = useState("");
     const [regularPrice, setRegularPrice] = useState(null);
   // Cập nhật giá khi có discount
   useEffect(() => {
@@ -79,6 +80,28 @@ function ProductDetail({ product, seller }) {
     alert("❌ Thêm giỏ hàng thất bại.");
 }
   }; 
+  useEffect(() => {
+    console.log("User object:", user);
+    console.log("UserId:", user?.user?.userId);
+    const userId=user?.user?.userId;
+    console.log(userId);
+    if (user?.user?.userId) {
+      fetchUserAddress();
+    }
+  }, [user?.userId]);
+
+  const fetchUserAddress = async () => {
+    try {
+      const res = await fetch(`https://kltn.azurewebsites.net/api/addresses/1`);
+      if (!res.ok) throw new Error("Không lấy được địa chỉ");
+      const data = await res.json();
+      console.log("Fetched address data:", data);
+      setUserAddress(data[0]);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      alert("Lỗi khi tải địa chỉ");
+    }
+  };
 
   const [selectedImage, setSelectedImage] = useState(images[0] || "");
   const [hoverImage, setHoverImage] = useState(null);
@@ -138,18 +161,18 @@ function ProductDetail({ product, seller }) {
           </div>
 
           <div className="product-price-and-discount">
-            <p className="product-final-price">{formatVND(price)}</p>
-            {showDiscount && (
-              <>
-                <p className="product-discount">-{discount}%</p>
-                {regularPrice !== null && (
-                  <p className="product-regular-price">
-                    {formatVND(Number(regularPrice.toFixed(2)))}
-                  </p>
-                )}
-              </>
-            )}
-          </div>
+          <p className="product-final-price">{formatVND(price)}</p>
+
+          {discount > 0 && regularPrice !== null && (
+            <>
+              <p className="product-discount">-{discount}%</p>
+              <p className="product-regular-price">
+                {formatVND(Number(regularPrice.toFixed(2)))}
+              </p>
+            </>
+          )}
+        </div>
+
         </div>
 
         <div className="product-delivery-info">
@@ -157,12 +180,12 @@ function ProductDetail({ product, seller }) {
 
           <div className="delivery-from">
             <p>Giao từ</p>
-            <span>{seller?.address || "Đang tải..."}</span>
+            <span>{"Quận " + sellerAddress?.district +", "+ sellerAddress?.province || "Đang tải..."}</span>
           </div>
 
           <div className="delivery-to">
             <p>Giao đến</p>
-            <span>{user?.address || "Đang tải..."}</span>
+            <span>{userAddress?.province || "Đang tải..."}</span>
           </div>
 
           <div className="delivery-fee">

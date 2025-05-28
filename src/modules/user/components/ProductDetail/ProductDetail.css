@@ -135,7 +135,7 @@
 }
 .product-delivery-info span{
     font-weight: bold;
-    color:aqua;
+    color:#009e6c;
     text-align: right;
     
 }
@@ -190,14 +190,14 @@
 }
 
 .buy-now {
-    background-color: #ff6600;
-    color: white;
+    background-color: #768e71;
+    color: rgb(255, 255, 255);
     border: none;
     border-radius: 5px;
 }
 
 .add-to-cart {
-    background-color: #007bff;
+    background-color: #30492b;
     color: white;
     border: none;
     border-radius: 5px;
@@ -297,3 +297,39 @@
     border-color: #2e7d32;
   }
   
+@media (max-width: 768px) {
+  .product-detail {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-main-info,
+  .product-detail-transactions,
+  .product-description {
+    width: 100%;
+  }
+
+  .delivery-from,
+  .delivery-to,
+  .delivery-fee,
+  .product-rating-and-sold,
+  .product-price-and-discount {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-supply {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .supply-information {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .quantity-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

@@ -44,9 +44,12 @@
     -webkit-box-orient: vertical;
 }
 .btn-add-product{
+    border: solid 2px #fefefe;
     width: 30%;
+    height: 40px;
     border-radius: 10px;
     background-color: #457d58;
     font-size: larger;
     text-align: center;
+    color:white;
 }

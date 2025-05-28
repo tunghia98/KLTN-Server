@@ -1,3 +1,50 @@
-.clip-half {
-  clip-path: polygon(0 0, 50% 0, 50% 100%, 0% 100%);
+.rating-container {
+  display: flex;
+  align-items: center;
+}
+
+.star-wrapper {
+  position: relative;
+  display: inline-block;
+  /* width và height sẽ set inline theo size truyền vào */
+}
+
+.star-icon {
+  stroke-width: 1.5;
+  display: block;
+}
+
+/* Sao rỗng */
+.star-icon.empty {
+  stroke: #d1d5db; /* màu xám */
+  fill: none;
+}
+
+/* Sao đầy */
+.star-icon.filled {
+  stroke: #facc15; /* màu vàng */
+  fill: #facc15;
+}
+
+/* Overlay để hiển thị sao đầy hoặc nửa sao */
+.star-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.star-overlay.half {
+  width: 50%; /* nửa sao */
+}
+
+.star-overlay.full {
+  width: 100%; /* đầy sao */
+}
+
+/* Text bên cạnh */
+.rating-text {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #4b5563; /* màu xám đậm */
 }

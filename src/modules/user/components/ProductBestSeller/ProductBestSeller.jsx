@@ -8,18 +8,18 @@ import { faChevronRight, faChevronLeft } from "@fortawesome/free-solid-svg-icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // 🔥 Component nhận cả bestsellers và danh sách products
-const ProductBestSellers = ({ bestsellers = [], products = [] }) => {
+const ProductBestSellers = ({bestsellers}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderRef = useRef(null);
 
   // 🔄 Chuyển bestsellers (chỉ có productId) thành danh sách sản phẩm chi tiết
-  const bestsellerProducts = Array.isArray(bestsellers)
-    ? bestsellers
-        .map(bs => products.find(p => p.id === bs.productId))
-        .filter(p => p) // loại bỏ sản phẩm không tìm thấy
-    : [];
+  // const bestsellerProducts = Array.isArray(bestsellers)
+  //   ? bestsellers
+  //       .map(bs => products.find(p => p.id === bs.productId))
+  //       .filter(p => p) // loại bỏ sản phẩm không tìm thấy
+  //   : [];
 
-  const visibleProducts = bestsellerProducts.slice(0, 10); // chỉ lấy 10 sản phẩm
+  const visibleProducts = bestsellers; // chỉ lấy 10 sản phẩm
   const slidesToShow = Math.min(4, visibleProducts.length);
 
   const settings = {
@@ -45,7 +45,14 @@ const ProductBestSellers = ({ bestsellers = [], products = [] }) => {
       <Slider ref={sliderRef} {...settings} className="category-items">
         {visibleProducts.length > 0 ? (
           visibleProducts.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
+            <div key={product.id} className="best-seller-item">
+              <span
+                className="top-number"
+              >
+                {index + 1}
+              </span>
+              <ProductCard product={product} index={index} className="bestseller-product-card" />
+            </div>
           ))
         ) : (
           <p>Không có sản phẩm nào</p>
