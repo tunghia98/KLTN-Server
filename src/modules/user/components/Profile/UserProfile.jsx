@@ -35,6 +35,17 @@ const UserProfile = () => {
         ward: "",
         street: "",
     });
+    const handleEditAddress = (addr) => {
+        setForm({
+            street: addr.street,
+            ward: addr.ward,
+            district: addr.district,
+            province: addr.province,
+        });
+        setEditingAddress(addr.id);
+        setShowAddressForm(true);
+    };
+
 
     const [selectedChat, setSelectedChat] = useState(null);  // Lưu trạng thái chat đã chọn
 
@@ -224,8 +235,8 @@ const UserProfile = () => {
                 <div className="address-section-container">
                     <AddressList
                         addresses={addresses}
-                        // onAddClick={() => setShowAddressForm(true)}
-                        // handleEditAddress={handleEditAddress}
+                        onAddClick={() => setShowAddressForm(true)}
+                        handleEditAddress={handleEditAddress}
                     />
                     {showAddressForm && (
                         <AddressForm

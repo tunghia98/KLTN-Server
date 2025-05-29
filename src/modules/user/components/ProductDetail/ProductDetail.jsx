@@ -18,8 +18,9 @@ function ProductDetail({ product, seller, sellerAddress }) {
     const { fetchCartFromBackend } = useCart();
   const productSellCounter = 10;
   const [showDiscount, setShowDiscount] = useState(false);
-  const [userAddress, setUserAddress] = useState("");
     const [regularPrice, setRegularPrice] = useState(null);
+  const [userInfo, setUserInfo] = useState({});
+  const [addresses, setAddresses] = useState([]);
   // Cập nhật giá khi có discount
   useEffect(() => {
     if (discount === 0) {
@@ -80,28 +81,40 @@ function ProductDetail({ product, seller, sellerAddress }) {
     alert("❌ Thêm giỏ hàng thất bại.");
 }
   }; 
-  useEffect(() => {
-    console.log("User object:", user);
-    console.log("UserId:", user?.user?.userId);
-    const userId=user?.user?.userId;
-    console.log(userId);
-    if (user?.user?.userId) {
-      fetchUserAddress();
-    }
-  }, [user?.userId]);
+useEffect(() => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) return; // Không đăng nhập thì thoát luôn, không fetch gì cả
 
-  const fetchUserAddress = async () => {
+  const fetchUserAndAddresses = async () => {
     try {
-      const res = await fetch(`https://kltn.azurewebsites.net/api/addresses/1`);
-      if (!res.ok) throw new Error("Không lấy được địa chỉ");
-      const data = await res.json();
-      console.log("Fetched address data:", data);
-      setUserAddress(data[0]);
+      const resUser = await fetch("https://kltn.azurewebsites.net/api/Users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!resUser.ok) throw new Error("Không lấy được thông tin người dùng");
+
+      const userData = await resUser.json();
+      setUserInfo(userData);
+
+      const resAddress = await fetch("https://kltn.azurewebsites.net/api/addresses/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!resAddress.ok) throw new Error("Không lấy được địa chỉ");
+
+      const addressData = await resAddress.json();
+      setAddresses(addressData);
     } catch (err) {
-      console.error("Fetch error:", err);
-      alert("Lỗi khi tải địa chỉ");
+      console.error("Lỗi khi fetch user hoặc địa chỉ:", err);
     }
   };
+
+  fetchUserAndAddresses();
+}, []);
 
   const [selectedImage, setSelectedImage] = useState(images[0] || "");
   const [hoverImage, setHoverImage] = useState(null);
@@ -180,12 +193,20 @@ function ProductDetail({ product, seller, sellerAddress }) {
 
           <div className="delivery-from">
             <p>Giao từ</p>
-            <span>{"Quận " + sellerAddress?.district +", "+ sellerAddress?.province || "Đang tải..."}</span>
+            <span>{sellerAddress?.district +", "+ sellerAddress?.province || "Đang tải..."}</span>
           </div>
 
           <div className="delivery-to">
             <p>Giao đến</p>
-            <span>{userAddress?.province || "Đang tải..."}</span>
+            {localStorage.getItem("accessToken") ? (
+              addresses.length === 0 ? (
+                <span>Đang tải...</span>
+              ) : (
+                <span>{addresses[0]?.district}, {addresses[0]?.province}</span>
+              )
+            ) : (
+              <span>Chưa xác định</span>
+            )}
           </div>
 
           <div className="delivery-fee">
@@ -230,15 +251,16 @@ function ProductDetail({ product, seller, sellerAddress }) {
             <button onClick={increaseQuantity}>+</button>
           </div>
         </div>
-
-        <button className="buy-now" onClick={handleBuyNow}>Mua ngay</button>
-        <button className="add-to-cart" onClick={handleAddToCart}>Thêm vào giỏ hàng</button>
+        <div className="button-transactions">
+          <button className="buy-now" onClick={handleBuyNow}>Mua ngay</button>
+        <button className="add-to-cart" onClick={handleAddToCart}>Thêm vào giỏ hàng</button></div>              
+        
         <SimilarProduct category={product.category} />
       </div>
 
       <div className="product-description">
         <label className="product-detail-title">Mô tả sản phẩm</label>
-        <div className="div-gradient">
+        <div className="description-content">
           <p>{description}</p>
           <Button text="Xem thêm" type="button" btnStyle="more" />
         </div>

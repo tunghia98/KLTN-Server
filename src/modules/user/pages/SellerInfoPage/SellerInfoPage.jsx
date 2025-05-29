@@ -18,6 +18,8 @@ const SellerPage = () => {
   const [selectedSort, setSelectedSort] = useState("default");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sellerAddress, setSellerAddress] = useState(null);
+  const [owner, setOwner] = useState(null);
   const productsPerPage = 12;
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -94,7 +96,38 @@ const SellerPage = () => {
             setLoading(false);
         }
     };
-
+    const fetchSellerAddress = async (sellerId) => {
+    try {
+      const res = await fetch(`https://kltn.azurewebsites.net/api/addresses/Shop/${sellerId}`);
+      if (!res.ok) throw new Error("Không lấy được địa chỉ");
+      const data = await res.json();
+      setSellerAddress(data[0]); // ✅ lấy địa chỉ đầu tiên
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi khi tải địa chỉ");
+    }
+    };
+      useEffect(() => {
+    if (seller?.id) {
+      fetchSellerAddress(seller.id);
+    }
+  }, [seller]);
+    const fetchOwner = async (ownerId) => {
+    try {
+      const res = await fetch(`https://kltn.azurewebsites.net/api/users/${ownerId}`);
+      if (!res.ok) throw new Error("Không thể tải thông tin người dùng");
+      const data = await res.json();
+      setOwner(data);
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi khi tải thông tin người dùng");
+    }
+  };
+  useEffect(() => {
+    if (seller?.ownerId) {
+      fetchOwner(seller.ownerId);
+    }
+  }, [seller]);
   // Fetch Brands and Categories from Products
   //const fetchBrandsAndCategories = () => {
   //  const uniqueBrands = [...new Set(sellerProducts.map((product) => product.brand))];
@@ -182,7 +215,11 @@ const SellerPage = () => {
           alt={seller?.name || "Shop"}
         />
         <div className="seller-info-details">
-          <h3>{seller?.name}</h3>
+          <div>
+            <h3>{seller?.name}</h3>
+            <p>{sellerAddress?.district+", "+sellerAddress?.province}</p>
+            <p>{owner?.phoneNumber}</p>
+          </div>
           <button className="contact-button">Tư Vấn</button>
           <p>Đây là trang của người bán chuyên cung cấp sản phẩm nông nghiệp chất lượng cao.</p>
         </div>

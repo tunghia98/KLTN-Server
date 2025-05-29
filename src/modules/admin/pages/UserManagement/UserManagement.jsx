@@ -51,7 +51,7 @@ export default function UserManagement() {
 
     return (
         <div className="user-container">
-            <h2>Danh sách tài khoản Buyer</h2>
+            <h2>Danh sách tài khoản người dùng</h2>
             {loading ? (
                 <p>Đang tải...</p>
             ) : (

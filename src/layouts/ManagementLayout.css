@@ -59,16 +59,7 @@
   }
   
   /* Header */
-  .management-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #2d3748;
-    color: #ffffff;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
+ 
   .management-header .title {
     font-size: 1.25rem;
     font-weight: bold;

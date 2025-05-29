@@ -136,10 +136,8 @@
 .product-delivery-info span{
     font-weight: bold;
     color:#009e6c;
-    text-align: right;
     
-}
-.delivery-to span, .delivery-fee span{
+}.delivery-from span ,.delivery-to span, .delivery-fee span{
     position: absolute;
     right: 10px;
 }
@@ -279,7 +277,7 @@
     position: relative; 
 }
 .product-detail-title{
-    padding-left:15px;
+    padding-left:5px;
     font-size: larger;
 }
 .product-detail-thumbnail {
@@ -332,4 +330,21 @@
     width: 100%;
     justify-content: space-between;
   }
+}
+.button-transactions{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.description-content{
+    padding-left: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    background-color: white;
+    border-radius: 10px;
+    overflow-y: auto; /* Nếu nội dung quá nhiều, có thanh cuộn */
 }

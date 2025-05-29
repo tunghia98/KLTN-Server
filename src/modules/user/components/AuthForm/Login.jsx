@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 import Button from "../../../../components/Common/Button.jsx";
 import Popup from "../../../../components/Common/Popup.jsx";
 import { useNavigate } from "react-router-dom";
-import { sellers, userAccounts } from "../../../../data/data.js"; // Thêm dữ liệu người dùng
-import { useUser } from "../../../../contexts/UserContext.jsx";  // Import component Popup
+import { useUser } from "../../../../contexts/UserContext.jsx";
 
-function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
-  const [email, setEmail] = useState(""); // Thay "username" bằng "email"
+function Login({ isOpen, onClose, onSwitchToRegister, isReady }) {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const { setUser } = useUser();
@@ -18,7 +19,7 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch("https://kltn.azurewebsites.net/api/auth/login", {
         method: "POST",
@@ -30,24 +31,21 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
           password: password,
         }),
       });
-  
+
       if (!response.ok) {
         const message = await response.text();
-        alert(message || "Sai tài khoản hoặc mật khẩu!");
+        toast.error(message || "Sai tài khoản hoặc mật khẩu!");
         return;
       }
-  
+
       const data = await response.json();
-  
-      // Lưu token
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
-  
-      // ✅ Giải mã token KHÔNG có schema
+
       const payload = JSON.parse(atob(data.accessToken.split(".")[1]));
       const userId = payload["userId"];
       const username = payload["username"];
-        let role = "";
+      let role = "";
         const rolea = payload["role"]; // Đúng định dạng bạn tạo
         if (rolea.includes("buyer"))
             role = "buyer";
@@ -55,36 +53,35 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
             role = "seller";
         if (rolea.includes("admin"))
             role = "admin";
-        const decodedUser = { userId, username, role };
-        setUser(decodedUser);
+      const decodedUser = { userId, username, role };
+      setUser(decodedUser);
         localStorage.setItem("user", JSON.stringify(decodedUser));
       if (rememberMe) {
-          localStorage.setItem("user", JSON.stringify(decodedUser));
+        localStorage.setItem("user", JSON.stringify(decodedUser));
       }
-  
-      alert(`Chào mừng ${username}!`);
-  
-      // Điều hướng theo role
-        if (role.includes("admin")) {
-            navigate("/admin/dashboard");
-        } else if (role.includes("seller")) {
-            navigate("/seller/dashboard");
+
+      toast.success(`Đăng nhập thành công!`);
+
+    setTimeout(() => {
+      if (role.includes("admin")) {
+        navigate("/admin/dashboard");
+      } else if (role.includes("seller")) {
+        navigate("/seller/dashboard");
+      } else {
+        if (isReady === true) {
+          navigate("/onboarding");
         } else {
-            if (isReady === true) {
-                navigate("/onboarding");
-            } else {
-                navigate("/");
-            }
+          navigate("/");
         }
-  
+      }
       onClose();
-  
+    }, 1500); 
+
     } catch (err) {
-      alert("Lỗi kết nối đến máy chủ!");
+      toast.error("Lỗi kết nối đến máy chủ!");
       console.error(err);
     }
   };
-  
 
   return ReactDOM.createPortal(
     <Popup isOpen={isOpen} onClose={onClose} title="Đăng nhập" redirectTo="/">
@@ -94,7 +91,7 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
           <input
             type="text"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Sử dụng email để tìm kiếm
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -118,7 +115,7 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
           </label>
         </div>
         <div className="form-actions">
-          <Button type="submit" text="Đăng nhập" btnStyle="auth"></Button>
+          <Button type="submit" text="Đăng nhập" btnStyle="auth" />
         </div>
         <div className="auth-options">
           <p style={{ marginTop: "0.5rem", textAlign: "center" }}>
@@ -142,6 +139,16 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady}) {
           </p>
         </div>
       </form>
+
+      {/* ToastContainer nên được đặt trong chính component nếu không dùng ở App */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
     </Popup>,
     document.body
   );
