@@ -23,20 +23,54 @@ const Homepage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   // Fetch tất cả sản phẩm
   useEffect(() => {
+    const fetchBestsellers = async () => {
+      try {
+        const res = await fetch("https://kltn.azurewebsites.net/api/products");
+        if (!res.ok) throw new Error("Lỗi tải sản phẩm");
+
+        const allProducts = await res.json();
+
+        const topSelling = [...allProducts]
+          .sort((a, b) => b.quantity - a.quantity)
+          .slice(0, 10);
+
+        const bestSellerIds = topSelling.map((p) => p.id);
+
+        const imagesRes = await fetch(
+          "https://kltn.azurewebsites.net/api/product-images/list-by-products",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(bestSellerIds),
+          }
+        );
+
+        const imagesData = await imagesRes.json();
+
+        const topSellingWithImages = topSelling.map((product) => ({
+          ...product,
+          imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
+        }));
+
+        setBestsellers(topSellingWithImages);
+      } catch (err) {
+        console.error("Lỗi khi tải bestseller:", err.message);
+      }
+    };
+
+    fetchBestsellers();
+  }, []);
+
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch("https://kltn.azurewebsites.net/api/products");
         if (!res.ok) throw new Error("Lỗi tải sản phẩm");
 
         const products = await res.json();
-
-        // Lấy top 10 sản phẩm bán chạy nhất (giả sử theo soldQuantity)
-        const topSellingProducts = [...products]
-          .sort((a, b) => b.quantity - a.quantity)
-          .slice(0, 10);
-        setBestsellers(topSellingProducts);
-        console.log("Top selling products:", topSellingProducts);
-        const productIds = topSellingProducts.map((p) => p.id);
+        const productIds = products.map((p) => p.id);
 
         // Lấy ảnh theo danh sách sản phẩm
         const imagesRes = await fetch(
@@ -53,7 +87,7 @@ const Homepage = () => {
         const imagesData = await imagesRes.json();
 
         // Gộp ảnh vào từng sản phẩm
-        const productsWithImages = topSellingProducts.map((product) => ({
+        const productsWithImages = products.map((product) => ({
           ...product,
           imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
         }));
