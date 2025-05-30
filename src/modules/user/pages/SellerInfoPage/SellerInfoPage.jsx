@@ -21,14 +21,17 @@ const SellerPage = () => {
   const [sellerAddress, setSellerAddress] = useState(null);
   const [owner, setOwner] = useState(null);
   const productsPerPage = 12;
-
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const [sellerId, ...sellerNameArray] = sellerSlug.split("-");
   const sellerNameSlug = sellerNameArray.join("-");
+  const categoryOptions = [{ label: "Tất cả danh mục", value: "all" }, ...categories.map(c => ({ label: c, value: c }))];
+    const brandOptions = [{ label: "Tất cả nhãn hiệu", value: "all" }, ...brands.map(b => ({ label: b, value: b }))];
 
+    const selectedCategoryOption = categoryOptions.find(opt => opt.value === selectedCategory) || categoryOptions[0];
+    const selectedBrandOption = brandOptions.find(opt => opt.value === selectedBrand) || brandOptions[0];
   // Fetch Seller Information
   const fetchSeller = async (sellerId) => {
     try {
@@ -37,6 +40,7 @@ const SellerPage = () => {
       const data = await res.json();
       if (!data) throw new Error("Không tìm thấy nhà cung cấp");
       setSeller(data);
+
     } catch (err) {
       setError(err.message);
     }
@@ -59,8 +63,13 @@ const SellerPage = () => {
 
             const products = await productRes.json();
             const categories = await categoryRes.json();
-            const brands = await brandRes.json();
+            const brandNames = await brandRes.json(); // ["AgriTool", "Adidas", "Nike"]
 
+            const brands = brandNames.map((name, index) => ({
+                id: index + 1,        // hoặc dùng index nếu không có ID thực
+                name,
+            }));
+            console.log(brands);
             // 2. Lấy danh sách productIds để fetch ảnh
             const productIds = products.map(p => p.id);
 
@@ -203,6 +212,33 @@ const SellerPage = () => {
     setFilteredProducts(filtered);
   }, [selectedCategory, selectedBrand, selectedSort, searchKeyword, sellerProducts]);
 
+    // thêm cuộc hội thoại mới
+    //const handleCreateConversation = async () => {
+    //    setLoading(true);
+    //    try {
+    //        const res = await fetch("https://kltn.azurewebsites.net/api/conversations/create", {
+    //            method: "POST",
+    //            headers: {
+    //                "Content-Type": "application/json",
+    //                // Nếu có token thì thêm vào đây
+    //                // Authorization: `Bearer ${token}`
+    //            },
+    //            body: JSON.stringify({ UserBId: receiverId }),
+    //        });
+    //        if (!res.ok) {
+    //            const error = await res.text();
+    //            alert("Lỗi tạo cuộc trò chuyện: " + error);
+    //            return;
+    //        }
+    //        const data = await res.json();
+    //        onCreated && onCreated(data);
+    //        alert("Tạo cuộc trò chuyện thành công!");
+    //    } catch (err) {
+    //        alert("Lỗi mạng hoặc server.");
+    //    } finally {
+    //        setLoading(false);
+    //    }
+    //};
   return (
     <div className="seller-page">
       <div className="seller-info">
@@ -220,7 +256,9 @@ const SellerPage = () => {
             <p>{sellerAddress?.district+", "+sellerAddress?.province}</p>
             <p>{owner?.phoneNumber}</p>
           </div>
-          <button className="contact-button">Tư Vấn</button>
+                  {/*<button className="contact-button" onClick={handleCreateConversation} disabled={loading}>*/}
+                  {/*    {loading ? "Đang tạo..." : "Tư Vấn"}*/}
+                  {/*</button>*/}
           <p>Đây là trang của người bán chuyên cung cấp sản phẩm nông nghiệp chất lượng cao.</p>
         </div>
       </div>
@@ -230,12 +268,13 @@ const SellerPage = () => {
                   <div className="filter-item">
                       <label htmlFor="category">Lọc theo danh mục: </label>
                       <Autocomplete
-                          options={[{ label: "Tất cả danh mục", value: "all" }, ...categories.map(c => ({ label: c, value: c }))]}
+                          options={categoryOptions}
                           getOptionLabel={(option) => option.label}
-                          value={{ label: selectedCategory === "all" ? "Tất cả danh mục" : selectedCategory, value: selectedCategory }}
+                          value={selectedCategoryOption}
                           onChange={(event, newValue) => {
                               setSelectedCategory(newValue ? newValue.value : "all");
                           }}
+                          isOptionEqualToValue={(option, value) => option.value === value.value}
                           renderInput={(params) => (
                               <TextField {...params} label="Chọn danh mục" variant="outlined" size="small" />
                           )}
@@ -248,12 +287,13 @@ const SellerPage = () => {
               <div className="filter-item">
                   <label htmlFor="brand">Lọc theo nhãn hiệu: </label>
                   <Autocomplete
-                      options={[{ label: "Tất cả nhãn hiệu", value: "all" }, ...brands.map(b => ({ label: b, value: b }))]}
+                      options={brandOptions}
                       getOptionLabel={(option) => option.label}
-                      value={{ label: selectedBrand === "all" ? "Tất cả nhãn hiệu" : selectedBrand, value: selectedBrand }}
+                      value={selectedBrandOption}
                       onChange={(event, newValue) => {
                           setSelectedBrand(newValue ? newValue.value : "all");
                       }}
+                      isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
                           <TextField {...params} label="Chọn nhãn hiệu" variant="outlined" size="small" />
                       )}

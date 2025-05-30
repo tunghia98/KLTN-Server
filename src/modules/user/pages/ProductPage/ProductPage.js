@@ -16,6 +16,20 @@ function ProductPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
+    const categoryOptions = [
+        { label: "Tất cả danh mục", value: "all" },
+        ...categories.map((c) => ({ label: c.name, value: c.name })),
+    ];
+
+    const brandOptions = [
+        { label: "Tất cả nhãn hiệu", value: "all" },
+        ...brands.map((b) => ({ label: b, value: b })),
+    ];
+    const selectedCategoryOption =
+        categoryOptions.find((opt) => opt.value === selectedCategory) || categoryOptions[0];
+
+    const selectedBrandOption =
+        brandOptions.find((opt) => opt.value === selectedBrand) || brandOptions[0];
 
     useEffect(() => {
         const fetchData = async () => {
@@ -28,7 +42,12 @@ function ProductPage() {
 
                 const productData = await productRes.json();
                 const categoryData = await categoryRes.json();
-                const brandData = await brandRes.json();
+                const brandNames = await brandRes.json(); // ["AgriTool", "Adidas", "Nike"]
+
+                const brands = brandNames.map((name, index) => ({
+                    id: index + 1,        // hoặc dùng index nếu không có ID thực
+                    name,
+                }));
 
                 // Lấy danh sách productIds
                 const productIds = productData.map((p) => p.id);
@@ -110,60 +129,46 @@ function ProductPage() {
       <div className="products-filters">
         <div className="filter-item">
           <label htmlFor="category">Lọc theo danh mục:</label>
-          <Autocomplete
-            options={[
-              { label: "Tất cả danh mục", value: "all" },
-              ...categories.map((c) => ({ label: c.name, value: c.name })),
-            ]}
-            getOptionLabel={(option) => option.label}
-            value={{
-              label:
-                selectedCategory === "all"
-                  ? "Tất cả danh mục"
-                  : selectedCategory,
-              value: selectedCategory,
-            }}
-            onChange={(event, newValue) => {
-              setSelectedCategory(newValue ? newValue.value : "all");
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Chọn danh mục"
-                variant="outlined"
-                size="small"
-              />
-            )}
-            style={{ width: 250 }}
-          />
+                  <Autocomplete
+                      options={categoryOptions}
+                      getOptionLabel={(option) => option.label}
+                      value={selectedCategoryOption}
+                      onChange={(event, newValue) => {
+                          setSelectedCategory(newValue ? newValue.value : "all");
+                      }}
+                      isOptionEqualToValue={(option, value) => option.value === value.value}
+                      renderInput={(params) => (
+                          <TextField
+                              {...params}
+                              label="Chọn danh mục"
+                              variant="outlined"
+                              size="small"
+                          />
+                      )}
+                      style={{ width: 250 }}
+                  />
         </div>
 
         <div className="filter-item">
           <label htmlFor="brand">Lọc theo nhãn hiệu:</label>
-          <Autocomplete
-            options={[
-              { label: "Tất cả nhãn hiệu", value: "all" },
-              ...brands.map((b) => ({ label: b, value: b })),
-            ]}
-            getOptionLabel={(option) => option.label}
-            value={{
-              label:
-                selectedBrand === "all" ? "Tất cả nhãn hiệu" : selectedBrand,
-              value: selectedBrand,
-            }}
-            onChange={(event, newValue) => {
-              setSelectedBrand(newValue ? newValue.value : "all");
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Chọn nhãn hiệu"
-                variant="outlined"
-                size="small"
-              />
-            )}
-            style={{ width: 250 }}
-          />
+                  <Autocomplete
+                      options={brandOptions}
+                      getOptionLabel={(option) => option.label}
+                      value={selectedBrandOption}
+                      onChange={(event, newValue) => {
+                          setSelectedBrand(newValue ? newValue.value : "all");
+                      }}
+                      isOptionEqualToValue={(option, value) => option.value === value.value}
+                      renderInput={(params) => (
+                          <TextField
+                              {...params}
+                              label="Chọn nhãn hiệu"
+                              variant="outlined"
+                              size="small"
+                          />
+                      )}
+                      style={{ width: 250 }}
+                  />
         </div>
 
         <div className="filter-item">

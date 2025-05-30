@@ -17,6 +17,7 @@ export default function EditProductPage() {
         quantity: 0,
         categoryId: '',
         status: "Khả dụng",
+        brand: '',
         images: []
     });
 
@@ -79,7 +80,8 @@ export default function EditProductPage() {
                 price: parseFloat(product.price),
                 quantity: parseInt(product.quantity),
                 categoryId: parseInt(product.categoryId),
-                status: product.status
+                status: product.status,
+                brand: product.brand.trim() // ✅ thêm dòng này
             };
 
             console.log("Payload gửi lên:", payload);
@@ -288,7 +290,16 @@ export default function EditProductPage() {
                         onChange={handleInputChange}
                     />
                 </div>
-
+                <div className="edit-product-group">
+                    <label>Nhãn hiệu</label>
+                    <input
+                        type="text"
+                        name="brand"
+                        value={product.brand}
+                        onChange={handleInputChange}
+                        placeholder="Nhập nhãn hiệu "
+                    />
+                </div>
                 <div className="edit-product-group">
                     <label>Trạng thái</label>
                     <select
