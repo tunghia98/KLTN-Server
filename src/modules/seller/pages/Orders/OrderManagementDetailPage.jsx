@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./OrderManagementDetailPage.css";
+import getSelectBackgroundColor from "../../utils/getSelectBackgroundColor";
 
 const OrderDetailPage = () => {
     const { orderId } = useParams();
@@ -74,7 +75,7 @@ const OrderDetailPage = () => {
     if (!order) return <div>Không tìm thấy đơn hàng!</div>;
 
     return (
-        <div>
+        <div className="order-management-detail-container">
             <Link to="/seller/orders" className="order-detail-back-button">
                 Quay lại
             </Link>
@@ -85,7 +86,13 @@ const OrderDetailPage = () => {
                 <p><strong>Số điện thoại:</strong> {order.customer?.phoneNumber}</p>
                 <p><strong>Hình thức thanh toán:</strong> {order.payment ?.method}</p>
                 <p><strong>Tổng tiền:</strong> {order.totalAmount?.toLocaleString()}₫</p>
-                <p><strong>Trạng thái:</strong> {order.status}</p>
+                <p>
+                    <strong>Trạng thái:</strong>{" "}
+                    <span style={{ color: getSelectBackgroundColor(order.status) }}>
+                        {order.status}
+                    </span>
+                </p>
+
                 <p><strong>Ngày đặt:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
 
                 <h2>Sản phẩm trong đơn hàng</h2>

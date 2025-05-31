@@ -23,7 +23,7 @@
     height: 100%; /* Đảm bảo chiều cao của grid item */
 }
 .logo-footer{
-    width: 80%;
+    width: 100%;
     height: max-content;
     cursor: pointer;
 }
@@ -37,10 +37,11 @@ li{
   
 .footer-grid-container > div {
     text-align: left;
-    padding: 20px 0;
+    padding: 20px 30px;
 }
 .title{
     padding-left:10px;
+    text-align: left;
 }
 .footer-detail li a {
     text-decoration: none;
@@ -50,4 +51,7 @@ li{
     color: green;
     font-weight: bold;
   }
-  
+  .grid-item-service-customer, .grid-item-payment-shipping{
+    border: 2px solid #ccc; /* Viền cho mỗi cột */
+    border-radius: 10px;
+  }

@@ -24,6 +24,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  color:black;
 }
 
 /* User name style */
@@ -67,7 +68,7 @@
 }
 
 /* Optional: Add a small icon next to the user name */
-.user-name::before {
+.user-name::after {
   content: "👤"; /* Replace with icon if using FontAwesome or other icon libraries */
   margin-right: 0.5rem;
 }

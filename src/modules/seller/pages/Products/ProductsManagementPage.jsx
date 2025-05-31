@@ -9,6 +9,7 @@ function ProductManagementPage() {
     const navigate = useNavigate();
     const [sellerproducts, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState(""); // <-- Tìm kiếm
 
     const fetchProducts = async () => {
         try {
@@ -68,7 +69,7 @@ function ProductManagementPage() {
 
     const handleEdit = (product) => {
         navigate(`/seller/products/edit/${product.id}`, { state: { product } });
-    }
+    };
 
     const handleImportCSV = async (e) => {
         const file = e.target.files[0];
@@ -85,7 +86,6 @@ function ProductManagementPage() {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-                    // ❗ Không đặt 'Content-Type' ở đây, để fetch tự đặt boundary cho multipart/form-data
                 },
                 body: formData
             });
@@ -97,15 +97,21 @@ function ProductManagementPage() {
 
             const result = await res.text();
             alert("Import CSV thành công: " + result);
-
-            // 👉 Nếu muốn tự động refresh lại danh sách sản phẩm sau khi import thành công
-            // fetchProducts();  (nếu bạn có hàm fetchProducts)
+            fetchProducts();
         } catch (error) {
             console.error("Lỗi import CSV:", error);
             alert(error.message || "Có lỗi khi upload CSV.");
         }
     };
 
+    // Hàm lọc theo từ khóa
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredProducts = sellerproducts.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     useEffect(() => {
         fetchProducts();
@@ -115,19 +121,29 @@ function ProductManagementPage() {
         <div className="product-management">
             <h1>Quản lý sản phẩm</h1>
             <div className="product-management-actions">
-                <button className="add-product-btn" onClick={() => navigate('/seller/products/edit/new', { state: { product: null } })}>
-                    ➕ Thêm sản phẩm
-                </button>
-                <button className="import-csv-btn" onClick={() => document.getElementById('csvInput').click()}>
-                    📄 Thêm sản phẩm từ CSV
-                </button>
                 <input
-                    type="file"
-                    accept=".csv"
-                    id="csvInput"
-                    style={{ display: 'none' }}
-                    onChange={(e) => handleImportCSV(e)}
+                    type="text"
+                    placeholder="Tìm kiếm sản phẩm..."
+                    className="search-input"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
                 />
+                <div>
+                    <button className="add-product-btn" onClick={() => navigate('/seller/products/edit/new', { state: { product: null } })}>
+                        ➕ Thêm sản phẩm
+                    </button>
+                    <button className="import-csv-btn" onClick={() => document.getElementById('csvInput').click()}>
+                        📄 Thêm sản phẩm từ CSV
+                    </button>
+                    <input
+                        type="file"
+                        accept=".csv"
+                        id="csvInput"
+                        style={{ display: 'none' }}
+                        onChange={handleImportCSV}
+                    />
+                </div>
+
             </div>
 
             {loading ? (
@@ -145,22 +161,14 @@ function ProductManagementPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {sellerproducts.map((product) => (
+                        {filteredProducts.map((product) => (
                             <tr key={product.id}>
                                 <td>
-                                    {product.imageUrls?.[0] ? (
-                                        <img
-                                            src={`https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0]}`}
-                                            alt="Ảnh sản phẩm"
-                                            className="product-image"
-                                        />
-                                    ) : (
-                                        <img
-                                            src="https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png"
-                                            alt="Ảnh mặc định"
-                                            className="product-image"
-                                        />
-                                    )}
+                                    <img
+                                        src={`https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0] || "7a2843f5-2a5a-46e2-8eea-080b51bada6b.png"}`}
+                                        alt="Ảnh sản phẩm"
+                                        className="product-image"
+                                    />
                                 </td>
                                 <td>{product.name}</td>
                                 <td>{product.price.toLocaleString()}₫</td>
@@ -172,9 +180,9 @@ function ProductManagementPage() {
                                 </td>
                             </tr>
                         ))}
-                        {sellerproducts.length === 0 && (
+                        {filteredProducts.length === 0 && (
                             <tr>
-                                <td colSpan="6">Chưa có sản phẩm nào.</td>
+                                <td colSpan="6">Không tìm thấy sản phẩm nào.</td>
                             </tr>
                         )}
                     </tbody>

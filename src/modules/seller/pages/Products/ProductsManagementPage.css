@@ -76,5 +76,39 @@
     object-fit: cover;
     border-radius: 8px;
 }
+.add-product-btn,
+.import-csv-btn {
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
 
-  
+.add-product-btn {
+  background-color: #4caf50; /* xanh lá */
+  color: white;
+}
+
+.add-product-btn:hover {
+  background-color: #45a049;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.import-csv-btn {
+  background-color: #2196f3; /* xanh dương */
+  color: white;
+}
+
+.import-csv-btn:hover {
+  background-color: #1976d2;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+.product-management-actions{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}

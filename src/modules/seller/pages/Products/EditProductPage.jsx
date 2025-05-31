@@ -228,10 +228,10 @@ export default function EditProductPage() {
 
 
     return (
-        <div className="edit-product-container">
+        <div className="edit-product-container">  
             <div className="edit-product-card">
-                <h2>{isEditing ? "Sửa Thông Tin Sản Phẩm" : "Thêm Sản Phẩm Mới"}</h2>
-
+            <h2>{isEditing ? "Sửa Thông Tin Sản Phẩm" : "Thêm Sản Phẩm Mới"}</h2>
+            <div className="edit-product-group-container">
                 <div className="edit-product-group">
                     <label>Tên sản phẩm</label>
                     <input
@@ -321,8 +321,16 @@ export default function EditProductPage() {
                         onChange={handleInputChange}
                         rows="4"
                         placeholder="Nhập mô tả chi tiết sản phẩm..."
-                        style={{ width: '100%', minHeight: '150px', resize: 'vertical' }}
-                    />
+                        style={{
+                            width: '100%',
+                            minHeight: '150px',
+                            resize: 'vertical',
+                            fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                            'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                            sans-serif`
+                        }}
+                        />
+
                 </div>
 
                 <div className="edit-product-group">
@@ -368,14 +376,14 @@ export default function EditProductPage() {
                                     style={{
                                         position: "absolute",
                                         top: "2px",
-                                        right: "2px",
+                                        right: "-25px",
                                         background: "red",
                                         color: "white",
                                         border: "none",
                                         borderRadius: "50%",
-                                        width: "20px",
-                                        height: "20px",
-                                        fontSize: "12px",
+                                        width: "25px",
+                                        height: "25px",
+                                        fontSize: "20px",
                                         cursor: "pointer",
                                         lineHeight: "20px",
                                         textAlign: "center",
@@ -393,7 +401,8 @@ export default function EditProductPage() {
 
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+            </div>
+                                <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
                     <button onClick={handleSave} className="btn-apply" disabled={loading}>
                         {loading ? 'Đang lưu...' : 'Lưu'}
                     </button>

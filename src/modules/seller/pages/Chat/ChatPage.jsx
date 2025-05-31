@@ -27,7 +27,6 @@ function ChatPage() {
                 if (!resChats.ok) throw new Error("Không lấy được danh sách cuộc trò chuyện");
                 const conversations = await resChats.json();
                 setChatList(conversations);
-
                 // Chọn chat đầu tiên nếu chưa có chat nào được chọn
                 if (conversations.length > 0 && !selectedChat) {
                     setSelectedChat(conversations[0].id);
@@ -40,16 +39,7 @@ function ChatPage() {
 
         fetchUserAndChats();
     }, [accessToken, selectedChat]);
-  const chats = [
-    { id: 1, name: "Nguyễn Văn A", lastMessage: "Chào bạn, tôi cần giúp đỡ." },
-    { id: 2, name: "Trần Thị B", lastMessage: "Sản phẩm này có sẵn chưa?" },
-    { id: 3, name: "Lê Minh C", lastMessage: "Tôi muốn hỏi về đơn hàng." },
-    // Các cuộc trò chuyện khác
-  ];
 
-  const handleSelectChat = (chatId) => {
-    setSelectedChat(chatId);
-  };
 
   return (
     <div className="chat-app">

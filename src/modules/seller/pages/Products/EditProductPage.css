@@ -1,15 +1,19 @@
   
   .edit-product-card {
-    margin: 0 auto;
+    margin: 25px auto;
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px;
+    width: 80%;
     box-sizing: border-box;
+
   }
-  
+  .edit-product-group-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
   .edit-product-card h2 {
     text-align: center;
     margin-bottom: 20px;
@@ -75,6 +79,9 @@
   .custom-file-label{
     margin: 0 auto;
     text-align: center;
+    border: 1px solid #ddd;
+    width: max-content;
+    padding: 10px;
   }
   .edit-product-group select {
     width: 100%;

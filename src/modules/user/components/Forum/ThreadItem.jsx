@@ -1,15 +1,22 @@
 import "./Forum.css";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import toSlug from "../../../../utils/toSlug";
 
-const ThreadItem = ({title, likes, replies, category, crop, region }) => {
+const ThreadItem = ({ title, likes, commentCount, category, crop, region }) => {
   return (
     <div className="thread-item">
-      <Link to={`/forum/thread/${toSlug(title)}`}>
+      <Link
+        to={`/forum/thread/${toSlug(title)}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
         <h3 className="thread-title">{title}</h3>
       </Link>
-      <p>{likes} lượt thích | {replies} câu trả lời</p>
-      <p>Phân loại: {category} | Giống cây: {crop} | Khu vực: {region}</p>
+      <p>
+        {likes} lượt thích | {commentCount} câu trả lời
+      </p>
+      <p>Phân loại: {category}</p>
+      <p>Giống cây: {crop}</p>
+      <p>Khu vực: {region}</p>
     </div>
   );
 };

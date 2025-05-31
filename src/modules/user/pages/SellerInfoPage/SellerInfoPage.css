@@ -23,21 +23,36 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 24px;
+  margin: 0 auto;
   border: 2px solid #e0e0e0;
 }
-
+.seller-info-details{
+  margin-left: 20px;
+  flex: 1;
+}
 .seller-info-details h3 {
-  margin: 0;
+  margin: 5px;
   font-size: 24px;
   color: #333;
 }
 
 .seller-info-details p {
   color: #666;
-  margin-top: 8px;
+  margin: 5px;
 }
-
+.filter-item-price {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  width: 15%;
+  justify-content: flex-end;
+}
+.filter-item-price select {
+  width: max-content;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
 .contact-button {
   background-color: #28a745;
   color: white;
@@ -59,11 +74,14 @@
   gap: 20px;
   margin-bottom: 30px;
   align-items: flex-end;
+  justify-content: space-between;
 }
 
 .filter-item {
   display: flex;
   flex-direction: column;
+  padding-bottom: 10px;
+  width: max-content;
 }
 
 .filter-item label {
@@ -77,10 +95,13 @@
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  min-width: 200px;
+  width: unset !important
+}
+.search-bar {
+  all: unset !important;
 }
 
-.search-bar {
+.product-search-bar {
   margin-top: 8px;
 }
 

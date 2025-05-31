@@ -9,13 +9,13 @@ const SellerPage = () => {
   const { sellerSlug } = useParams();
   const [seller, setSeller] = useState(null);
   const [sellerProducts, setSellerProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
-    const navigate = useNavigate();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);  // New state for categories
-  const [selectedCategory, setSelectedCategory] = useState("all");  // New state for selected category
+  const [categories, setCategories] = useState([]); // New state for categories
+  const [selectedCategory, setSelectedCategory] = useState("all"); // New state for selected category
   const [selectedBrand, setSelectedBrand] = useState("all");
   const [selectedSort, setSelectedSort] = useState("default");
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -25,90 +25,114 @@ const SellerPage = () => {
   const productsPerPage = 12;
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   const [sellerId, ...sellerNameArray] = sellerSlug.split("-");
   const sellerNameSlug = sellerNameArray.join("-");
-  const categoryOptions = [{ label: "Tất cả danh mục", value: "all" }, ...categories.map(c => ({ label: c, value: c }))];
-    const brandOptions = [{ label: "Tất cả nhãn hiệu", value: "all" }, ...brands.map(b => ({ label: b, value: b }))];
+  const categoryOptions = [
+    { label: "Tất cả danh mục", value: "all" },
+    ...categories.map((c) => ({ label: c, value: c })),
+  ];
+  const brandOptions = [
+    { label: "Tất cả nhãn hiệu", value: "all" },
+    ...brands.map((b) => ({ label: b, value: b })),
+  ];
 
-    const selectedCategoryOption = categoryOptions.find(opt => opt.value === selectedCategory) || categoryOptions[0];
-    const selectedBrandOption = brandOptions.find(opt => opt.value === selectedBrand) || brandOptions[0];
+  const selectedCategoryOption =
+    categoryOptions.find((opt) => opt.value === selectedCategory) ||
+    categoryOptions[0];
+  const selectedBrandOption =
+    brandOptions.find((opt) => opt.value === selectedBrand) || brandOptions[0];
   // Fetch Seller Information
   const fetchSeller = async (sellerId) => {
     try {
-      const res = await fetch(`https://kltn.azurewebsites.net/api/Shops/${sellerId}`);
+      const res = await fetch(
+        `https://kltn.azurewebsites.net/api/Shops/${sellerId}`
+      );
       if (!res.ok) throw new Error("Không thể tải nhà cung cấp");
       const data = await res.json();
       if (!data) throw new Error("Không tìm thấy nhà cung cấp");
       setSeller(data);
-
     } catch (err) {
       setError(err.message);
     }
   };
 
-    const fetchSellerProducts = async () => {
-        try {
-            setLoading(true);
-
-            // 1. Fetch products, categories, brands song song
-            const [productRes, categoryRes, brandRes] = await Promise.all([
-                fetch(`https://kltn.azurewebsites.net/api/Products/by-shop/${sellerId}`),
-                fetch(`https://kltn.azurewebsites.net/api/Categories/by-shop/${sellerId}`),
-                fetch(`https://kltn.azurewebsites.net/api/Categories/brands/by-shop/${sellerId}`),
-            ]);
-
-            if (!productRes.ok || !categoryRes.ok || !brandRes.ok) {
-                throw new Error("Không thể tải dữ liệu");
-            }
-
-            const products = await productRes.json();
-            const categories = await categoryRes.json();
-            const brandNames = await brandRes.json(); // ["AgriTool", "Adidas", "Nike"]
-
-            const brands = brandNames.map((name, index) => ({
-                id: index + 1,        // hoặc dùng index nếu không có ID thực
-                name,
-            }));
-            // 2. Lấy danh sách productIds để fetch ảnh
-            const productIds = products.map(p => p.id);
-
-            // 3. Fetch hình ảnh cho các productIds (POST)
-            const imagesRes = await fetch('https://kltn.azurewebsites.net/api/product-images/list-by-products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Nếu cần token, thêm header Authorization ở đây
-                },
-                body: JSON.stringify(productIds),
-            });
-
-            if (!imagesRes.ok) throw new Error("Lỗi tải hình ảnh sản phẩm");
-
-            const imagesData = await imagesRes.json();
-
-            // 4. Ghép ảnh vào từng sản phẩm
-            const productsWithImages = products.map(product => ({
-                ...product,
-                imageUrls: imagesData[product.id]?.map(img => img.imageUrl) || []
-            }));
-
-            // 5. Set state
-            setSellerProducts(productsWithImages);
-            setFilteredProducts(productsWithImages);
-            setCategories(categories.map(c => c.name));
-            setBrands(brands.map(b => b.name)); // Giả sử API trả object brand, map lấy name
-        } catch (err) {
-            setError(err.message);
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-    const fetchSellerAddress = async (sellerId) => {
+  const fetchSellerProducts = async () => {
     try {
-      const res = await fetch(`https://kltn.azurewebsites.net/api/addresses/Shop/${sellerId}`);
+      setLoading(true);
+
+      // 1. Fetch products, categories, brands song song
+      const [productRes, categoryRes, brandRes] = await Promise.all([
+        fetch(
+          `https://kltn.azurewebsites.net/api/Products/by-shop/${sellerId}`
+        ),
+        fetch(
+          `https://kltn.azurewebsites.net/api/Categories/by-shop/${sellerId}`
+        ),
+        fetch(
+          `https://kltn.azurewebsites.net/api/Categories/brands/by-shop/${sellerId}`
+        ),
+      ]);
+
+      if (!productRes.ok || !categoryRes.ok || !brandRes.ok) {
+        throw new Error("Không thể tải dữ liệu");
+      }
+
+      const products = await productRes.json();
+      const categories = await categoryRes.json();
+      const brandNames = await brandRes.json(); // ["AgriTool", "Adidas", "Nike"]
+
+      const brands = brandNames.map((name, index) => ({
+        id: index + 1, // hoặc dùng index nếu không có ID thực
+        name,
+      }));
+      // 2. Lấy danh sách productIds để fetch ảnh
+      const productIds = products.map((p) => p.id);
+
+      // 3. Fetch hình ảnh cho các productIds (POST)
+      const imagesRes = await fetch(
+        "https://kltn.azurewebsites.net/api/product-images/list-by-products",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Nếu cần token, thêm header Authorization ở đây
+          },
+          body: JSON.stringify(productIds),
+        }
+      );
+
+      if (!imagesRes.ok) throw new Error("Lỗi tải hình ảnh sản phẩm");
+
+      const imagesData = await imagesRes.json();
+
+      // 4. Ghép ảnh vào từng sản phẩm
+      const productsWithImages = products.map((product) => ({
+        ...product,
+        imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
+      }));
+
+      // 5. Set state
+      setSellerProducts(productsWithImages);
+      setFilteredProducts(productsWithImages);
+      setCategories(categories.map((c) => c.name));
+      setBrands(brands.map((b) => b.name)); // Giả sử API trả object brand, map lấy name
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchSellerAddress = async (sellerId) => {
+    try {
+      const res = await fetch(
+        `https://kltn.azurewebsites.net/api/addresses/Shop/${sellerId}`
+      );
       if (!res.ok) throw new Error("Không lấy được địa chỉ");
       const data = await res.json();
       setSellerAddress(data[0]); // ✅ lấy địa chỉ đầu tiên
@@ -116,15 +140,17 @@ const SellerPage = () => {
       console.error(err);
       alert("Lỗi khi tải địa chỉ");
     }
-    };
-      useEffect(() => {
+  };
+  useEffect(() => {
     if (seller?.id) {
       fetchSellerAddress(seller.id);
     }
   }, [seller]);
-    const fetchOwner = async (ownerId) => {
+  const fetchOwner = async (ownerId) => {
     try {
-      const res = await fetch(`https://kltn.azurewebsites.net/api/users/${ownerId}`);
+      const res = await fetch(
+        `https://kltn.azurewebsites.net/api/users/${ownerId}`
+      );
       if (!res.ok) throw new Error("Không thể tải thông tin người dùng");
       const data = await res.json();
       setOwner(data);
@@ -181,9 +207,11 @@ const SellerPage = () => {
     let filtered = [...sellerProducts];
 
     // Lọc theo danh mục (category)
-      if (selectedCategory !== "all") {
-          filtered = filtered.filter((product) => product.categoryName === selectedCategory);
-      }
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(
+        (product) => product.categoryName === selectedCategory
+      );
+    }
 
     // Lọc theo từ khóa tìm kiếm
     if (searchKeyword.trim() !== "") {
@@ -211,33 +239,42 @@ const SellerPage = () => {
     }
 
     setFilteredProducts(filtered);
-  }, [selectedCategory, selectedBrand, selectedSort, searchKeyword, sellerProducts]);
-    const handleCreateConversation = async () => {
-        const accessToken = localStorage.getItem("accessToken");
-        setLoading(true);
-        try {
-            const res = await fetch("https://kltn.azurewebsites.net/api/conversations/create", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`
-                },
-                body: JSON.stringify({ UserBId: seller.ownerId }),
-            });
-            if (!res.ok) {
-                const error = await res.text();
-                alert("Lỗi tạo cuộc trò chuyện: " + error);
-                return;
-            }
-            const data = await res.json();
-            navigate(`/profile`);
-            alert("Tạo cuộc trò chuyện thành công!");
-        } catch (err) {
-            alert("Lỗi mạng hoặc server.");
-        } finally {
-            setLoading(false);
+  }, [
+    selectedCategory,
+    selectedBrand,
+    selectedSort,
+    searchKeyword,
+    sellerProducts,
+  ]);
+  const handleCreateConversation = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    setLoading(true);
+    try {
+      const res = await fetch(
+        "https://kltn.azurewebsites.net/api/conversations/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ UserBId: seller.ownerId }),
         }
-    };
+      );
+      if (!res.ok) {
+        const error = await res.text();
+        alert("Lỗi tạo cuộc trò chuyện: " + error);
+        return;
+      }
+      const data = await res.json();
+      navigate(`/profile`);
+      alert("Tạo cuộc trò chuyện thành công!");
+    } catch (err) {
+      alert("Lỗi mạng hoặc server.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="seller-page">
@@ -252,57 +289,111 @@ const SellerPage = () => {
         />
         <div className="seller-info-details">
           <div>
-            <h3>{seller?.name}</h3>
-            <p>{sellerAddress?.district+", "+sellerAddress?.province}</p>
-            <p>{owner?.phoneNumber}</p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <h3>{seller?.name}</h3>
+              <button
+                className="contact-button"
+                onClick={handleCreateConversation}
+                disabled={loading}
+              >
+                {loading ? "Đang tạo..." : "Tư Vấn"}
+              </button>
+            </div>
+
+            <p>
+              <strong>Địa chỉ:</strong>{" "}
+              {sellerAddress?.district + ", " + sellerAddress?.province}
+            </p>
+            <p>
+              <strong>Số điện thoại: </strong>
+              {owner?.phoneNumber}
+            </p>
           </div>
-                  <button className="contact-button" onClick={handleCreateConversation} disabled={loading}>
-                      {loading ? "Đang tạo..." : "Tư Vấn"}
-                  </button>
-          <p>Đây là trang của người bán chuyên cung cấp sản phẩm nông nghiệp chất lượng cao.</p>
+          <p>
+            <strong>Giới thiệu: </strong>Đây là trang của người bán chuyên cung
+            cấp sản phẩm nông nghiệp chất lượng cao.
+          </p>
         </div>
       </div>
 
       <div className="seller-filters">
-        <div className="filter-item">
-                  <div className="filter-item">
-                      <label htmlFor="category">Lọc theo danh mục: </label>
-                      <Autocomplete
-                          options={categoryOptions}
-                          getOptionLabel={(option) => option.label}
-                          value={selectedCategoryOption}
-                          onChange={(event, newValue) => {
-                              setSelectedCategory(newValue ? newValue.value : "all");
-                          }}
-                          isOptionEqualToValue={(option, value) => option.value === value.value}
-                          renderInput={(params) => (
-                              <TextField {...params} label="Chọn danh mục" variant="outlined" size="small" />
-                          )}
-                          style={{ width: 250 }}
-                      />
-                  </div>
-
-        </div>
-
-              <div className="filter-item">
-                  <label htmlFor="brand">Lọc theo nhãn hiệu: </label>
-                  <Autocomplete
-                      options={brandOptions}
-                      getOptionLabel={(option) => option.label}
-                      value={selectedBrandOption}
-                      onChange={(event, newValue) => {
-                          setSelectedBrand(newValue ? newValue.value : "all");
-                      }}
-                      isOptionEqualToValue={(option, value) => option.value === value.value}
-                      renderInput={(params) => (
-                          <TextField {...params} label="Chọn nhãn hiệu" variant="outlined" size="small" />
-                      )}
-                      style={{ width: 250 }}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            gap: "100px",
+            width: "80%",
+          }}
+        >
+          <h2>Sản phẩm đang bán</h2>
+          <div
+            style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}
+          >
+            <div className="filter-item">
+              {/* <label htmlFor="category">Lọc theo danh mục: </label> */}
+              <Autocomplete
+                options={categoryOptions}
+                getOptionLabel={(option) => option.label}
+                value={selectedCategoryOption}
+                onChange={(event, newValue) => {
+                  setSelectedCategory(newValue ? newValue.value : "all");
+                }}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Chọn danh mục"
+                    variant="outlined"
+                    size="small"
                   />
-              </div>
+                )}
+                style={{ width: 250 }}
+              />
+            </div>
 
-        <div className="filter-item">
-          <label htmlFor="sort">Sắp xếp: </label>
+            <div className="filter-item">
+              {/* <label htmlFor="brand">Lọc theo nhãn hiệu: </label> */}
+              <Autocomplete
+                options={brandOptions}
+                getOptionLabel={(option) => option.label}
+                value={selectedBrandOption}
+                onChange={(event, newValue) => {
+                  setSelectedBrand(newValue ? newValue.value : "all");
+                }}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Chọn nhãn hiệu"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                style={{ width: 250 }}
+              />
+            </div>
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Tìm sản phẩm theo tên..."
+                value={searchKeyword}
+                onChange={handleSearchChange}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="filter-item-price">
           <select id="sort" value={selectedSort} onChange={handleSortChange}>
             <option value="default">Chọn sắp xếp</option>
             <option value="bestseller">Bán chạy nhất</option>
@@ -310,19 +401,9 @@ const SellerPage = () => {
             <option value="price-low">Giá thấp đến cao</option>
           </select>
         </div>
-
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Tìm sản phẩm theo tên..."
-            value={searchKeyword}
-            onChange={handleSearchChange}
-          />
-        </div>
       </div>
 
       <div className="seller-products">
-        <h2>Sản phẩm đang bán</h2>
         <div className="product-grid">
           {filteredProducts.length === 0 ? (
             <p>Không có sản phẩm nào phù hợp với bộ lọc của bạn</p>
