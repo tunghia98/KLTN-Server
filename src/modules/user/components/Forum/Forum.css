@@ -484,7 +484,6 @@
   border-radius: 10px;
   min-height: 100px;
   flex: 1;
-  overflow: auto;
   background-color: #f4f4f4;
   border-radius: 5px;
 }

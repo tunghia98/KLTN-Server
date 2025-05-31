@@ -7,7 +7,7 @@ export const useCart = () => useContext(CartContext);
 export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
     const { user } = useUser();
-    const accessToken = localStorage.getItem("accessToken");;
+    const accessToken = localStorage.getItem("accessToken");
     const fetchCartFromBackend = async () => {
         if (!accessToken) return;
 

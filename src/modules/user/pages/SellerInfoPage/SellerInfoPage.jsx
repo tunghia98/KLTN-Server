@@ -4,11 +4,13 @@ import ProductCard from "../../components/ProductCard/ProductCard";
 import Pagination from "../../../../components/Pagination/Pagination";
 import "./SellerInfoPage.css";
 import { Autocomplete, TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 const SellerPage = () => {
   const { sellerSlug } = useParams();
   const [seller, setSeller] = useState(null);
   const [sellerProducts, setSellerProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [brands, setBrands] = useState([]);
@@ -69,7 +71,6 @@ const SellerPage = () => {
                 id: index + 1,        // hoặc dùng index nếu không có ID thực
                 name,
             }));
-            console.log(brands);
             // 2. Lấy danh sách productIds để fetch ảnh
             const productIds = products.map(p => p.id);
 
@@ -211,34 +212,33 @@ const SellerPage = () => {
 
     setFilteredProducts(filtered);
   }, [selectedCategory, selectedBrand, selectedSort, searchKeyword, sellerProducts]);
+    const handleCreateConversation = async () => {
+        const accessToken = localStorage.getItem("accessToken");
+        setLoading(true);
+        try {
+            const res = await fetch("https://kltn.azurewebsites.net/api/conversations/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({ UserBId: seller.ownerId }),
+            });
+            if (!res.ok) {
+                const error = await res.text();
+                alert("Lỗi tạo cuộc trò chuyện: " + error);
+                return;
+            }
+            const data = await res.json();
+            navigate(`/profile`);
+            alert("Tạo cuộc trò chuyện thành công!");
+        } catch (err) {
+            alert("Lỗi mạng hoặc server.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // thêm cuộc hội thoại mới
-    //const handleCreateConversation = async () => {
-    //    setLoading(true);
-    //    try {
-    //        const res = await fetch("https://kltn.azurewebsites.net/api/conversations/create", {
-    //            method: "POST",
-    //            headers: {
-    //                "Content-Type": "application/json",
-    //                // Nếu có token thì thêm vào đây
-    //                // Authorization: `Bearer ${token}`
-    //            },
-    //            body: JSON.stringify({ UserBId: receiverId }),
-    //        });
-    //        if (!res.ok) {
-    //            const error = await res.text();
-    //            alert("Lỗi tạo cuộc trò chuyện: " + error);
-    //            return;
-    //        }
-    //        const data = await res.json();
-    //        onCreated && onCreated(data);
-    //        alert("Tạo cuộc trò chuyện thành công!");
-    //    } catch (err) {
-    //        alert("Lỗi mạng hoặc server.");
-    //    } finally {
-    //        setLoading(false);
-    //    }
-    //};
   return (
     <div className="seller-page">
       <div className="seller-info">
@@ -256,9 +256,9 @@ const SellerPage = () => {
             <p>{sellerAddress?.district+", "+sellerAddress?.province}</p>
             <p>{owner?.phoneNumber}</p>
           </div>
-                  {/*<button className="contact-button" onClick={handleCreateConversation} disabled={loading}>*/}
-                  {/*    {loading ? "Đang tạo..." : "Tư Vấn"}*/}
-                  {/*</button>*/}
+                  <button className="contact-button" onClick={handleCreateConversation} disabled={loading}>
+                      {loading ? "Đang tạo..." : "Tư Vấn"}
+                  </button>
           <p>Đây là trang của người bán chuyên cung cấp sản phẩm nông nghiệp chất lượng cao.</p>
         </div>
       </div>

@@ -45,14 +45,29 @@ const UserProfile = () => {
         setEditingAddress(addr.id);
         setShowAddressForm(true);
     };
+    const [chatList, setChatList] = useState([]);
+    const [selectedChat, setSelectedChat] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
+
+    const accessToken = localStorage.getItem("accessToken");
 
 
-    const [selectedChat, setSelectedChat] = useState(null);  // Lưu trạng thái chat đã chọn
+    useEffect(() => {
+        if (!currentUserId) return;
 
-    const chatList = [
-        { id: 1, name: "Shop Phân Bón Hữu Cơ", lastMessage: "Bạn cần thêm thông tin sản phẩm?" },
-        { id: 2, name: "Shop Nông Sản ABC", lastMessage: "Đơn hàng của bạn đang được xử lý." },
-    ];
+        fetch("https://kltn.azurewebsites.net/api/conversations/me", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        })
+            .then((res) => res.json())
+            .then((conversations) => {
+                setChatList(conversations);
+                // Nếu chưa chọn chat nào, chọn chat đầu tiên mặc định
+                if (conversations.length > 0 && !selectedChat) {
+                    setSelectedChat(conversations[0].id);
+                }
+            })
+            .catch(() => alert("Không lấy được danh sách cuộc trò chuyện"));
+    }, [accessToken, currentUserId, selectedChat]);
 
     const fetchUser = async () => {
         try {
@@ -65,6 +80,7 @@ const UserProfile = () => {
             if (!res.ok) throw new Error("Không lấy được thông tin người dùng");
 
             const data = await res.json();
+            setCurrentUserId(data.id || data.userId);
             setUserInfo(data);
             setFormData({
                 name: data.name || "",
@@ -254,11 +270,15 @@ const UserProfile = () => {
                 <div className="chat-section-wrapper">
                     <div className="chat-app">
                         <div className="chat-list">
-                            <ChatList chats={chatList} onSelectChat={setSelectedChat} userRole="user" />
+                            <ChatList chats={chatList} onSelectChat={setSelectedChat} currentUserId={currentUserId} />
                         </div>
                         <div className="chat-content">
                             {selectedChat ? (
-                                <ChatContent chatId={selectedChat} userRole="user" />
+                                <ChatContent
+                                    chatId={selectedChat.id}
+                                    currentUserId={currentUserId}
+                                    conversation={selectedChat}
+                                />
                             ) : (
                                 <p>Chọn một cửa hàng để bắt đầu trò chuyện.</p>
                             )}
