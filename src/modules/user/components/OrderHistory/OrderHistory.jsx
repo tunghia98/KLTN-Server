@@ -91,7 +91,7 @@ const OrderHistory = () => {
                             >
                                 {expandedOrderId === order.id ? "Ẩn chi tiết" : "Xem chi tiết"}
                             </button>
-                            {order.status === "Chờ xác nhận" && (
+                            {(order.status === "Chờ xác nhận" || order.status === "Đang xử lý") && (
                                 <button
                                     className="btn btn-secondary"
                                     onClick={() => handleCancelClick(order.id)}

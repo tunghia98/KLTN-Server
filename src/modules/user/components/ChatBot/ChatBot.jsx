@@ -10,6 +10,24 @@ const ChatBot = () => {
     ]);
     const [loading, setLoading] = useState(false);
 
+    const processBotResponse = (text) => {
+        const regex = /List ID sản phẩm\s*:\s*([0-9,\s]+)/i;
+        const match = text.match(regex);
+
+        let productIds = [];
+        if (match) {
+            // Tách danh sách ID
+            productIds = match[1]
+                .split(',')
+                .map(id => parseInt(id.trim()))
+                .filter(id => !isNaN(id));
+
+            // Xoá phần "List ID sản phẩm: ..." khỏi nội dung text
+            text = text.replace(regex, "").trim();
+        }
+
+        return { text, productIds };
+    };
     const handleSend = async () => {
         if (!message.trim()) return;
 
@@ -19,7 +37,7 @@ const ChatBot = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("https://kltn.azurewebsites.net/api/ChatBot/ask", {
+            const response = await fetch("https://kltn.azurewebsites.net/api/ChatBot/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -29,11 +47,11 @@ const ChatBot = () => {
 
             if (!response.ok) throw new Error("Không thể kết nối tới API");
 
-            const data = await response.json();
+            const data = await response.text();
 
             setChatLog(prev => [
                 ...prev,
-                { from: "bot", text: data.response }
+                { from: "bot", text: data }
             ]);
         } catch (err) {
             setChatLog(prev => [
