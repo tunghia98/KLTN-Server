@@ -95,7 +95,7 @@ const OrderManagementPage = () => {
                                         backgroundColor: getSelectBackgroundColor(order.status),
                                     }}
                                 >
-                                    <option value="Chờ xác nhận">Chờ xác nhận</option>
+                                    <option value="Đang xử lý">Đang xử lý</option>
                                     <option value="Đã xác nhận">Đã xác nhận</option>
                                     <option value="Đang giao">Đang giao</option>
                                     <option value="Đã giao">Đã giao</option>
