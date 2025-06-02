@@ -118,24 +118,12 @@ useEffect(() => {
     useEffect(() => {
         const fetchRecommendations = async () => {
             try {
-                const token = localStorage.getItem("accessToken");
                 let recommends = [];
 
-                if (token) {
+                if (userInfo.id) {
                     // Nếu có token, lấy user info rồi fetch gợi ý cá nhân hóa
-                    const resUser = await fetch("https://kltn.azurewebsites.net/api/Users/me", {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    if (!resUser.ok) throw new Error("Không lấy được thông tin người dùng");
-
-                    const userData = await resUser.json();
-
-                    const resRecommends = await fetch(
-                        `https://kltn.azurewebsites.net/api/Recommendation/user/${userData.id}`,
-                        {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }
-                    );
+                    console.log(userInfo);
+                    const resRecommends = await fetch(`https://kltn.azurewebsites.net/api/Recommendation/user/${userInfo.id}`);
 
                     if (!resRecommends.ok) throw new Error("Lấy gợi ý thất bại");
 
@@ -162,17 +150,11 @@ useEffect(() => {
                 if (!imagesRes.ok) throw new Error("Lỗi tải ảnh sản phẩm gợi ý");
 
                 const imagesData = await imagesRes.json();
-
-                const recommendsWithImages = recommends.map((product) => {
-                    const matchedImages = imagesData.filter((img) => img.productId === product.id);
-                    return {
-                        ...product,
-                        images: matchedImages.map(
-                            (img) => `https://kltn.azurewebsites.net/api/product-images/file/${img.fileName}`
-                        ),
-                    };
-                });
-
+                const recommendsWithImages = recommends.map((product) => ({
+                    ...product,
+                    imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
+                }));
+                console.log(recommendsWithImages);
                 setRecommendations(recommendsWithImages);
             } catch (err) {
                 console.error("Lỗi fetch recommendations:", err);
