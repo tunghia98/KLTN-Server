@@ -101,10 +101,13 @@
   all: unset !important;
 }
 
-.product-search-bar {
-  margin-top: 8px;
+.product-search-bar input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
-
 .seller-products h2 {
   font-size: 22px;
   margin-bottom: 16px;

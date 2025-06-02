@@ -383,7 +383,7 @@ const SellerPage = () => {
                 style={{ width: 250 }}
               />
             </div>
-            <div className="search-bar">
+            <div className="product-search-bar">
               <input
                 type="text"
                 placeholder="Tìm sản phẩm theo tên..."

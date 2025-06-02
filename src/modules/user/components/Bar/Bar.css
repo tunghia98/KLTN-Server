@@ -341,14 +341,12 @@ border-radius: 10px;
 }
 
 .seller-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  display: flex;
   justify-items: center;
 }
 
 .seller-card {
-  background-color: #f9f9f9;
+  background-color: #457d58;
   border-radius: 8px;
   padding: 1.2rem;
   width: 100%;
@@ -358,12 +356,15 @@ border-radius: 10px;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
+  display:flex;
+  align-items: center;
+  justify-content: center;;
 }
 
 .seller-card h3 {
   font-size: 1.6rem;
   font-weight: 600;
-  color: #555;
+  color: #ffffff;
   margin: 1rem 0;
   transition: color 0.3s ease;
 }
@@ -394,4 +395,39 @@ border-radius: 10px;
     max-width: 100%;
     padding: 1rem;
   }
+}
+.category-bar-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.category-search-input {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 250px;
+}
+
+.category-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: none;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }

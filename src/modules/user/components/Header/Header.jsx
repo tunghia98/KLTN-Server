@@ -7,7 +7,8 @@ import {
   faLocationDot,
   faShoppingCart,
   faArrowRightFromBracket,
-  faBars
+  faBars,
+  faShop,
 } from "@fortawesome/free-solid-svg-icons";
 import Login from "../AuthForm/Login";
 import Register from "../AuthForm/Register";
@@ -40,7 +41,7 @@ function Header() {
     localStorage.removeItem("user");
     setUser(null);
   };
-
+  console.log("user", user);
   return (
     <header className="header">
       {/* Main Nav */}
@@ -89,6 +90,12 @@ function Header() {
               <span className="cart-badge">{totalProducts}</span>
             )}
           </div>
+          {user && user.role === "seller" && (
+            <div className="header-cart">
+              <FontAwesomeIcon icon={faShop} className="icon-cart" />
+              <Link to="/seller/dashboard">Cửa hàng</Link>
+            </div>
+          )}
 
           {user && (
             <div className="header-logout">
