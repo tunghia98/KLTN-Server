@@ -16,74 +16,79 @@ function ProductPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
-    const categoryOptions = [
-        { label: "Tất cả danh mục", value: "all" },
-        ...categories.map((c) => ({ label: c.name, value: c.name })),
-    ];
+  const categoryOptions = [
+    { label: "Tất cả danh mục", value: "all" },
+    ...categories.map((c) => ({ label: c.name, value: c.name })),
+  ];
 
-    const brandOptions = [
-        { label: "Tất cả nhãn hiệu", value: "all" },
-        ...brands.map((b) => ({ label: b, value: b })),
-    ];
-    const selectedCategoryOption =
-        categoryOptions.find((opt) => opt.value === selectedCategory) || categoryOptions[0];
+  const brandOptions = [
+    { label: "Tất cả nhãn hiệu", value: "all" },
+    ...brands.map((b) => ({ label: b, value: b })),
+  ];
+  const selectedCategoryOption =
+    categoryOptions.find((opt) => opt.value === selectedCategory) ||
+    categoryOptions[0];
 
-    const selectedBrandOption =
-        brandOptions.find((opt) => opt.value === selectedBrand) || brandOptions[0];
+  const selectedBrandOption =
+    brandOptions.find((opt) => opt.value === selectedBrand) || brandOptions[0];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [productRes, categoryRes, brandRes] = await Promise.all([
-                    fetch("https://kltn.azurewebsites.net/api/Products"),
-                    fetch("https://kltn.azurewebsites.net/api/Categories/used"),
-                    fetch("https://kltn.azurewebsites.net/api/Categories/brands"),
-                ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productRes, categoryRes, brandRes] = await Promise.all([
+          fetch("https://kltn.azurewebsites.net/api/Products"),
+          fetch("https://kltn.azurewebsites.net/api/Categories/used"),
+          fetch("https://kltn.azurewebsites.net/api/Categories/brands"),
+        ]);
 
-                const productData = await productRes.json();
-                const categoryData = await categoryRes.json();
-                const brandNames = await brandRes.json(); // ["AgriTool", "Adidas", "Nike"]
+        const productData = await productRes.json();
+        const categoryData = await categoryRes.json();
+        const brandNames = await brandRes.json(); // ["AgriTool", "Adidas", "Nike"]
 
-                const brands = brandNames.map((name, index) => ({
-                    id: index + 1,        // hoặc dùng index nếu không có ID thực
-                    name,
-                }));
+        const brands = brandNames.map((name, index) => ({
+          id: index + 1, // hoặc dùng index nếu không có ID thực
+          name,
+        }));
 
-                // Lấy danh sách productIds
-                const productIds = productData.map((p) => p.id);
+        // Lấy danh sách productIds
+        const productIds = productData.map((p) => p.id);
 
-                // Gọi API lấy hình ảnh theo productIds
-                const imagesRes = await fetch("https://kltn.azurewebsites.net/api/product-images/list-by-products", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(productIds),
-                });
+        // Gọi API lấy hình ảnh theo productIds
+        const imagesRes = await fetch(
+          "https://kltn.azurewebsites.net/api/product-images/list-by-products",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(productIds),
+          }
+        );
 
-                const imagesData = await imagesRes.json();
+        const imagesData = await imagesRes.json();
 
-                // Gộp ảnh vào từng sản phẩm
-                const productsWithImages = productData.map((product) => ({
-                    ...product,
-                    imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
-                }));
+        // Gộp ảnh vào từng sản phẩm
+        const productsWithImages = productData.map((product) => ({
+          ...product,
+          imageUrls: imagesData[product.id]?.map((img) => img.imageUrl) || [],
+        }));
 
-                setProducts(productsWithImages);
-                setFilteredProducts(productsWithImages.reverse());
-                setCategories(categoryData);
+        setProducts(productsWithImages);
+        setFilteredProducts(productsWithImages.reverse());
+        setCategories(categoryData);
 
-                // Có thể dùng brand từ brandData hoặc trích từ products như dưới
-                const uniqueBrands = [...new Set(productsWithImages.map((p) => p.brand))];
-                setBrands(uniqueBrands);
-            } catch (err) {
-                console.error("Lỗi khi gọi API:", err);
-            }
-        };
+        // Có thể dùng brand từ brandData hoặc trích từ products như dưới
+        const uniqueBrands = [
+          ...new Set(productsWithImages.map((p) => p.brand)),
+        ];
+        setBrands(uniqueBrands);
+      } catch (err) {
+        console.error("Lỗi khi gọi API:", err);
+      }
+    };
 
-        fetchData();
-    }, []);
-
+    fetchData();
+  }, []);
 
   useEffect(() => {
     let filtered = [...products];
@@ -127,52 +132,77 @@ function ProductPage() {
       </h1>
 
       <div className="products-filters">
-        <div className="filter-item">
-          <label htmlFor="category">Lọc theo danh mục:</label>
-                  <Autocomplete
-                      options={categoryOptions}
-                      getOptionLabel={(option) => option.label}
-                      value={selectedCategoryOption}
-                      onChange={(event, newValue) => {
-                          setSelectedCategory(newValue ? newValue.value : "all");
-                      }}
-                      isOptionEqualToValue={(option, value) => option.value === value.value}
-                      renderInput={(params) => (
-                          <TextField
-                              {...params}
-                              label="Chọn danh mục"
-                              variant="outlined"
-                              size="small"
-                          />
-                      )}
-                      style={{ width: 250 }}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            gap: "100px",
+            width: "80%",
+          }}
+        >
+          <h2></h2>
+          <div
+            style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}
+          >
+            <div className="filter-item">
+              {/* <label htmlFor="category">Lọc theo danh mục: </label> */}
+              <Autocomplete
+                options={categoryOptions}
+                getOptionLabel={(option) => option.label}
+                value={selectedCategoryOption}
+                onChange={(event, newValue) => {
+                  setSelectedCategory(newValue ? newValue.value : "all");
+                }}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Chọn danh mục"
+                    variant="outlined"
+                    size="small"
                   />
-        </div>
+                )}
+                style={{ width: 250 }}
+              />
+            </div>
 
-        <div className="filter-item">
-          <label htmlFor="brand">Lọc theo nhãn hiệu:</label>
-                  <Autocomplete
-                      options={brandOptions}
-                      getOptionLabel={(option) => option.label}
-                      value={selectedBrandOption}
-                      onChange={(event, newValue) => {
-                          setSelectedBrand(newValue ? newValue.value : "all");
-                      }}
-                      isOptionEqualToValue={(option, value) => option.value === value.value}
-                      renderInput={(params) => (
-                          <TextField
-                              {...params}
-                              label="Chọn nhãn hiệu"
-                              variant="outlined"
-                              size="small"
-                          />
-                      )}
-                      style={{ width: 250 }}
+            <div className="filter-item">
+              {/* <label htmlFor="brand">Lọc theo nhãn hiệu: </label> */}
+              <Autocomplete
+                options={brandOptions}
+                getOptionLabel={(option) => option.label}
+                value={selectedBrandOption}
+                onChange={(event, newValue) => {
+                  setSelectedBrand(newValue ? newValue.value : "all");
+                }}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Chọn nhãn hiệu"
+                    variant="outlined"
+                    size="small"
                   />
+                )}
+                style={{ width: 250 }}
+              />
+            </div>
+            <div className="product-search-bar">
+              <input
+                type="text"
+                placeholder="Tìm sản phẩm theo tên..."
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
-
-        <div className="filter-item">
-          <label htmlFor="sort">Sắp xếp:</label>
+        <div className="filter-item-price">
           <select
             id="sort"
             value={selectedSort}
@@ -184,19 +214,9 @@ function ProductPage() {
             <option value="price-low">Giá thấp đến cao</option>
           </select>
         </div>
-
-        <div className="products-search-bar">
-          <input
-            type="text"
-            placeholder="Tìm sản phẩm theo tên..."
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-          />
-        </div>
       </div>
 
       <div className="seller-products">
-        <h2>Sản phẩm đang bán</h2>
         <div className="product-grid">
           {current.length === 0 ? (
             <p>Không có sản phẩm nào phù hợp</p>

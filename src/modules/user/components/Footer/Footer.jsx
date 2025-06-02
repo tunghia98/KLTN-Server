@@ -6,6 +6,7 @@ import Login from "../AuthForm/Login.jsx";
 import "./Footer.css";
 
 function Footer() {
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn } = useUser();
@@ -76,7 +77,12 @@ function Footer() {
                 <li>
                   <Link to="/privacy-policy">Chính sách bảo mật</Link>
                 </li>
-                <li onClick={handleClick}>Kênh người bán</li>
+                {user && user.role === "user" && (
+                  <li onClick={handleClick} style={{ cursor: "pointer" }}>
+                    Kênh người bán
+                  </li>
+                )}
+
                 <li>
                   <Link to="/discounts">Giảm giá</Link>
                 </li>

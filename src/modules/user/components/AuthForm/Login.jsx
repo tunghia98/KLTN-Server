@@ -21,16 +21,19 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady }) {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://kltn.azurewebsites.net/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userName: email,
-          password: password,
-        }),
-      });
+      const response = await fetch(
+        "https://kltn.azurewebsites.net/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userName: email,
+            password: password,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const message = await response.text();
@@ -46,37 +49,33 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady }) {
       const userId = payload["userId"];
       const username = payload["username"];
       let role = "";
-        const rolea = payload["role"]; // Đúng định dạng bạn tạo
-        if (rolea.includes("buyer"))
-            role = "buyer";
-        if (rolea.includes("seller"))
-            role = "seller";
-        if (rolea.includes("admin"))
-            role = "admin";
+      const rolea = payload["role"]; // Đúng định dạng bạn tạo
+      if (rolea.includes("buyer")) role = "buyer";
+      if (rolea.includes("seller")) role = "seller";
+      if (rolea.includes("admin")) role = "admin";
       const decodedUser = { userId, username, role };
       setUser(decodedUser);
-        localStorage.setItem("user", JSON.stringify(decodedUser));
+      localStorage.setItem("user", JSON.stringify(decodedUser));
       if (rememberMe) {
         localStorage.setItem("user", JSON.stringify(decodedUser));
       }
 
       toast.success(`Đăng nhập thành công!`);
 
-    setTimeout(() => {
-      if (role.includes("admin")) {
-        navigate("/admin/dashboard");
-      } else if (role.includes("seller")) {
-        navigate("/seller/dashboard");
-      } else {
-        if (isReady === true) {
-          navigate("/onboarding");
+      setTimeout(() => {
+        if (role.includes("admin")) {
+          navigate("/admin/dashboard");
+        } else if (role.includes("seller")) {
+          navigate("/seller/dashboard");
         } else {
-          navigate("/");
+          if (isReady === true) {
+            navigate("/onboarding");
+          } else {
+            navigate("/");
+          }
         }
-      }
-      onClose();
-    }, 1500); 
-
+        onClose();
+      }, 700);
     } catch (err) {
       toast.error("Lỗi kết nối đến máy chủ!");
       console.error(err);

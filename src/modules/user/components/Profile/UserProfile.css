@@ -164,6 +164,9 @@ input[type="radio"]:checked + label + .tab-content {
     gap: 40px;
     margin-top: 2rem;
     align-items: flex-start;
+    width: 80%;
+    padding-left:20px;
+    box-sizing: border-box;
 }
 
 .address-list {
@@ -209,7 +212,7 @@ input[type="radio"]:checked + label + .tab-content {
 }
 /* Profile container */
 .profile-container {
-  width: 100%;
+  width: 90%;
   margin: 0 auto;
   padding: 20px;
   background-color: #ffffff;
@@ -247,7 +250,7 @@ input[type="radio"]:checked + label + .tab-content {
 }
 
 .profile-form-wrapper .address-section-container {
-  width: 80%;
+  width: 40%;
 }
 
 /* Responsive layout adjustments */
@@ -340,7 +343,7 @@ input[type="radio"]:checked + label + .tab-content {
   }
 
   .profile-form-wrapper .address-section-container {
-    width: 100%;
+    width: 80%;
   }
 
   .profile-user-menu-item {

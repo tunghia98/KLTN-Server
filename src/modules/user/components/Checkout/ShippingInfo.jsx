@@ -47,9 +47,9 @@ const ShippingInfo = ({ addresses = [], onAddressChange }) => {
     return (
         <div className="shipping-info">
             <h3>Giao tới</h3>
-            <select value={selectedId} onChange={handleSelectChange}>
+            <select value={selectedId} onChange={handleSelectChange} className="shipping-select">
                 {addresses.map((addr) => (
-                    <option key={addr.id} value={addr.id}>
+                    <option key={addr.id} value={addr.id} className="shipping-option">
                         {formatAddress(addr)}
                     </option>
                 ))}

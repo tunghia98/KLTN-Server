@@ -13,7 +13,12 @@ const ForumSearchFilter = ({
   handleCropChange,
   handleRegionChange,
   handleSearchChange,
+  threads,
+  userThreads,
+  showUserThreads,
+  setShowUserThreads,
 }) => {
+  console.log(showUserThreads);
   return (
     <>
       <div className="filter-form">
@@ -21,7 +26,9 @@ const ForumSearchFilter = ({
         <select onChange={handleCategoryChange} value={category || ""}>
           <option value="">Tất cả</option>
           {categories?.map((item) => (
-            <option key={item.id} value={item.id}>{item.name}</option>
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
           ))}
         </select>
 
@@ -29,7 +36,9 @@ const ForumSearchFilter = ({
         <select onChange={handleCropChange} value={crop || ""}>
           <option value="">Tất cả</option>
           {crops?.map((item) => (
-            <option key={item.id} value={item.id}>{item.name}</option>
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
           ))}
         </select>
 
@@ -37,18 +46,33 @@ const ForumSearchFilter = ({
         <select onChange={handleRegionChange} value={region || ""}>
           <option value="">Tất cả</option>
           {regions?.map((item) => (
-            <option key={item.id} value={item.id}>{item.name}</option>
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
           ))}
         </select>
       </div>
+      <div className="forum-search-bar-my-threads">
+        <button
+          onClick={() => {
+            setShowUserThreads((prev) => {
+              console.log("Toggle showUserThreads:", !prev);
+              return !prev;
+            });
+          }}
+          className="button-find-mine-forum"
+        >
+          Của tôi
+        </button>
 
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Nhập từ khóa "
-          value={searchKeyword}
-          onChange={(e) => handleSearchChange(e.target.value)}
-        />
+        <div className="search-bar-forum">
+          <input
+            type="text"
+            placeholder="Nhập từ khóa "
+            value={searchKeyword}
+            onChange={(e) => handleSearchChange(e.target.value)}
+          />
+        </div>
       </div>
     </>
   );

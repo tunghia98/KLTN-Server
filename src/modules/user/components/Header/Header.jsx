@@ -96,6 +96,12 @@ function Header() {
               <Link to="/seller/dashboard">Cửa hàng</Link>
             </div>
           )}
+          {user && user.role === "admin" && (
+            <div className="header-cart">
+              <FontAwesomeIcon icon={faShop} className="icon-cart" />
+              <Link to="/admin/dashboard">Quản trị</Link>
+            </div>
+          )}
 
           {user && (
             <div className="header-logout">
