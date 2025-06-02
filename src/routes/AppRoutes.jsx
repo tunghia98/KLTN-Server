@@ -10,8 +10,8 @@ import PrivacyPolicyPage from "../modules/user/pages/PrivacyPolicyPage.jsx";
 import AboutPage from "../modules/user/pages/AboutPage.jsx";
 import ContactPage from "../modules/user/pages/ContactPage.jsx";
 import WarrantyPolicyPage from "../modules/user/pages/WarrantyPolicyPage.jsx";
-import ForumPage from '../modules/user/pages/Forum/ForumPage.jsx';
-import ThreadDetailPage from '../modules/user/pages/Forum/ThreadDetailPage.jsx';
+import ForumPage from "../modules/user/pages/Forum/ForumPage.jsx";
+import ThreadDetailPage from "../modules/user/pages/Forum/ThreadDetailPage.jsx";
 import UserInfoPage from "../modules/user/pages/UserInfoPage/UserInfoPage.jsx";
 import { useUser } from "../contexts/UserContext";
 import PrivateRoute from "../components/PrivateRoute.jsx";
@@ -21,7 +21,7 @@ import OrdersManagementPage from "../modules/seller/pages/Orders/OrdersManagemen
 import ProductsManagementPage from "../modules/seller/pages/Products/ProductsManagementPage.jsx";
 import OrderDetailPage from "../modules/seller/pages/Orders/OrderManagementDetailPage.jsx";
 import EditProductPage from "../modules/seller/pages/Products/EditProductPage.jsx";
-import RevenueManagementPage from "../modules/seller/pages/Revenue/RevenueManagementPage.jsx";
+import StatisticsManagementPage from "../modules/seller/pages/Statistics/StatisticsManagementPage.jsx";
 import PromotionsManagementPage from "../modules/seller/pages/Promotion/PromotionsManagementPage.jsx";
 import ShippingManagementPage from "../modules/seller/pages/Shipping/ShippingManagementPage.jsx";
 import ProductPromoted from "../modules/seller/pages/Promotion/ProductPromoted.jsx";
@@ -55,214 +55,219 @@ const AppRoutes = () => {
       <Route path="/profile" element={<UserInfoPage />} />
       <Route path="/forum" element={<ForumPage />} />
       <Route path="/forum/thread/:titleSlug" element={<ThreadDetailPage />} />
-      <Route path="/sellers/:sellerSlug" element={<MainLayout><SellerInfoPage /></MainLayout>} />
-          <Route path="/products/:productSlug" element={<ProductDetailPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/forum/create" element={<CreateNewThread />} />
-          <Route path="products" element={<ProductPage />} />
-          <Route path="/location-map" element={<MapPage/>} />
+      <Route
+        path="/sellers/:sellerSlug"
+        element={
+          <MainLayout>
+            <SellerInfoPage />
+          </MainLayout>
+        }
+      />
+      <Route path="/products/:productSlug" element={<ProductDetailPage />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/forum/create" element={<CreateNewThread />} />
+      <Route path="products" element={<ProductPage />} />
+      <Route path="/location-map" element={<MapPage />} />
       {/* Seller and Admin Routes using ManagementLayout */}
       <Route
         path="/seller/dashboard"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
-            <ManagementLayout/>
+          <PrivateRoute allowedRoles={["seller"]}>
+            <ManagementLayout />
           </PrivateRoute>
         }
       />
-      <Route 
-        path="/seller/orders" 
+      <Route
+        path="/seller/orders"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <OrdersManagementPage>
-              </OrdersManagementPage>
+              <OrdersManagementPage></OrdersManagementPage>
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-      <Route 
-        path="/seller/orders/:orderId" 
+      <Route
+        path="/seller/orders/:orderId"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <OrderDetailPage/>
+              <OrderDetailPage />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-      <Route 
+      <Route
         path="/seller/products"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
-          <ManagementLayout>
-            <ProductsManagementPage />
-          </ManagementLayout>
-        </PrivateRoute>
+          <PrivateRoute allowedRoles={["seller"]}>
+            <ManagementLayout>
+              <ProductsManagementPage />
+            </ManagementLayout>
+          </PrivateRoute>
         }
       />
       <Route
         path="/seller/products/edit/:productId"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
               <EditProductPage />
             </ManagementLayout>
-          </PrivateRoute> 
+          </PrivateRoute>
         }
-        />
-        <Route
-        path="/seller/revenue"
+      />
+      <Route
+        path="/seller/statistics"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <RevenueManagementPage/>
+              <StatisticsManagementPage />
             </ManagementLayout>
           </PrivateRoute>
         }
-        />
-        <Route
+      />
+      <Route
         path="/seller/promotions"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <PromotionsManagementPage/>
+              <PromotionsManagementPage />
             </ManagementLayout>
           </PrivateRoute>
         }
-        />
-        <Route
+      />
+      <Route
         path="/seller/delivery"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <ShippingManagementPage/>
+              <ShippingManagementPage />
             </ManagementLayout>
           </PrivateRoute>
         }
-        />
-        <Route
+      />
+      <Route
         path="/seller/review"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <SellerReviewsPage/>
+              <SellerReviewsPage />
             </ManagementLayout>
           </PrivateRoute>
         }
-        />
-        <Route
+      />
+      <Route
         path="/seller/chat"
         element={
-          <PrivateRoute allowedRoles={['seller']}>
+          <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <ChatPage/>
+              <ChatPage />
             </ManagementLayout>
           </PrivateRoute>
         }
-        />
-{/* ADMIN */}
-      
+      />
+      {/* ADMIN */}
+
       <Route
         path="/admin/dashboard"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
-            <ManagementLayout>
-            </ManagementLayout>
+          <PrivateRoute allowedRoles={["admin"]}>
+            <ManagementLayout></ManagementLayout>
           </PrivateRoute>
         }
       />
       <Route
         path="/admin/users"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <UserManagement/>
+              <UserManagement />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/sellers"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <SellerManagement/>
+              <SellerManagement />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/transaction"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <TransactionManagement/>
+              <TransactionManagement />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/statistics"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <StatisticsDashboard/>
+              <StatisticsDashboard />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/access-control"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <AccessControlSettings/>
+              <AccessControlSettings />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/violation"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <ViolationManagement/>
+              <ViolationManagement />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/support-request"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <SupportRequestManagement/>
+              <SupportRequestManagement />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/support-channel"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <SupportChannelManagement/>
+              <SupportChannelManagement />
             </ManagementLayout>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         path="/admin/customization"
         element={
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
-              <WebsiteCustomization/>
+              <WebsiteCustomization />
             </ManagementLayout>
           </PrivateRoute>
         }
-      />  
+      />
 
       {/* Seller Onboarding Route */}
       <Route path="/onboarding" element={<SellerOnboarding />} />

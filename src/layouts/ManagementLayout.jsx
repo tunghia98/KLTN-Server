@@ -53,7 +53,7 @@ function ManagementLayout({ children }) {
               <Link to="/seller/products">Sản phẩm</Link>
             </li>
             <li>
-              <Link to="/seller/revenue">Doanh thu</Link>
+              <Link to="/seller/statistics">Thống kê</Link>
             </li>
             <li>
               <Link to="/seller/delivery">Vận chuyển</Link>

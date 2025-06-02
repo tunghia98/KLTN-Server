@@ -1,0 +1,84 @@
+.rating-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rating-item {
+  border: 1px solid #e0e0e0;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+}
+
+.rating-item h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.rating-item textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  font-family: inherit;
+  background-color: #fff;
+}
+
+.rating-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-submit {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-submit:hover {
+  background-color: #218838;
+}
+
+.btn-cancel {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #c82333;
+}
+
+/* Star rating input styling (if needed) */
+.star-rating-input {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.star-rating-input svg {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star-rating-input svg.filled {
+  color: #ffc107;
+}
+
+.star-rating-input svg.empty {
+  color: #e0e0e0;
+}
