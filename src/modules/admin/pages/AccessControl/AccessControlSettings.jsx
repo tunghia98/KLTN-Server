@@ -30,7 +30,6 @@ export default function AccessControlSettings() {
       alert("Vui lòng chọn quản trị viên!");
       return;
     }
-    console.log(`Đã lưu phân quyền cho ${selectedAdmin.name}:`, permissions);
     alert(`Đã lưu phân quyền cho ${selectedAdmin.name}`);
     // TODO: Gửi dữ liệu lên server tại đây
   };

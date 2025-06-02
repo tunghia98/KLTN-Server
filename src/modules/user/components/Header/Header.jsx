@@ -41,7 +41,6 @@ function Header() {
     localStorage.removeItem("user");
     setUser(null);
   };
-  console.log("user", user);
   return (
     <header className="header">
       {/* Main Nav */}
