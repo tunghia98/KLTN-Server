@@ -8,7 +8,23 @@ const ProductCard = ({ product, categoryName, index }) => {
   const navigate = useNavigate(); // để chuyển hướng khi mua
   const { fetchCartFromBackend } = useCart();
   if (!product) return <p>Không có sản phẩm.</p>;
+    const logProductView = async (productId) => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) return; // hoặc bạn có thể xử lý khác nếu chưa login
 
+        try {
+            await fetch("https://kltn.azurewebsites.net/api/productviewlogs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ productId }),
+            });
+        } catch (error) {
+            console.error("Lỗi log view sản phẩm:", error);
+        }
+    };
   const productLink = `/products/${product.id+"-"+toSlug(product.name)}`;
 
     const handleAddToCart = async () => {
@@ -54,7 +70,7 @@ const ProductCard = ({ product, categoryName, index }) => {
               src={
                   product.imageUrls?.[0]
                       ? `https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0]}`
-                      : `https://kltn.azurewebsites.net/api/product-images/file/7a2843f5-2a5a-46e2-8eea-080b51bada6b.png`
+                      : `https://kltn.azurewebsites.net/api/product-images/file/default.png`
               }
               alt={product.name}
               className="card-img"
@@ -65,7 +81,8 @@ const ProductCard = ({ product, categoryName, index }) => {
         <Link
           to={productLink}
           state={{ product, idSeller: product.idSeller }}
-          className="card-link"
+                  className="card-link"
+                  onClick={() => logProductView(product.id)}
         >
           {product.name}
         </Link>

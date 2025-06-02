@@ -1,24 +1,35 @@
 import "./SimilarProduct.css";
-function SimilarProduct(){
-    return(
-        <div className="similar-product">
-                    <label className="product-detail-title">Sản phẩm tương tự</label>
-                    <div className="similar-product-list">
-                        {[...Array(9)].map((_, i) => (
-                            <div key={i} className="similar-product-list">
-                                <div className="similar-product-item">
-                                    <img src="logo192.png" alt="abc" />
-                                    <p>Tên sản phẩm tương tự</p>
-                                    <div className="similar-product-price-trans">
-                                        <span>Giá tiền</span>
-                                        <button className="">+</button>
-                                    </div>
 
-                                </div>
+function SimilarProduct({ products }) {
+    return (
+        <div className="similar-product">
+            <label className="product-detail-title">Sản phẩm tương tự</label>
+            <div className="similar-product-list">
+                {products && products.length > 0 ? (
+                    products.map((product) => (
+                        <div key={product.id} className="similar-product-item">
+                            <img
+                                src={
+                                    product.imageUrls?.[0]
+                                        ? `https://kltn.azurewebsites.net/api/product-images/file/${product.imageUrls[0]}`
+                                        : `https://kltn.azurewebsites.net/api/product-images/file/default.png`
+                                }
+                                alt={product.name}
+                                className="card-img"
+                            />
+                            <p>{product.name}</p>
+                            <div className="similar-product-price-trans">
+                                <span>{product.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</span>
+                                <button className="">+</button>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>Không có sản phẩm tương tự</p>
+                )}
+            </div>
         </div>
-    )
+    );
 }
+
 export default SimilarProduct;
