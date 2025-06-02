@@ -28,10 +28,8 @@ function ManagementHeader() {
           const shops = await res.json();
   
           const sellerId = user.userId;
-          console.log("ID nhà cung cấp:", sellerId);
           const foundSeller = shops.find((s) => String(s.ownerId) === String(sellerId));
           setSeller(foundSeller); // Lưu thông tin nhà cung cấp vào state
-          console.log("Nhà cung cấp:", foundSeller);
         } catch (error) {
           console.error("Lỗi khi tải danh sách nhà cung cấp:", error);
         }
