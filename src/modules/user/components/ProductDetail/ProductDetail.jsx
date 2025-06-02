@@ -17,7 +17,8 @@ function ProductDetail({ product, seller, sellerAddress }) {
     const [quantity, setQuantity] = useState(1);
     const { fetchCartFromBackend } = useCart();
   const productSellCounter = 10;
-  const [showDiscount, setShowDiscount] = useState(false);
+    const [showDiscount, setShowDiscount] = useState(false);
+    const [recommendations, setRecommendations] = useState([]);
     const [regularPrice, setRegularPrice] = useState(null);
   const [userInfo, setUserInfo] = useState({});
   const [addresses, setAddresses] = useState([]);
@@ -95,9 +96,8 @@ useEffect(() => {
 
       if (!resUser.ok) throw new Error("Không lấy được thông tin người dùng");
 
-      const userData = await resUser.json();
-      setUserInfo(userData);
-
+        const userData = await resUser.json();
+        setUserInfo(userData);
       const resAddress = await fetch("https://kltn.azurewebsites.net/api/addresses/user", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -115,7 +115,72 @@ useEffect(() => {
 
   fetchUserAndAddresses();
 }, []);
+    useEffect(() => {
+        const fetchRecommendations = async () => {
+            try {
+                const token = localStorage.getItem("accessToken");
+                let recommends = [];
 
+                if (token) {
+                    // Nếu có token, lấy user info rồi fetch gợi ý cá nhân hóa
+                    const resUser = await fetch("https://kltn.azurewebsites.net/api/Users/me", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (!resUser.ok) throw new Error("Không lấy được thông tin người dùng");
+
+                    const userData = await resUser.json();
+
+                    const resRecommends = await fetch(
+                        `https://kltn.azurewebsites.net/api/Recommendation/user/${userData.id}`,
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+
+                    if (!resRecommends.ok) throw new Error("Lấy gợi ý thất bại");
+
+                    recommends = await resRecommends.json();
+                    console.log(recommends);
+                } else {
+                    // Nếu không có token (không đăng nhập), fetch gợi ý chung
+                    const resGeneral = await fetch(`https://kltn.azurewebsites.net/api/Recommendation/user/0`);
+                    if (!resGeneral.ok) throw new Error("Lấy gợi ý chung thất bại");
+
+                    recommends = await resGeneral.json();
+                }
+
+                const productIds = recommends.map((p) => p.id);
+
+                const imagesRes = await fetch("https://kltn.azurewebsites.net/api/product-images/list-by-products", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(productIds),
+                });
+
+                if (!imagesRes.ok) throw new Error("Lỗi tải ảnh sản phẩm gợi ý");
+
+                const imagesData = await imagesRes.json();
+
+                const recommendsWithImages = recommends.map((product) => {
+                    const matchedImages = imagesData.filter((img) => img.productId === product.id);
+                    return {
+                        ...product,
+                        images: matchedImages.map(
+                            (img) => `https://kltn.azurewebsites.net/api/product-images/file/${img.fileName}`
+                        ),
+                    };
+                });
+
+                setRecommendations(recommendsWithImages);
+            } catch (err) {
+                console.error("Lỗi fetch recommendations:", err);
+            }
+        };
+
+        fetchRecommendations();
+    }, []);
   const [selectedImage, setSelectedImage] = useState(images[0] || "");
   const [hoverImage, setHoverImage] = useState(null);
   const displayImage = hoverImage || selectedImage;
@@ -255,7 +320,7 @@ useEffect(() => {
           <button className="buy-now" onClick={handleBuyNow}>Mua ngay</button>
         <button className="add-to-cart" onClick={handleAddToCart}>Thêm vào giỏ hàng</button></div>              
         
-        <SimilarProduct category={product.category} />
+              <SimilarProduct products={recommendations} />
       </div>
 
       <div className="product-description">
