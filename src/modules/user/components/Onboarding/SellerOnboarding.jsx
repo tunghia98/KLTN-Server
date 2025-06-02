@@ -304,7 +304,7 @@ export default function SellerOnboarding() {
           <div className="payment-step">
             <h3>Thanh toán phí đăng ký bán hàng</h3>
             <p>
-              Bạn cần thanh toán <strong>20.000đ</strong> để hoàn tất đăng ký
+              Bạn cần thanh toán <strong>200.000đ</strong> để hoàn tất đăng ký
               bán hàng.
             </p>
 
@@ -313,13 +313,10 @@ export default function SellerOnboarding() {
                 {/* TODO: Tích hợp ví thanh toán hoặc hướng dẫn chuyển khoản */}
                 <p>Quét mã QR để thanh toán:</p>
                 <img
-                  src="/sample-qr.png"
+                  src="./QR.jpg"
                   alt="QR code"
-                  style={{ width: 200, margin: "20px 0" }}
+                  style={{ width: 400, margin: "0 auto",  }}
                 />
-                <button onClick={() => setHasPaid(true)}>
-                  Tôi đã thanh toán
-                </button>
               </div>
             ) : (
               <div>
@@ -340,11 +337,7 @@ export default function SellerOnboarding() {
           <button onClick={nextStep}>Tiếp theo</button>
         ) : (
           <>
-            {!hasPaid ? (
-              <button disabled>Vui lòng thanh toán</button> // Chưa thanh toán thì không cho bấm
-            ) : (
-              <button onClick={handleComplete}>Hoàn tất</button> // Đã thanh toán mới cho bấm hoàn tất
-            )}
+            <button onClick={handleComplete}>Hoàn tất</button>
           </>
         )}
       </div>

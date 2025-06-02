@@ -14,27 +14,17 @@ const TABS = [
   { key: "top", label: "Top sản phẩm bán chạy" },
 ];
 
+const tabComponents = {
+  total: <TotalOrders />,
+  completed: <CompletedOrders />,
+  cancelled: <CancelledOrders />,
+  revenue: <RevenueStats />,
+  top: <TopProducts />,
+};
+
 export default function StatisticsManagement() {
   const [activeTab, setActiveTab] = useState("total");
 
-  const renderTab = () => {
-    switch (activeTab) {
-      case "total":
-        return <TotalOrders />;
-      case "completed":
-        return <CompletedOrders />;
-      case "cancelled":
-        return <CancelledOrders />;
-      case "revenue":
-        return <RevenueStats />;
-      case "top":
-        return <TopProducts />;
-      default:
-        return null;
-    }
-  };
-  console.log("Active Tab:", activeTab);
-  console.log("Rendering Tab:", renderTab());
   return (
     <div className="statistics-management">
       <div className="tabs">
@@ -48,7 +38,9 @@ export default function StatisticsManagement() {
           </button>
         ))}
       </div>
-      <div className="tab-content">{renderTab()}</div>
+      <div className="tab-content">
+        {tabComponents[activeTab] || <div>Không có dữ liệu tab</div>}
+      </div>
     </div>
   );
 }

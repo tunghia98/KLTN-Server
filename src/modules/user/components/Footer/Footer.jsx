@@ -77,9 +77,9 @@ function Footer() {
                 <li>
                   <Link to="/privacy-policy">Chính sách bảo mật</Link>
                 </li>
-                {user && user.role === "user" && (
+                {user && user.role === "buyer" && (
                   <li onClick={handleClick} style={{ cursor: "pointer" }}>
-                    Kênh người bán
+                    <Link to="/onboarding">Kênh người bán</Link>
                   </li>
                 )}
 

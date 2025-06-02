@@ -1,6 +1,7 @@
 import "./SimilarProduct.css";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../../../contexts/CartContext";
+import toSlug from "../../../../utils/toSlug";
 
 function SimilarProduct({ products }) {
   const navigate = useNavigate();
@@ -47,7 +48,13 @@ function SimilarProduct({ products }) {
       <div className="similar-product-list">
         {products && products.length > 0 ? (
           products.map((product) => (
-            <div key={product.id} className="similar-product-item">
+            <div
+              key={product.id}
+              className="similar-product-item"
+              onClick={() =>
+                navigate(`/products/${product?.id}-${toSlug(product?.name)}`)
+              }
+            >
               <img
                 src={
                   product.imageUrls?.[0]
