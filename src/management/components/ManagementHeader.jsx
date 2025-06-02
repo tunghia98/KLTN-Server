@@ -21,7 +21,6 @@ function ManagementHeader() {
     navigate("/profile"); // Điều hướng đến trang sửa thông tin
   };
   useEffect(() => {
-<<<<<<< HEAD
     const fetchSellers = async () => {
       try {
         const res = await fetch("https://kltn.azurewebsites.net/api/Shops");
@@ -37,24 +36,6 @@ function ManagementHeader() {
         console.log("Nhà cung cấp:", foundSeller);
       } catch (error) {
         console.error("Lỗi khi tải danh sách nhà cung cấp:", error);
-=======
-      const fetchSellers = async () => {
-        try {
-          const res = await fetch("https://kltn.azurewebsites.net/api/Shops");
-          if (!res.ok) throw new Error("Không thể tải danh sách nhà cung cấp");
-          const shops = await res.json();
-  
-          const sellerId = user.userId;
-          const foundSeller = shops.find((s) => String(s.ownerId) === String(sellerId));
-          setSeller(foundSeller); // Lưu thông tin nhà cung cấp vào state
-        } catch (error) {
-          console.error("Lỗi khi tải danh sách nhà cung cấp:", error);
-        }
-      };
-  
-      if (user && user.userId) {
-        fetchSellers();
->>>>>>> 61749fcfb315335bc4063e309f490541ec1fc01b
       }
     };
 
