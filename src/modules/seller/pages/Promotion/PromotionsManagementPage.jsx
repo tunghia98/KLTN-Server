@@ -12,19 +12,18 @@ const PromotionsManagementPage = () => {
   const [storePromotions, setStorePromotions] = useState([]);
   const [newPromo, setNewPromo] = useState({
     code: "",
-    discount_type: "percentage",
-    amount: "",
-    start_date: "",
-    end_date: "",
+    type: "",
+    value: "",
+    startDate: "",
+    endDate: "",
     condition: "",
+    productId: [],
   });
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // Quản lý trạng thái popup
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {
-    if (!user || !user.id) {
-      return;
-    }
+    if (!user || !user.id) return;
     const filteredPromotions = storePromotions.filter(
       (promo) => promo.seller_id === user.id
     );
@@ -43,64 +42,91 @@ const PromotionsManagementPage = () => {
       return;
     }
     if (
-      !newPromo.amount ||
-      isNaN(newPromo.amount) ||
-      Number(newPromo.amount) <= 0
+      !newPromo.value ||
+      isNaN(newPromo.value) ||
+      Number(newPromo.value) <= 0
     ) {
       alert("Vui lòng nhập số tiền hoặc phần trăm giảm hợp lệ");
       return;
     }
-    if (!newPromo.start_date || !newPromo.end_date) {
+    if (!newPromo.startDate || !newPromo.endDate) {
       alert("Vui lòng chọn ngày bắt đầu và kết thúc");
       return;
     }
-    if (new Date(newPromo.start_date) > new Date(newPromo.end_date)) {
+    if (new Date(newPromo.startDate) > new Date(newPromo.endDate)) {
       alert("Ngày bắt đầu phải trước ngày kết thúc");
       return;
     }
 
     try {
-      // Dữ liệu gửi lên API
+      // Dữ liệu gửi lên để tạo mã giảm giá
       const dataToSend = {
-        seller_id: user.id,
         code: newPromo.code,
-        discount_type: newPromo.discount_type,
-        amount: Number(newPromo.amount),
-        start_date: newPromo.start_date,
-        end_date: newPromo.end_date,
-        condition: newPromo.condition || null,
-        product_ids: selectedProducts.map((p) => p.id), // nếu có sản phẩm áp dụng
+        type: newPromo.type,
+        value: Number(newPromo.value),
+        startDate: newPromo.startDate,
+        endDate: newPromo.endDate,
       };
 
-      const res = await fetch(
-        "https://kltn.azurewebsites.net/api/Promotion/add",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-          body: JSON.stringify(dataToSend),
-        }
-      );
+      const res = await fetch("https://kltn.azurewebsites.net/api/promotions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      const promotionResult = await res.json();
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Thêm mã giảm giá thất bại");
+        throw new Error(promotionResult.message || "Thêm mã giảm giá thất bại");
       }
 
+      const promotionId = promotionResult.id; // hoặc promotionResult.promotionId nếu API trả vậy
+      console.log("Promotion ID:", promotionId);
       alert("Thêm mã giảm giá thành công!");
+      for (const product of selectedProducts) {
+        const productToSend = {
+          promotionId: promotionId,
+          productId: product.id,
+        };
+
+        const resProduct = await fetch(
+          "https://kltn.azurewebsites.net/api/ProductPromotions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            body: JSON.stringify(productToSend),
+          }
+        );
+
+        if (!resProduct.ok) {
+          const errorData = await resProduct.json();
+          throw new Error(
+            errorData.message || `Thêm sản phẩm ID ${product.id} thất bại`
+          );
+        }
+      }
+
+      alert("Thêm sản phẩm áp dụng thành công!");
+
+      // Reset form
       setNewPromo({
         code: "",
-        discount_type: "percentage",
-        amount: "",
-        start_date: "",
-        end_date: "",
-        condition: "",
+        type: "",
+        value: "",
+        startDate: "",
+        endDate: "",
+        productId: [],
       });
+
       setSelectedProducts([]);
 
-      // Tải lại danh sách mã giảm giá mới nhất
+      // Reload lại danh sách khuyến mãi
       fetchPromotions();
     } catch (error) {
       alert("Lỗi khi thêm mã giảm giá: " + error.message);
@@ -123,10 +149,11 @@ const PromotionsManagementPage = () => {
     setSelectedProducts((prev) => prev.filter((p) => p.id !== productId));
   };
 
-  const fetchPromotions = async () => {
+  const fetchPromotions = async (sellerId) => {
     try {
+      setLoading(true);
       const res = await fetch(
-        `https://kltn.azurewebsites.net/api/Promotion/my-shop-promotions`,
+        `https://kltn.azurewebsites.net/api/StorePromotions/by-shop/${sellerId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -138,19 +165,25 @@ const PromotionsManagementPage = () => {
       setStorePromotions(promotions);
     } catch (error) {
       console.error("Lỗi tải mã khuyến mãi:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchPromotions();
-  }, []);
+    if (user?.userId) {
+      fetchPromotions(parseInt(user.userId, 10));
+    }
+  }, [user]);
+  console.log("User ID:", user.userId, typeof user.userId);
 
   if (!user) return <div>Vui lòng đăng nhập để xem mã khuyến mãi.</div>;
+  console.log(selectedProducts);
 
   return (
     <div className="promotions-management-page">
       <h2>Mã khuyến mãi của cửa hàng {user.id}</h2>
 
-      {/* Form thêm mã giảm giá mới */}
       <div className="add-promotion-form">
         <h3>Thêm mã giảm giá mới</h3>
         <input
@@ -161,22 +194,18 @@ const PromotionsManagementPage = () => {
           placeholder="Mã giảm giá"
         />
 
-        <select
-          name="discount_type"
-          value={newPromo.discount_type}
-          onChange={handleChange}
-        >
-          <option value="percentage">Phần trăm</option>
-          <option value="fixed">Cố định</option>
+        <select name="type" value={newPromo.type} onChange={handleChange}>
+          <option value="">-- Chọn loại giảm giá --</option>
+          <option value="percent">Phần trăm</option>
+          <option value="order">Cố định</option>
         </select>
 
-        {/* Hiển thị nhập tỷ lệ phần trăm hoặc số tiền giảm tùy theo loại giảm giá */}
-        {newPromo.discount_type === "percentage" ? (
+        {newPromo.type === "percent" ? (
           <div>
             <input
               type="number"
-              name="amount"
-              value={newPromo.amount}
+              name="value"
+              value={newPromo.value}
               onChange={handleChange}
               placeholder="Số phần trăm giảm"
             />
@@ -184,12 +213,12 @@ const PromotionsManagementPage = () => {
               Chọn sản phẩm áp dụng khuyến mãi
             </button>
           </div>
-        ) : (
+        ) : newPromo.type === "order" ? (
           <div>
             <input
               type="number"
-              name="amount"
-              value={newPromo.amount}
+              name="value"
+              value={newPromo.value}
               onChange={handleChange}
               placeholder="Số tiền giảm"
             />
@@ -201,49 +230,52 @@ const PromotionsManagementPage = () => {
               placeholder="Giá trị đơn hàng hợp lệ"
             />
           </div>
-        )}
+        ) : null}
 
         <input
           type="date"
-          name="start_date"
-          value={newPromo.start_date}
+          name="startDate"
+          value={newPromo.startDate}
           onChange={handleChange}
         />
         <input
           type="date"
-          name="end_date"
-          value={newPromo.end_date}
+          name="endDate"
+          value={newPromo.endDate}
           onChange={handleChange}
         />
         <button onClick={handleAddPromotion}>Thêm mã giảm giá</button>
       </div>
 
-      {/* Danh sách các mã giảm giá hiện có */}
       <div className="promotions-list">
         <h3>Danh sách mã giảm giá</h3>
-        {storePromotions.length === 0 ? (
+        {loading ? (
+          <p>Đang tải...</p>
+        ) : storePromotions.length === 0 ? (
           <p>Hiện tại chưa có mã giảm giá nào.</p>
         ) : (
           <ul>
-            {storePromotions.map((promo) => (
-              <li key={promo.id}>
-                <div>
-                  <strong>Mã: {promo.code}</strong> - Loại:{" "}
-                  <strong>{promo.discount_type}</strong> - Giảm: {promo.amount}{" "}
-                  {promo.discount_type === "percentage" ? "%" : ""}
-                </div>
-                <div>Bắt đầu: {promo.start_date}</div>
-                <div>Hết hạn: {promo.end_date}</div>
-                {promo.discount_type === "fixed" && promo.condition && (
-                  <div>Điều kiện áp dụng: {promo.condition}</div>
-                )}
-              </li>
-            ))}
+            {storePromotions.map(
+              (promo) =>
+                console.log(promo) || (
+                  <li key={promo.id}>
+                    <div>
+                      <strong>Mã: {promo.code}</strong> - Loại:{" "}
+                      <strong>{promo.type}</strong> - Giảm: {promo.value}{" "}
+                      {promo.type === "percent" ? "%" : ""}
+                    </div>
+                    <div>Bắt đầu: {promo.startDate}</div>
+                    <div>Hết hạn: {promo.endDate}</div>
+                    {promo.type === "order" && promo.condition && (
+                      <div>Điều kiện áp dụng: {promo.condition}</div>
+                    )}
+                  </li>
+                )
+            )}
           </ul>
         )}
       </div>
 
-      {/* Hiển thị sản phẩm đã chọn */}
       <div className="selected-products-container">
         <h3>Sản phẩm đã chọn:</h3>
         {selectedProducts.length > 0 ? (
@@ -267,7 +299,6 @@ const PromotionsManagementPage = () => {
         )}
       </div>
 
-      {/* Hiển thị popup nếu cần */}
       {isPopupOpen && (
         <ProductPromoted onClose={closePopup} onApply={applySelectedProducts} />
       )}
