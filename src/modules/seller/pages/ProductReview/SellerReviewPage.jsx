@@ -1,129 +1,265 @@
 import React, { useState, useEffect } from "react";
-import ReviewCard from "../../components/Review/ReviewCard"; // Import ReviewCard để hiển thị đánh giá
-import SellerProductMiniCard from "../../components/Products/SellerProductMiniCard"; // Sử dụng card sản phẩm
-import { products } from "../../../../data/data"; // Import dữ liệu sản phẩm thực tế
-import "./SellerReviewPage.css"; // CSS cho SellerReviewPage
+import ReviewList from "../../components/Review/ReviewList";
+import SellerProductMiniCard from "../../components/Products/SellerProductMiniCard";
+import "./SellerReviewPage.css";
 
 const SellerReviewPage = ({ sellerId }) => {
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
-  const [reply, setReply] = useState({}); // Lưu thông tin trả lời cho từng đánh giá
-  const [openReview, setOpenReview] = useState(null); // Lưu ID của review đang được mở rộng (click vào)
-  const [selectedProduct, setSelectedProduct] = useState(null); // Lưu sản phẩm được chọn
+  const [reply, setReply] = useState({});
+  const [openReview, setOpenReview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [productRatings, setProductRatings] = useState({});
+
+  const reviewsSample = [
+    {
+      id: 1,
+      user: { name: "Nguyen Van A" }, // ✅ Sửa chỗ này thành object
+      rating: 5,
+      content: "Sản phẩm rất tốt, giao hàng nhanh!",
+      date: "2025-06-01",
+      replies: ["Cảm ơn bạn đã ủng hộ!"],
+    },
+    {
+      id: 2,
+      user: { name: "Tran Thi B" },
+      rating: 4,
+      content: "Chất lượng khá ổn, giá hợp lý.",
+      date: "2025-05-28",
+      replies: [],
+    },
+    {
+      id: 3,
+      user: { name: "Le Van C" },
+      rating: 2,
+      content: "Sản phẩm không đúng như mô tả.",
+      date: "2025-05-30",
+      replies: [
+        "Chúng tôi xin lỗi vì sự cố này. Vui lòng liên hệ để được hỗ trợ.",
+      ],
+    },
+    {
+      id: 4,
+      user: { name: "Pham Thi D" },
+      rating: 3,
+      content: "Tạm được, nhưng giao hàng hơi chậm.",
+      date: "2025-06-02",
+      replies: [],
+    },
+    {
+      id: 5,
+      user: { name: "Hoang Van E" },
+      rating: 1,
+      content: "Chất lượng kém, không hài lòng.",
+      date: "2025-05-25",
+      replies: [],
+    },
+  ];
+  const count_tmp = reviewsSample.length;
+  const value_tmp =
+    count_tmp > 0
+      ? reviewsSample.reduce((sum, r) => sum + r.rating, 0) / count_tmp
+      : 0;
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://kltn.azurewebsites.net/api/products/my-shop-products`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        if (!res.ok) throw new Error("Lỗi tải sản phẩm");
+        const products = await res.json();
+
+        const productIds = products.map((p) => p.id);
+        const imagesRes = await fetch(
+          "https://kltn.azurewebsites.net/api/product-images/list-by-products",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            body: JSON.stringify(productIds),
+          }
+        );
+
+        const imagesData = await imagesRes.json();
+
+        const productsWithImages = products.map((product) => {
+          const imagesForProduct = imagesData && imagesData[String(product.id)];
+          return {
+            ...product,
+            imageUrls: Array.isArray(imagesForProduct)
+              ? imagesForProduct.map((img) => img.imageUrl)
+              : [],
+          };
+        });
+
+        setProducts(productsWithImages);
+      } catch (error) {
+        console.error("Lỗi tải sản phẩm:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
-    if (selectedProduct) {
-      // Giả sử fetch dữ liệu đánh giá từ API dựa trên productId
-      const fetchedReviews = [
-        { id: 1, productId: 1, user: "Nguyễn Văn A", rating: 5, comment: "Sản phẩm tuyệt vời!", date: "2025-04-20", replies: [] },
-        { id: 2, productId: 2, user: "Trần Thị B", rating: 4, comment: "Chất lượng ổn.", date: "2025-04-18", replies: [] },
-        { id: 3, productId: 1, user: "Lê Minh C", rating: 3, comment: "Sản phẩm bình thường.", date: "2025-04-17", replies: [] },
-        { id: 4, productId: 1, user: "Phạm Thanh D", rating: 5, comment: "Rất tốt, sẽ mua lại.", date: "2025-04-16", replies: [] },
-        { id: 5, productId: 3, user: "Ngô Quốc E", rating: 4, comment: "Giao hàng nhanh, sản phẩm chất lượng.", date: "2025-04-15", replies: [] },
-        { id: 6, productId: 2, user: "Hoàng Lê F", rating: 2, comment: "Sản phẩm không đúng mô tả.", date: "2025-04-14", replies: [] },
-      ];
+    const fetchReviews = async () => {
+      if (!selectedProduct) return;
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://kltn.azurewebsites.net/api/reviews/product/${selectedProduct.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        if (!res.ok) throw new Error("Lỗi tải đánh giá");
 
-      // Lọc các đánh giá dựa trên productId đã chọn
-      const filteredReviews = fetchedReviews.filter(review => review.productId === selectedProduct.id);
+        const allReviews = await res.json();
 
-      const indexOfLastReview = currentPage * reviewsPerPage;
-      const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
-      setReviews(filteredReviews.slice(indexOfFirstReview, indexOfLastReview));
-    }
-  }, [currentPage, selectedProduct]);
+        const count = allReviews.length;
+        const value =
+          count > 0
+            ? allReviews.reduce((sum, r) => sum + r.rating, 0) / count
+            : 0;
+
+        setProductRatings((prev) => ({
+          ...prev,
+          [selectedProduct.id]: { value, count },
+        }));
+
+        setReviews(allReviews);
+      } catch (error) {
+        console.error("Lỗi tải đánh giá:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [selectedProduct]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   const handleReplyChange = (reviewId, replyText) => {
-    setReply((prevReply) => ({ ...prevReply, [reviewId]: replyText }));
+    setReply((prev) => ({ ...prev, [reviewId]: replyText }));
   };
 
   const handleSubmitReply = (reviewId) => {
     const updatedReviews = reviews.map((review) =>
-      review.id === reviewId ? { ...review, replies: [...review.replies, reply[reviewId]] } : review
+      review.id === reviewId
+        ? { ...review, replies: [...review.replies, reply[reviewId]] }
+        : review
     );
     setReviews(updatedReviews);
-    setReply((prevReply) => ({ ...prevReply, [reviewId]: "" })); // Reset reply text
+    setReply((prev) => ({ ...prev, [reviewId]: "" }));
   };
 
-  // Toggle trả lời khi click vào đánh giá
   const toggleReplySection = (reviewId) => {
-    if (openReview === reviewId) {
-      setOpenReview(null); // Nếu đánh giá đã mở thì đóng lại
-    } else {
-      setOpenReview(reviewId); // Mở phần trả lời cho đánh giá mới
-    }
+    setOpenReview((prev) => (prev === reviewId ? null : reviewId));
   };
 
   const handleProductClick = (product) => {
-    setSelectedProduct(product); // Cập nhật sản phẩm đã chọn
+    setSelectedProduct(product);
+    setCurrentPage(1);
   };
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const value =
+    selectedProduct && productRatings[selectedProduct.id]
+      ? productRatings[selectedProduct.id].value
+      : 0;
+  const count =
+    selectedProduct && productRatings[selectedProduct.id]
+      ? productRatings[selectedProduct.id].count
+      : 0;
+
+  const displayedReviews =
+    reviews.length > 0 ? reviews : selectedProduct ? reviewsSample : [];
+
+  const paginatedReviews = displayedReviews.slice(
+    (currentPage - 1) * reviewsPerPage,
+    currentPage * reviewsPerPage
+  );
+  useEffect(() => {
+    if (selectedProduct) {
+      setReviews(reviewsSample); // Ép để test
+    }
+  }, [selectedProduct]);
 
   return (
     <div className="seller-review-page">
       <h2>Đánh giá sản phẩm của bạn</h2>
 
-      {/* Hiển thị thông tin sản phẩm */}
+      <input
+        type="text"
+        placeholder="Tìm sản phẩm..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-input"
+      />
+
       <div className="product-summary">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <SellerProductMiniCard
             key={product.id}
             product={product}
-            onClick={() => handleProductClick(product)} // Khi click vào sản phẩm, sẽ hiển thị đánh giá của sản phẩm đó
+            onClick={() => handleProductClick(product)}
+            value={value_tmp}
+            count={count_tmp}
+            productReviews={reviewsSample}
           />
         ))}
       </div>
 
-      {/* Nếu có sản phẩm được chọn, hiển thị danh sách đánh giá */}
       {selectedProduct && (
-        <div className="reviews-list">
-          {reviews.map((review) => (
-            <div key={review.id}>
-              <ReviewCard review={review} />
-              <div className="review-card-footer">
-                <button onClick={() => toggleReplySection(review.id)}>
-                  {openReview === review.id ? "Ẩn phần trả lời" : "Trả lời"}
-                </button>
-                {/* Phần trả lời */}
-                {openReview === review.id && (
-                  <div className="reply-section">
-                    <textarea
-                      value={reply[review.id] || ""}
-                      onChange={(e) => handleReplyChange(review.id, e.target.value)}
-                      placeholder="Trả lời đánh giá..."
-                    />
-                    <button onClick={() => handleSubmitReply(review.id)}>Gửi trả lời</button>
-                    {review.replies.length > 0 && (
-                      <div className="replies">
-                        <h4>Phản hồi:</h4>
-                        {review.replies.map((reply, index) => (
-                          <div key={index} className="reply">
-                            <p>{reply}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+        <>
+          <ReviewList
+            reviews={paginatedReviews}
+            reply={reply}
+            openReview={openReview}
+            onReplyChange={handleReplyChange}
+            onSubmitReply={handleSubmitReply}
+            onToggleReply={toggleReplySection}
+          />
 
-      {/* Pagination */}
-      <div className="pagination">
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-          Prev
-        </button>
-        <span>{currentPage}</span>
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={reviews.length < reviewsPerPage}>
-          Next
-        </button>
-      </div>
+          <div className="pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
+            <span>{currentPage}</span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage * reviewsPerPage >= displayedReviews.length}
+            >
+              Next
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

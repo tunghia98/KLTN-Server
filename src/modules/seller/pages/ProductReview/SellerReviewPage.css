@@ -138,3 +138,20 @@
   background-color: #e2e8f0;
   cursor: not-allowed;
 }
+.rating-filter {
+  margin: 20px 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.rating-filter button {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+.rating-filter button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}

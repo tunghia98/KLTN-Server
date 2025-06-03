@@ -1,6 +1,8 @@
 .rating-container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
+  cursor:pointer;
 }
 
 .star-wrapper {
@@ -44,7 +46,6 @@
 
 /* Text bên cạnh */
 .rating-text {
-  margin-left: 8px;
   font-size: 14px;
   color: #4b5563; /* màu xám đậm */
 }

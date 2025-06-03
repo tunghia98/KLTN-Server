@@ -21,7 +21,6 @@ import OrdersManagementPage from "../modules/seller/pages/Orders/OrdersManagemen
 import ProductsManagementPage from "../modules/seller/pages/Products/ProductsManagementPage.jsx";
 import OrderDetailPage from "../modules/seller/pages/Orders/OrderManagementDetailPage.jsx";
 import EditProductPage from "../modules/seller/pages/Products/EditProductPage.jsx";
-import StatisticsManagementPage from "../modules/seller/pages/Statistics/StatisticsManagementPage.jsx";
 import PromotionsManagementPage from "../modules/seller/pages/Promotion/PromotionsManagementPage.jsx";
 import ShippingManagementPage from "../modules/seller/pages/Shipping/ShippingManagementPage.jsx";
 import ProductPromoted from "../modules/seller/pages/Promotion/ProductPromoted.jsx";
@@ -39,6 +38,7 @@ import WebsiteCustomization from "../modules/admin/pages/WebsiteCustomization/We
 import CreateNewThread from "../modules/user/components/CreateNewThread/CreateNewThread.jsx";
 import MainLayout from "../layouts/MainLayout.jsx";
 import MapPage from "../modules/user/pages/MapPage/MapPage.jsx";
+import StatisticsManagementPage from "../modules/seller/pages/Statistics/StatisticsManagementPage.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
   return (

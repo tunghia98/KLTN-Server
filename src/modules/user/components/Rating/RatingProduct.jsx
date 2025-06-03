@@ -15,7 +15,8 @@ export default function Rating({ value = 0, count = 0, size = 20, onRate }) {
 
   return (
     <div className="rating-container">
-      {Array.from({ length: totalStars }).map((_, i) => {
+      <div>
+              {Array.from({ length: totalStars }).map((_, i) => {
         const isFull = i < fullStars;
         const isHalf = i === fullStars && hasHalf;
 
@@ -41,6 +42,8 @@ export default function Rating({ value = 0, count = 0, size = 20, onRate }) {
           </div>
         );
       })}
+      </div>
+
       <span className="rating-text">
         ({value.toFixed(1)}/5 - {count} đánh giá)
       </span>

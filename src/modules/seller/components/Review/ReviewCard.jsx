@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./ReviewCard.css";
 
 const ReviewCard = ({ review }) => {
-  const [reply, setReply] = useState("");         // Nội dung phản hồi
+  const [reply, setReply] = useState(""); // Nội dung phản hồi
   const [isReplying, setIsReplying] = useState(false); // Toggle ô trả lời
   const [submittedReply, setSubmittedReply] = useState(review.reply || null); // Phản hồi đã gửi
 
@@ -17,7 +17,7 @@ const ReviewCard = ({ review }) => {
   return (
     <div className="review-card">
       <div className="review-card-header">
-        <h4>{review.user}</h4>
+        <p>{review.user.name}</p>
         <span className="review-rating">
           {Array(review.rating).fill("★").join(" ")}
         </span>

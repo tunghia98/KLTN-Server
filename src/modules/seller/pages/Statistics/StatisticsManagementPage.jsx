@@ -38,7 +38,8 @@ export default function StatisticsManagement() {
           </button>
         ))}
       </div>
-      <div className="tab-content">
+      <div className="tab-statistics-content">
+        {console.log(activeTab)}
         {tabComponents[activeTab] || <div>Không có dữ liệu tab</div>}
       </div>
     </div>
