@@ -1,0 +1,70 @@
+.thread-manager {
+  padding: 1rem;
+}
+
+.thread-filter {
+  margin-bottom: 1rem;
+}
+
+.thread-filter button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  background-color: #f0f0f0;
+  color: #000;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.thread-filter button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.thread-filter button:hover {
+  background-color: #e0e0e0;
+}
+
+.thread-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.thread-item {
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+}
+
+.thread-info {
+  margin-bottom: 6px;
+}
+
+.auto-reply-btn {
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.auto-reply-btn:hover {
+  background-color: #218838;
+}
+.clickable-title {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.thread-info {
+  margin-bottom: 6px;
+}
+
+.thread-info:hover .clickable-title {
+  color: #0056b3;
+}

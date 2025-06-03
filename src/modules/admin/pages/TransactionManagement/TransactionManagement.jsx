@@ -1,51 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TransactionManagement.css";
 
-const dummyTransactions = [
-  {
-    id: "TXN001",
-    buyer: "Nguyễn Văn A",
-    seller: "Shop B",
-    product: "Phân bón hữu cơ",
-    amount: 120000,
-    status: "Thành công",
-    date: "2025-04-20",
-  },
-  {
-    id: "TXN002",
-    buyer: "Trần Thị C",
-    seller: "Shop D",
-    product: "Thuốc trừ sâu",
-    amount: 560000,
-    status: "Chờ xử lý",
-    date: "2025-04-21",
-  },
-  {
-    id: "TXN003",
-    buyer: "Lê Văn E",
-    seller: "Shop F",
-    product: "Hạt giống ngô",
-    amount: 30000,
-    status: "Hủy",
-    date: "2025-04-19",
-  },
-];
-
 export default function TransactionManagement() {
-  const [transactions, setTransactions] = useState(dummyTransactions);
+  const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("Tất cả");
-
-  const filtered = transactions.filter((t) => {
-    const matchSearch =
-      t.buyer.toLowerCase().includes(search.toLowerCase()) ||
-      t.seller.toLowerCase().includes(search.toLowerCase()) ||
-      t.product.toLowerCase().includes(search.toLowerCase()) ||
-      t.id.toLowerCase().includes(search.toLowerCase());
-    const matchStatus =
-      statusFilter === "Tất cả" || t.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [orderDetails, setOrderDetails] = useState({});
 
   const flagAsSuspicious = (id) => {
     alert(`Giao dịch ${id} đã được đánh dấu là bất thường để kiểm tra.`);
@@ -54,6 +16,87 @@ export default function TransactionManagement() {
   const suspendOrder = (id) => {
     alert(`Đã tạm dừng đơn hàng ${id}.`);
   };
+
+  useEffect(() => {
+    const fetchOrdersWithDetails = async () => {
+      try {
+        const res = await fetch("https://kltn.azurewebsites.net/api/orders", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Lỗi khi tải danh sách đơn hàng");
+
+        const orderList = await res.json();
+
+        const detailedOrders = await Promise.all(
+          orderList.map(async (order) => {
+            try {
+              const resDetail = await fetch(
+                `https://kltn.azurewebsites.net/api/orderitems/order/1`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                      "accessToken"
+                    )}`,
+                  },
+                }
+              );
+
+              if (!resDetail.ok)
+                throw new Error("Lỗi khi tải chi tiết đơn hàng");
+
+              const detail = await resDetail.json();
+              console.log(`Chi tiết đơn hàng ${order.id}:`, detail);
+
+              return {
+                ...order, // giữ dữ liệu ban đầu
+                ...detail, // merge thêm detail nếu khác
+              };
+            } catch (err) {
+              console.error(`Lỗi khi tải chi tiết cho đơn ${order.id}:`, err);
+              return {
+                ...order,
+                detailError: true,
+              };
+            }
+          })
+        );
+
+        setOrders(detailedOrders);
+      } catch (error) {
+        console.error("Lỗi:", error);
+        setError("Không thể tải dữ liệu.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrdersWithDetails();
+  }, []);
+
+  const searchLower = search.toLowerCase();
+
+  const filtered = orders.filter((t) => {
+    const buyer = t.customer?.name ?? "";
+    const seller = t.shopid ?? "";
+    const product = t.product ?? "";
+    const id = t.id ?? "";
+
+    const matchSearch =
+      buyer.toLowerCase().includes(searchLower) ||
+      seller.toLowerCase().includes(searchLower) ||
+      product.toLowerCase().includes(searchLower) ||
+      id.toLowerCase().includes(searchLower);
+
+    const matchStatus = statusFilter === "Tất cả" || t.status === statusFilter;
+
+    return matchSearch && matchStatus;
+  });
+
+  if (loading) return <div>Đang tải dữ liệu...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="transaction-container">
@@ -94,12 +137,16 @@ export default function TransactionManagement() {
           {filtered.map((t) => (
             <tr key={t.id}>
               <td>{t.id}</td>
-              <td>{t.buyer}</td>
-              <td>{t.seller}</td>
+              <td>{t.customer.name}</td>
+              <td>{t.shopid}</td>
               <td>{t.product}</td>
-              <td>{t.amount.toLocaleString()}đ</td>
+              <td>
+                {t.totalAmount != null
+                  ? t.totalAmount.toLocaleString() + "đ"
+                  : "N/A"}
+              </td>
               <td>{t.status}</td>
-              <td>{t.date}</td>
+              <td>{t.orderDate?.split("T")[0]}</td>
               <td>
                 <button onClick={() => flagAsSuspicious(t.id)}>Xác minh</button>
                 <button onClick={() => suspendOrder(t.id)}>Tạm dừng</button>

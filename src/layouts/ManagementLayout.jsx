@@ -23,12 +23,9 @@ function ManagementLayout({ children }) {
             <Link to="/admin/transaction">Lịch sử giao dịch</Link>
           </li>
           <li>
-            <Link to="/admin/statistics">Thống kê & Báo cáo</Link>
+            <Link to="/admin/statistics">Thống kê</Link>
           </li>
-          <li>
-            <Link to="/admin/access-control">Quyền truy cập</Link>
-          </li>
-          <li>
+          {/* <li>
             <Link to="/admin/violation">Kiểm tra & xử lý vi phạm</Link>
           </li>
           <li>
@@ -36,9 +33,15 @@ function ManagementLayout({ children }) {
           </li>
           <li>
             <Link to="/admin/support-channel">Kênh hỗ trợ</Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/admin/customization">Tùy chỉnh</Link>
+          </li>
+          <li>
+            <Link to="/admin/forum">Quản lý diễn đàn</Link>
+          </li>
+          <li>
+            <Link to="/">LÚA - CHỢ NÔNG</Link>
           </li>
         </>
       );

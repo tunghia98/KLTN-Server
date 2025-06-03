@@ -1,48 +1,56 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../../../../contexts/UserContext";
+
 export default function RevenueStats() {
   const { user } = useUser();
-  const [revenue, setRevenue] = React.useState([]);
-  const fetchData = async (shopId) => {
-    // Fetch total orders data from the API
+  const [revenue, setRevenue] = useState([]);
+
+  const fetchData = async () => {
     try {
-      const response = await fetch(
-        `https://kltn.azurewebsites.net/api/${shopId}/revenue`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch total orders");
+      let url = "";
+      if (user?.role === "admin") {
+        url = `https://kltn.azurewebsites.net/api/SystemReport/revenue`;
+      } else {
+        const shopId = user?.userId ? parseInt(user.userId, 10) : null;
+        if (!shopId) return;
+        url = `https://kltn.azurewebsites.net/api/ShopReport/${shopId}/revenue`;
       }
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch revenue data");
+      }
+
       const data = await response.json();
-      console.log("Total Orders Data:", data);
+      console.log("Revenue Data:", data);
       setRevenue(data);
     } catch (error) {
-      console.error("Error fetching total orders:", error);
-      return [];
+      console.error("Error fetching revenue:", error);
+      setRevenue([]);
     }
   };
+
   useEffect(() => {
-    const shopId = user?.userId ? parseInt(user.userId, 10) : null;
-    if (shopId) {
-      fetchData(shopId).then((data) => setRevenue(data));
+    if (user) {
+      fetchData();
     }
-  }, [user.userId]);
+  }, [user]);
 
   return (
     <div>
       <h2>Doanh thu</h2>
       <div className="total-orders">
-        {revenue.length > 0 ? (
+        {Array.isArray(revenue) && revenue.length > 0 ? (
           <ul>
             {revenue.map((order) => (
               <li key={order.id}>
-                <span>Đơn hàng ID: {order.id}</span>
-                <span>Ngày: {new Date(order.date).toLocaleDateString()}</span>
+                <span>Đơn hàng ID: {order.id}</span>{" "}
+                <span>Ngày: {new Date(order.date).toLocaleDateString()}</span>{" "}
                 <span>Tổng tiền: {order.totalAmount} VND</span>
               </li>
             ))}

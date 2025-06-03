@@ -3,7 +3,9 @@ import "./CommentSection.css";
 import { useUser } from "../../../../contexts/UserContext";
 
 function CommentSection({ comments }) {
-  const [commentList, setCommentList] = useState((comments || []).slice().reverse());
+  const [commentList, setCommentList] = useState(
+    (comments || []).slice().reverse()
+  );
   const [newComment, setNewComment] = useState("");
   const [replyContents, setReplyContents] = useState({});
   const { user } = useUser(); // Lấy thông tin người dùng từ context
@@ -19,9 +21,12 @@ function CommentSection({ comments }) {
       setCommentList([
         {
           content: newComment,
-          author: user.username || "Bạn đọc",  // Ưu tiên lấy tên người dùng
+          author: user.username || "Bạn đọc", // Ưu tiên lấy tên người dùng
           date: now.toLocaleDateString(),
-          time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          time: now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
           likes: 0,
           liked: false,
         },
@@ -71,6 +76,12 @@ function CommentSection({ comments }) {
       setReplyContents((prev) => ({ ...prev, [index]: "" }));
     }
   };
+  const handleAddAutoReply = async () => {
+    if (!user || !user.isAdmin) {
+      alert("Chỉ quản trị viên mới có thể sử dụng tính năng này.");
+      return;
+    }
+  };
 
   return (
     <div className="comment-section">
@@ -84,9 +95,20 @@ function CommentSection({ comments }) {
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Nhập bình luận của bạn..."
             />
-            <button onClick={handleAddComment} className="submit-comment-button">
+            <button
+              onClick={handleAddComment}
+              className="submit-comment-button"
+            >
               Gửi bình luận
             </button>
+            {user.role === "admin" && user ? (
+              <button
+                onClick={handleAddAutoReply}
+                className="auto-reply-button"
+              >
+                Trả lời tự động
+              </button>
+            ) : null}
           </>
         ) : (
           <p style={{ color: "gray", fontStyle: "italic" }}>
@@ -106,7 +128,7 @@ function CommentSection({ comments }) {
             <button
               onClick={() => handleLikeComment(idx)}
               className={`like-button ${cmt.liked ? "liked" : ""}`}
-              disabled={!user} 
+              disabled={!user}
             >
               {cmt.liked ? "Đã thích" : "👍 Thích"}
             </button>
@@ -114,7 +136,7 @@ function CommentSection({ comments }) {
             <button
               onClick={() => handleReplyComment(idx)}
               className="reply-button"
-              disabled={!user} 
+              disabled={!user}
             >
               Trả lời
             </button>
@@ -124,10 +146,18 @@ function CommentSection({ comments }) {
                 <textarea
                   placeholder="Nhập câu trả lời..."
                   value={replyContents[idx] || ""}
-                  onChange={(e) => setReplyContents((prev) => ({ ...prev, [idx]: e.target.value }))}
+                  onChange={(e) =>
+                    setReplyContents((prev) => ({
+                      ...prev,
+                      [idx]: e.target.value,
+                    }))
+                  }
                   autoFocus
                 />
-                <button onClick={() => handleSubmitReply(idx)} className="submit-reply-button">
+                <button
+                  onClick={() => handleSubmitReply(idx)}
+                  className="submit-reply-button"
+                >
                   Gửi
                 </button>
               </div>

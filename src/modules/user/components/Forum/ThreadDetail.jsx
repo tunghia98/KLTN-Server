@@ -1,32 +1,53 @@
 import React, { useState } from "react";
-import { useUser } from "../../../../contexts/UserContext"; // lấy thông tin user
+import { useUser } from "../../../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
-import Login from "../AuthForm/Login"; // Import Popup Login
+import Login from "../AuthForm/Login";
 import "./Forum.css";
 import CommentSection from "../Comment/CommentSection";
 
-function ThreadDetail({ thread, category, crop, region, userwriter}) {
+function ThreadDetail({ thread, category, crop, region, userwriter }) {
   const [likes, setLikes] = useState(thread.likes || 0);
-  const { user } = useUser(); // lấy thông tin người dùng
-  const [isLoginOpen, setIsLoginOpen] = useState(false); // Điều khiển việc mở popup login
+  const [isLocked, setIsLocked] = useState(thread.isLocked || false); // Thêm state khóa bài viết
+  const { user } = useUser();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const navigate = useNavigate();
-        console.log("Category:", category);
-        console.log("Crop:", crop);
-        console.log("Region:", region);
-        console.log("User:", user);
-  if (!thread) return <p className="thread-empty">Chủ đề không tồn tại.</p>;
+
+  const isAuthor = user && user.userId === thread.authorId;
+  const isAdmin = user && user.role === "admin";
 
   const handleLikePost = () => {
     if (!user) {
-      setIsLoginOpen(true); // Nếu chưa đăng nhập, mở popup login
+      setIsLoginOpen(true);
       return;
     }
-    setLikes(likes + 1); // Nếu đã đăng nhập, tăng lượt thích
+    setLikes((prev) => prev + 1);
   };
 
-  const handleCloseLoginPopup = () => {
-    setIsLoginOpen(false); // Đóng popup khi người dùng đăng nhập hoặc đóng
+  const handleCloseLoginPopup = () => setIsLoginOpen(false);
+
+  const handleToggleLock = async () => {
+    try {
+      const res = await fetch(
+        `https://kltn.azurewebsites.net/api/forumposts/${thread.id}/lock`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify({ isLocked: !isLocked }),
+        }
+      );
+      if (!res.ok)
+        throw new Error("Không thể cập nhật trạng thái khóa bài viết.");
+      setIsLocked(!isLocked);
+    } catch (err) {
+      console.error("Lỗi khi khóa/mở bài viết:", err);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái khóa bài viết.");
+    }
   };
+
+  if (!thread) return <p className="thread-empty">Chủ đề không tồn tại.</p>;
 
   return (
     <div className="thread-detail-container">
@@ -34,14 +55,15 @@ function ThreadDetail({ thread, category, crop, region, userwriter}) {
         <h1 className="thread-detail-title">{thread.title}</h1>
 
         <div className="thread-detail-info">
-        <p>Phân loại: {category?.name || "Không rõ"}</p>
-        <p>Giống cây: {crop?.name || "Không rõ"}</p>
-        <p>Khu vực: {region?.name || "Không rõ"}</p>
+          <p>Phân loại: {category?.name || "Không rõ"}</p>
+          <p>Giống cây: {crop?.name || "Không rõ"}</p>
+          <p>Khu vực: {region?.name || "Không rõ"}</p>
         </div>
 
         <div className="thread-detail-meta">
           <span>👍 {likes} lượt thích</span>
           <span>💬 {thread.replies} câu trả lời</span>
+          <span>📌 Trạng thái: {isLocked ? "Đã khóa" : "Đang mở"}</span>
         </div>
 
         <div className="thread-detail-content">
@@ -52,18 +74,34 @@ function ThreadDetail({ thread, category, crop, region, userwriter}) {
         </div>
 
         <div className="thread-author-info">
-          <p>Viết bởi: <strong>{userwriter?.name || "Người dùng ẩn danh"}</strong>- {thread.createdAt || "Không rõ ngày"}</p>
+          <p>
+            Viết bởi:{" "}
+            <strong>{userwriter?.name || "Người dùng ẩn danh"}</strong> –{" "}
+            {new Date(thread.createdAt).toLocaleDateString()}
+          </p>
         </div>
+
+        {(isAdmin || isAuthor) && (
+          <button onClick={handleToggleLock} className="lock-thread-btn">
+            {isLocked ? "Mở khóa bài viết" : "Khóa bài viết"}
+          </button>
+        )}
       </div>
 
-      <CommentSection comments={thread.comments} />
+      {/* Chỉ hiển thị bình luận nếu bài viết chưa bị khóa */}
+      {!isLocked ? (
+        <CommentSection comments={thread.comments} />
+      ) : (
+        <div className="comment-disabled-message">
+          Bài viết đã bị khóa, không thể bình luận.
+        </div>
+      )}
 
-      {/* Hiển thị popup login nếu chưa đăng nhập */}
-      <Login 
-        isOpen={isLoginOpen} 
-        onClose={handleCloseLoginPopup} 
+      <Login
+        isOpen={isLoginOpen}
+        onClose={handleCloseLoginPopup}
         onSwitchToRegister={() => navigate("/register")}
-        isReady={true} // Thêm trạng thái 'isReady' nếu cần
+        isReady={true}
       />
     </div>
   );

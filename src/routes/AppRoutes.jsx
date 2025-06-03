@@ -38,7 +38,8 @@ import WebsiteCustomization from "../modules/admin/pages/WebsiteCustomization/We
 import CreateNewThread from "../modules/user/components/CreateNewThread/CreateNewThread.jsx";
 import MainLayout from "../layouts/MainLayout.jsx";
 import MapPage from "../modules/user/pages/MapPage/MapPage.jsx";
-import StatisticsManagementPage from "../modules/seller/pages/Statistics/StatisticsManagementPage.jsx";
+import StatisticsManagementPage from "../pages/StatisticsManagementPage.jsx";
+import ForumManagement from "../modules/admin/pages/ForumManagement/ForumManagement.jsx";
 const AppRoutes = () => {
   const { user } = useUser();
   return (
@@ -123,7 +124,7 @@ const AppRoutes = () => {
         element={
           <PrivateRoute allowedRoles={["seller"]}>
             <ManagementLayout>
-              <StatisticsManagementPage />
+              <StatisticsManagementPage role="seller" />
             </ManagementLayout>
           </PrivateRoute>
         }
@@ -169,7 +170,16 @@ const AppRoutes = () => {
         }
       />
       {/* ADMIN */}
-
+      <Route
+        path="/admin/statistics"
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <ManagementLayout>
+              <StatisticsManagementPage role="admin" />
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
       <Route
         path="/admin/dashboard"
         element={
@@ -264,6 +274,16 @@ const AppRoutes = () => {
           <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
               <WebsiteCustomization />
+            </ManagementLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/forum"
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <ManagementLayout>
+              <ForumManagement />
             </ManagementLayout>
           </PrivateRoute>
         }

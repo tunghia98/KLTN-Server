@@ -1,52 +1,53 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../../../../contexts/UserContext";
+
 export default function CompletedOrders() {
   const { user } = useUser();
-    const [completedOrders, setCompletedOrders] = React.useState([]);
-    const fetchData = async (shopId) => {
-      // Fetch total orders data from the API
-      try {
-        const response = await fetch(
-          `https://kltn.azurewebsites.net/api/${shopId}/cancelled-orders`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch total orders");
-        }
-        const data = await response.json();
-        console.log("Total Orders Data:", data);
-        setCompletedOrders(data);
-      } catch (error) {
-        console.error("Error fetching total orders:", error);
-        return [];
+  const [completedOrders, setCompletedOrders] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      let url = "";
+      if (user?.role === "admin") {
+        url = `https://kltn.azurewebsites.net/api/SystemReport/completed-orders`;
+      } else {
+        const shopId = user?.userId ? parseInt(user.userId, 10) : null;
+        if (!shopId) return;
+        url = `https://kltn.azurewebsites.net/api/ShopReport/${shopId}/completed-orders`;
       }
-    };
-    useEffect(() => {
-      const shopId = user?.userId ? parseInt(user.userId, 10) : null;
-      if (shopId) {
-        fetchData(shopId).then((data) => setCompletedOrders(data));
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch completed orders");
       }
-    }, [user.userId]);
-    
+
+      const data = await response.json();
+      console.log("Completed Orders Data:", data);
+      setCompletedOrders(data);
+    } catch (error) {
+      console.error("Error fetching completed orders:", error);
+      setCompletedOrders(null);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
   return (
     <div>
       <h2>Đơn hàng đã hoàn thành</h2>
       <div className="total-orders">
-        {completedOrders.length > 0 ? (
-          <ul>
-            {completedOrders.map((order) => (
-              <li key={order.id}>
-                <span>Đơn hàng ID: {order.id}</span>
-                <span>Ngày: {new Date(order.date).toLocaleDateString()}</span>
-                <span>Tổng tiền: {order.totalAmount} VND</span>
-              </li>
-            ))}
-          </ul>
+        {completedOrders &&
+        typeof completedOrders.totalCompletedOrders === "number" ? (
+          <p>{completedOrders.totalCompletedOrders} đơn hàng đã hoàn thành</p>
         ) : (
           <p>Không có đơn hàng nào.</p>
         )}

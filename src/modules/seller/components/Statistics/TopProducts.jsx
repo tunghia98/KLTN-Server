@@ -1,48 +1,58 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../../../../contexts/UserContext";
+
 export default function TopProducts() {
   const { user } = useUser();
-    const [topProducts, setTopProducts] = React.useState([]);
-    const fetchData = async (shopId) => {
-      // Fetch total orders data from the API
-      try {
-        const response = await fetch(
-          `https://kltn.azurewebsites.net/api/${shopId}/top-products`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch total orders");
-        }
-        const data = await response.json();
-        console.log("Total Orders Data:", data);
-        setTopProducts(data);
-      } catch (error) {
-        console.error("Error fetching total orders:", error);
-        return [];
+  const [topProducts, setTopProducts] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      let url = "";
+      if (user?.role === "admin") {
+        // API cho admin (ví dụ: lấy top sản phẩm toàn hệ thống)
+        url = `https://kltn.azurewebsites.net/api/SystemReport/top-products`;
+      } else {
+        // API cho seller lấy theo shopId
+        const shopId = user?.userId ? parseInt(user.userId, 10) : null;
+        if (!shopId) return;
+        url = `https://kltn.azurewebsites.net/api/ShopReport/${shopId}/top-products`;
       }
-    };
-    useEffect(() => {
-      const shopId = user?.userId ? parseInt(user.userId, 10) : null;
-      if (shopId) {
-        fetchData(shopId).then((data) => setTopProducts(data));
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch top products");
       }
-    }, [user.userId]);
-    
+
+      const data = await response.json();
+      console.log("Top Products Data:", data);
+      setTopProducts(data);
+    } catch (error) {
+      console.error("Error fetching top products:", error);
+      setTopProducts([]);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
   return (
     <div>
       <h2>Sản phẩm bán chạy</h2>
       <div className="top-products">
-        {topProducts.length > 0 ? (
+        {Array.isArray(topProducts) && topProducts.length > 0 ? (
           <ul>
             {topProducts.map((product) => (
               <li key={product.id}>
-                <span>Tên sản phẩm: {product.name}</span>
-                <span>Số lượng bán: {product.quantitySold}</span>
+                <span>Tên sản phẩm: {product.name}</span>{" "}
+                <span>Số lượng bán: {product.quantitySold}</span>{" "}
                 <span>Doanh thu: {product.revenue} VND</span>
               </li>
             ))}

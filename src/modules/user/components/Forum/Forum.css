@@ -613,5 +613,27 @@
   transform: translateY(-5px) scale(1.02);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+.lock-thread-btn {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  margin-top: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.lock-thread-btn:hover {
+  background-color: #b52a37;
+}
+
+.comment-disabled-message {
+  padding: 16px;
+  background-color: #f9d6d5;
+  border: 1px solid #e99;
+  color: #a00;
+  border-radius: 4px;
+  margin-top: 20px;
+}
 
 
