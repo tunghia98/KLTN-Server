@@ -2,40 +2,13 @@ import React, { useState } from "react";
 import "./CommentSection.css";
 import { useUser } from "../../../../contexts/UserContext";
 
-function CommentSection({ comments }) {
+function CommentSection({ comments, thread }) {
   const [commentList, setCommentList] = useState(
     (comments || []).slice().reverse()
   );
   const [newComment, setNewComment] = useState("");
   const [replyContents, setReplyContents] = useState({});
-  const { user } = useUser(); // Lấy thông tin người dùng từ context
-
-  const handleAddComment = () => {
-    if (!user) {
-      alert("Vui lòng đăng nhập để bình luận!");
-      return;
-    }
-
-    const now = new Date();
-    if (newComment.trim()) {
-      setCommentList([
-        {
-          content: newComment,
-          author: user.username || "Bạn đọc", // Ưu tiên lấy tên người dùng
-          date: now.toLocaleDateString(),
-          time: now.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          likes: 0,
-          liked: false,
-        },
-        ...commentList,
-      ]);
-      setNewComment("");
-    }
-  };
-
+  const { user } = useUser();
   const handleLikeComment = (index) => {
     if (!user) {
       alert("Vui lòng đăng nhập để thích bình luận!");
@@ -71,15 +44,97 @@ function CommentSection({ comments }) {
       });
       updatedComments[index].isReplying = false;
       setCommentList(updatedComments);
-
-      // Clear nội dung trả lời
       setReplyContents((prev) => ({ ...prev, [index]: "" }));
     }
   };
+
   const handleAddAutoReply = async () => {
-    if (!user || !user.isAdmin) {
+    if (!user || user.role !== "admin") {
       alert("Chỉ quản trị viên mới có thể sử dụng tính năng này.");
       return;
+    }
+
+    try {
+      const reply = await fetchAutoReply(thread.id);
+      console.log(reply);
+      if (reply && reply.trim()) {
+        const now = new Date();
+        const aiComment = {
+          content: reply,
+          author: "AI Bot",
+          date: now.toLocaleDateString(),
+          time: now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          likes: 0,
+          liked: false,
+        };
+
+        setCommentList([aiComment, ...commentList]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi trả lời AI:", error);
+      alert("Không thể lấy trả lời tự động từ AI.");
+    }
+  };
+
+  const fetchAutoReply = async (threadId) => {
+    const response = await fetch(
+      `https://kltn.azurewebsites.net/api/ChatBot/forum-posts/${threadId}/ai-comment`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error("Server error: " + errorText);
+    }
+
+    const data = await response.json();
+    return data?.reply || "Không có câu trả lời phù hợp.";
+  };
+  const increaseCommentCount = async (threadId) => {
+    try {
+      await fetch(
+        `https://kltn.azurewebsites.net/api/forumposts/${threadId}/commentCount`,
+        {
+          method: "PATCH",
+        }
+      );
+    } catch (err) {
+      console.error("Lỗi khi cập nhật commentCount:", err);
+    }
+  };
+  const handleAddComment = async () => {
+    if (!user) {
+      alert("Vui lòng đăng nhập để bình luận!");
+      return;
+    }
+
+    const now = new Date();
+    if (newComment.trim()) {
+      setCommentList([
+        {
+          content: newComment,
+          author: user.username || "Bạn đọc",
+          date: now.toLocaleDateString(),
+          time: now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          likes: 0,
+          liked: false,
+        },
+        ...commentList,
+      ]);
+      setNewComment("");
+
+      await increaseCommentCount(thread.id); // ✅ cập nhật commentCount
     }
   };
 
@@ -101,14 +156,14 @@ function CommentSection({ comments }) {
             >
               Gửi bình luận
             </button>
-            {user.role === "admin" && user ? (
+            {user.role === "admin" && (
               <button
                 onClick={handleAddAutoReply}
                 className="auto-reply-button"
               >
                 Trả lời tự động
               </button>
-            ) : null}
+            )}
           </>
         ) : (
           <p style={{ color: "gray", fontStyle: "italic" }}>

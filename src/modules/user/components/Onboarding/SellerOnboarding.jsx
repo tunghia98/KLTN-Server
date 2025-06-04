@@ -7,12 +7,13 @@ import "./SellerOnboarding.css";
 const steps = [
   "Thiết lập shop",
   "Địa chỉ lấy hàng",
-  "Thông tin thanh toán",
+  // "Thông tin thanh toán", // Đã bỏ bước này
   "Hoàn tất",
   "Thanh toán",
 ];
 
 export default function SellerOnboarding() {
+  const {user}=useUser();
   const [step, setStep] = useState(0);
   const nextStep = () => {
     if (step === 0) {
@@ -34,50 +35,53 @@ export default function SellerOnboarding() {
         setError("Vui lòng nhập đầy đủ địa chỉ lấy hàng.");
         return;
       }
-    } else if (step === 2) {
-      if (!bankName.trim() || !bankAccount.trim()) {
-        setError("Vui lòng nhập đầy đủ thông tin thanh toán.");
-        return;
-      }
     }
-    // Nếu qua validate -> clear lỗi
+    // else if (step === 2) {
+    //   if (!bankName.trim() || !bankAccount.trim()) {
+    //     setError("Vui lòng nhập đầy đủ thông tin thanh toán.");
+    //     return;
+    //   }
+    // }
+
     setError("");
     setStep((s) => Math.min(s + 1, steps.length - 1));
   };
 
-  const [shopName, setShopName] = useState(""); // Thêm state cho tên shop
-  const [isChecked, setIsChecked] = useState(false); // Quản lý trạng thái checkbox
-  const [isCompleted, setIsCompleted] = useState(false); // Quản lý trạng thái hoàn tất
-  const [error, setError] = useState(""); // Thêm state cho thông báo lỗi
+  const [shopName, setShopName] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [error, setError] = useState("");
   const [shopAvatar, setShopAvatar] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
   const [street, setStreet] = useState("");
-  const [bankName, setBankName] = useState("");
-  const [bankAccount, setBankAccount] = useState("");
-  const [hasPaid, setHasPaid] = useState(false); // kiểm tra đã thanh toán
+  // const [bankName, setBankName] = useState("");
+  // const [bankAccount, setBankAccount] = useState("");
+  const [hasPaid, setHasPaid] = useState(false);
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
   const { isLoggedIn } = useUser();
   const navigate = useNavigate();
+
   if (!isLoggedIn) {
-    // Nếu chưa đăng nhập, redirect đến trang login
     return <Navigate to="/login" />;
   }
+
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
+
   const handleComplete = async () => {
     if (!isChecked) {
       alert("Vui lòng đồng ý các điều khoản trước khi hoàn tất.");
       return;
-    } // Redirect đến trang dashboard của người bán
+    }
 
-    const baseUrl = "https://kltn.azurewebsites.net"; // Cố định domain API
+    const baseUrl = "https://kltn.azurewebsites.net";
     const userId = localStorage.getItem("userId");
+
     try {
-      // 1. Gửi yêu cầu tạo shop
       const createShopResponse = await fetch(`${baseUrl}/api/shops/create`, {
         method: "POST",
         headers: {
@@ -97,7 +101,6 @@ export default function SellerOnboarding() {
       const createShopResult = await createShopResponse.json();
       const shopId = createShopResult.shopId;
 
-      // 2. Upload logo cửa hàng nếu có
       if (shopAvatar) {
         const formData = new FormData();
         formData.append("file", shopAvatar);
@@ -118,7 +121,6 @@ export default function SellerOnboarding() {
         }
       }
 
-      // 3. Thêm địa chỉ shop
       const addAddressResponse = await fetch(
         `${baseUrl}/api/addresses/shop/${shopId}`,
         {
@@ -140,23 +142,23 @@ export default function SellerOnboarding() {
         throw new Error("Thêm địa chỉ thất bại");
       }
 
-      // 4. Lưu tài khoản ngân hàng vào Wallet
-      const addWalletResponse = await fetch(`${baseUrl}/api/userwallets`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          walletType: "bank",
-          walletName: bankName,
-          walletNumber: bankAccount,
-        }),
-      });
+      // Bỏ phần thêm tài khoản ngân hàng:
+      // const addWalletResponse = await fetch(`${baseUrl}/api/userwallets`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      //   },
+      //   body: JSON.stringify({
+      //     walletType: "bank",
+      //     walletName: bankName,
+      //     walletNumber: bankAccount,
+      //   }),
+      // });
 
-      if (!addWalletResponse.ok) {
-        throw new Error("Thêm tài khoản ngân hàng thất bại");
-      }
+      // if (!addWalletResponse.ok) {
+      //   throw new Error("Thêm tài khoản ngân hàng thất bại");
+      // }
 
       alert("Đăng ký shop thành công!");
       setIsCompleted(true);
@@ -253,6 +255,7 @@ export default function SellerOnboarding() {
             />
           </div>
         )}
+        {/* Bỏ bước nhập ngân hàng
         {step === 2 && (
           <div className="bank-info-form">
             <label>Ngân hàng</label>
@@ -271,8 +274,8 @@ export default function SellerOnboarding() {
               onChange={(e) => setBankAccount(e.target.value)}
             />
           </div>
-        )}
-        {step === 3 && (
+        )} */}
+        {step === 2 && (
           <div className="completion-form">
             <h3>Hoàn tất đăng ký bán hàng</h3>
             <p>
@@ -300,22 +303,27 @@ export default function SellerOnboarding() {
             </div>
           </div>
         )}
-        {step === 4 && (
+        {step === 3 && (
           <div className="payment-step">
             <h3>Thanh toán phí đăng ký bán hàng</h3>
             <p>
               Bạn cần thanh toán <strong>200.000đ</strong> để hoàn tất đăng ký
               bán hàng.
             </p>
+            <p>
+              <strong>Vui lòng ghi cú pháp chuyển khoản:</strong>{" "}
+              <span style={{ fontWeight: "bold", color: "red" }}>
+                {shopName} - {user?.phoneNumber || "SĐT của bạn"}
+              </span>
+            </p>
 
             {!hasPaid ? (
               <div>
-                {/* TODO: Tích hợp ví thanh toán hoặc hướng dẫn chuyển khoản */}
                 <p>Quét mã QR để thanh toán:</p>
                 <img
                   src="./QR.jpg"
                   alt="QR code"
-                  style={{ width: 400, margin: "0 auto",  }}
+                  style={{ width: 400, margin: "0 auto" }}
                 />
               </div>
             ) : (
@@ -336,9 +344,7 @@ export default function SellerOnboarding() {
         {step < steps.length - 1 ? (
           <button onClick={nextStep}>Tiếp theo</button>
         ) : (
-          <>
-            <button onClick={handleComplete}>Hoàn tất</button>
-          </>
+          <button onClick={handleComplete}>Hoàn tất</button>
         )}
       </div>
     </div>

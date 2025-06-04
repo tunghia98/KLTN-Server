@@ -76,8 +76,10 @@ function ThreadDetail({ thread, category, crop, region, userwriter }) {
         <div className="thread-author-info">
           <p>
             Viết bởi:{" "}
-            <strong>{userwriter?.name || "Người dùng ẩn danh"}</strong> –{" "}
-            {new Date(thread.createdAt).toLocaleDateString()}
+            <strong>
+              {userwriter?.name || userwriter?.username || "Người dùng ẩn danh"}
+            </strong>{" "}
+            – {new Date(thread.createdAt).toLocaleDateString()}
           </p>
         </div>
 
@@ -90,7 +92,7 @@ function ThreadDetail({ thread, category, crop, region, userwriter }) {
 
       {/* Chỉ hiển thị bình luận nếu bài viết chưa bị khóa */}
       {!isLocked ? (
-        <CommentSection comments={thread.comments} />
+        <CommentSection comments={thread.comments} thread={thread} />
       ) : (
         <div className="comment-disabled-message">
           Bài viết đã bị khóa, không thể bình luận.
