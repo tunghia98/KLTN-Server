@@ -128,20 +128,18 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
   }, [shops, cartItems]);
 
   const handleSelectChange = (shopId, value) => {
+    const key = String(shopId); // 🔐 dùng string key nhất quán
     setDiscountCodes((prev) => ({
       ...prev,
-      [shopId]: value,
+      [key]: value,
     }));
 
     const promotion = availablePromotions[shopId]?.find(
       (promo) => promo.code === value
     );
-    if (onApplyDiscount) onApplyDiscount(shopId, promotion);
-  };
-
-  const handleApplyDiscount = (shopId) => {
-    const code = discountCodes[shopId] || "";
-    if (onApplyDiscount) onApplyDiscount(shopId, code);
+    if (onApplyDiscount && promotion) {
+      onApplyDiscount(key, promotion); // ✅ Gọi luôn khi chọn
+    }
   };
 
   return (
@@ -176,14 +174,6 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
                     </option>
                   ))}
                 </select>
-                <Button
-                  type="button"
-                  btnStyle="apply"
-                  className="apply-discount-btn"
-                  onClick={() => handleApplyDiscount(shopId)}
-                >
-                  Áp dụng
-                </Button>
               </>
             ) : (
               <div className="no-discount-message">Không có mã giảm giá</div>

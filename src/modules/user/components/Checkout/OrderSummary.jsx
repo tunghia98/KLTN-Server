@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import "./Checkout.css";
 
 const OrderSummary = ({
   cartItems = [],
@@ -10,7 +11,9 @@ const OrderSummary = ({
     const summaries = {};
 
     cartItems.forEach((item) => {
-      const { shopId, price, quantity } = item;
+      const shopId = String(item.shopId); // Ép shopId thành string
+      const { price, quantity } = item;
+
       if (!summaries[shopId]) {
         summaries[shopId] = {
           items: [],
@@ -26,17 +29,26 @@ const OrderSummary = ({
 
     for (const shopId in summaries) {
       const summary = summaries[shopId];
-      const promotion = discounts[shopId];
+      // Lấy promotion có thể là string hoặc number key
+      const promotion = discounts[shopId] || discounts[Number(shopId)];
 
+      const value = Number(promotion?.value || 0);
+
+      // Xử lý các loại giảm giá
       if (promotion?.type === "percent") {
-        summary.discount =
-          (summary.totalBeforeDiscount * promotion.value) / 100;
-      } else if (promotion?.type === "money") {
-        summary.discount = promotion.value;
+        summary.discount = (summary.totalBeforeDiscount * value) / 100;
+      } else if (promotion?.type === "money" || promotion?.type === "order") {
+        summary.discount = value;
+      } else {
+        summary.discount = 0;
       }
 
       summary.totalAfterDiscount =
         summary.totalBeforeDiscount - summary.discount;
+
+      if (summary.totalAfterDiscount < 0) {
+        summary.totalAfterDiscount = 0;
+      }
     }
 
     return summaries;
@@ -56,29 +68,48 @@ const OrderSummary = ({
     );
   }, [shopSummaries]);
 
-  const finalTotal = totalBeforeDiscount - totalDiscount;
+  // Tổng thành tiền = tổng các totalAfterDiscount
+  const finalTotal = useMemo(() => {
+    return Object.values(shopSummaries).reduce(
+      (sum, shop) => sum + shop.totalAfterDiscount,
+      0
+    );
+  }, [shopSummaries]);
 
   return (
-    <div className={className}>
+    <div className={`order-summary ${className}`}>
       <h3>Tóm tắt đơn hàng</h3>
 
-      {Object.entries(shopSummaries).map(([shopId, summary]) => (
-        <div key={shopId} style={{ marginBottom: "1rem" }}>
-          <strong>{shopNames[shopId] || `Cửa hàng #${shopId}`}</strong>
-          <div>Tạm tính: {summary.totalBeforeDiscount.toLocaleString()} đ</div>
-          <div>Giảm giá: -{summary.discount.toLocaleString()} đ</div>
-          <div>
-            Thành tiền:{" "}
-            <strong>{summary.totalAfterDiscount.toLocaleString()} đ</strong>
+      {Object.entries(shopSummaries).map(([shopId, summary]) => {
+        const promotion = discounts[shopId] || discounts[Number(shopId)];
+        return (
+          <div key={shopId} style={{ marginBottom: "1rem" }}>
+            <strong>{shopNames[shopId] || `Cửa hàng #${shopId}`}</strong>
+            <div>
+              Tạm tính: {summary.totalBeforeDiscount.toLocaleString()} đ
+            </div>
+            {promotion && (
+              <div>
+                Giảm giá:{" "}
+                {promotion.type === "percent"
+                  ? `-${promotion.value}%`
+                  : `-${promotion.value.toLocaleString()} đ`}{" "}
+                {promotion.code && <span>({promotion.code})</span>}
+              </div>
+            )}
+            <div>
+              Thành tiền:{" "}
+              <strong>{summary.totalAfterDiscount.toLocaleString()} đ</strong>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       <hr />
       <div>Tổng tạm tính: {totalBeforeDiscount.toLocaleString()} đ</div>
       <div>Tổng giảm giá: -{totalDiscount.toLocaleString()} đ</div>
       <div>
-        <strong>Tổng thành tiền: {finalTotal.toLocaleString()} đ</strong>
+        <strong>Tổng thanh toán: {finalTotal.toLocaleString()} đ</strong>
       </div>
     </div>
   );

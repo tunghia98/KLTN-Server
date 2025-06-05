@@ -9,46 +9,52 @@ import { useNavigate } from "react-router-dom";
 
 const CheckoutPage = () => {
   const { cartItems = [] } = useCart();
-  const checkedItems = cartItems.filter((item) => item.checked);
+
+  const checkedItems = useMemo(() => {
+    return cartItems.filter((item) => item.checked);
+  }, [cartItems]);
+
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [discountCodes, setDiscountCodes] = useState({});
   const [appliedPromotions, setAppliedPromotions] = useState({});
+  const [shops, setShops] = useState([]);
   const navigate = useNavigate();
 
-  const [shops, setShops] = useState([]);
-
-  useEffect(() => {
-    const fetchAddresses = async () => {
-      try {
-        const res = await fetch(
-          "https://kltn.azurewebsites.net/api/addresses/user",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
-        if (!res.ok) throw new Error("Không lấy được địa chỉ");
-        const data = await res.json();
-        setAddresses(data);
-      } catch (err) {
-        console.error(err);
-        alert("Lỗi khi tải địa chỉ");
-      }
-    };
-    fetchAddresses();
-  }, []);
-
-  const totalAmount = checkedItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const totalAmount = useMemo(() => {
+    return checkedItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  }, [checkedItems]);
 
   const shopIds = useMemo(
     () => [...new Set(checkedItems.map((item) => item.shopId))],
     [checkedItems]
   );
+
+  const fetchAddresses = async () => {
+    try {
+      const res = await fetch(
+        "https://kltn.azurewebsites.net/api/addresses/user",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("Không lấy được địa chỉ");
+      const data = await res.json();
+      setAddresses(data);
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi khi tải địa chỉ");
+    }
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
 
   const fetchShopName = async (shopId) => {
     try {
@@ -69,6 +75,7 @@ const CheckoutPage = () => {
       setShops([]);
       return;
     }
+
     const fetchShops = async () => {
       const shopData = await Promise.all(
         shopIds.map(async (id) => {
@@ -78,15 +85,38 @@ const CheckoutPage = () => {
       );
       setShops(shopData);
     };
+
     fetchShops();
   }, [shopIds]);
 
-  const stableShops = useMemo(() => shops, [shops]);
-  const stableCartItems = useMemo(() => cartItems, [cartItems]);
+  const shopNames = useMemo(() => {
+    const result = {};
+    shops.forEach(({ id, name }) => {
+      result[String(id)] = name; // Ép string luôn
+    });
+    return result;
+  }, [shops]);
+
+  // Chuẩn hóa key discounts sang string
+  const normalizedDiscounts = useMemo(() => {
+    const res = {};
+    for (const key in appliedPromotions) {
+      res[String(key)] = appliedPromotions[key];
+    }
+    return res;
+  }, [appliedPromotions]);
 
   const handleApplyDiscount = (shopId, promotion) => {
-    setDiscountCodes((prev) => ({ ...prev, [shopId]: promotion.code }));
-    setAppliedPromotions((prev) => ({ ...prev, [shopId]: promotion }));
+    const key = String(shopId);
+    setDiscountCodes((prev) => ({ ...prev, [key]: promotion.code }));
+    setAppliedPromotions((prev) => ({
+      ...prev,
+      [key]: {
+        code: promotion.code,
+        type: promotion.type,
+        value: promotion.value,
+      },
+    }));
   };
 
   const handleConfirmOrder = async () => {
@@ -112,6 +142,7 @@ const CheckoutPage = () => {
           discounts: discountCodes,
         }),
       });
+
       if (!res.ok) throw new Error("Đặt hàng thất bại!");
       alert("Đặt hàng thành công!");
       navigate("/order-success");
@@ -120,14 +151,6 @@ const CheckoutPage = () => {
       alert("Lỗi khi đặt hàng. Vui lòng thử lại.");
     }
   };
-  console.log("checkedItems:", checkedItems);
-  const shopNames = useMemo(() => {
-    const result = {};
-    shops.forEach(({ id, name }) => {
-      result[id] = name;
-    });
-    return result;
-  }, [shops]);
 
   return (
     <div className="checkout-page">
@@ -141,16 +164,15 @@ const CheckoutPage = () => {
           onAddressChange={setSelectedAddressId}
         />
         <Discount
-          shops={stableShops}
-          cartItems={stableCartItems}
+          shops={shops}
+          cartItems={checkedItems}
           onApplyDiscount={handleApplyDiscount}
         />
         <OrderSummary
           cartItems={checkedItems}
-          discounts={appliedPromotions}
+          discounts={normalizedDiscounts}
           shopNames={shopNames}
         />
-
         <div style={{ marginTop: 20, textAlign: "center" }}>
           <button className="btn-primary" onClick={handleConfirmOrder}>
             Xác nhận đặt hàng

@@ -1,10 +1,12 @@
 .cart-page-main{
     display:flex;
     flex-direction:row;
+    gap: 5px;
 }
 .cart-page-left{
     width: 100%;
 }
 .cart-page-right{
     width: 30%;
+    box-sizing: border-box;
 }
