@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "../../../../components/Common/Button.jsx";
 import "./Checkout.css";
 
@@ -6,115 +6,123 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
   const [availablePromotions, setAvailablePromotions] = useState({});
   const [discountCodes, setDiscountCodes] = useState({});
 
-  const fetchProductPromotions = async (productId) => {
+  const prevShopsRef = useRef();
+  const prevCartItemsRef = useRef();
+
+  const fetchProductPromotions = async () => {
     try {
       const res = await fetch(
         `https://kltn.azurewebsites.net/api/ProductPromotions`
       );
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-      const data = await res.json();
-      return data.filter((item) => item.productId === productId);
+      return await res.json();
     } catch (error) {
       console.error("Failed to fetch product promotions:", error);
       return [];
     }
   };
 
-  const fetchPromotionDetails = async (promotionIds) => {
+  const fetchAllPromotions = async () => {
     try {
-      const res = await fetch(`https://kltn.azurewebsites.net/api/promotions`);
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-      const allPromotions = await res.json();
+      const [productPromotionMappings, allPromotions] = await Promise.all([
+        fetchProductPromotions(),
+        fetch(`https://kltn.azurewebsites.net/api/promotions`).then((res) =>
+          res.ok ? res.json() : []
+        ),
+      ]);
 
       const now = new Date();
-
-      return allPromotions.filter((promo) => {
-        const startDate = new Date(promo.startDate);
-        const endDate = new Date(promo.endDate);
-        return (
-          promotionIds.includes(promo.id) && startDate <= now && now <= endDate
-        );
+      const validPromotions = allPromotions.filter((promo) => {
+        const start = new Date(promo.startDate);
+        const end = new Date(promo.endDate);
+        return start <= now && now <= end;
       });
-    } catch (error) {
-      console.error("Failed to fetch promotions:", error);
-      return [];
-    }
-  };
 
-  const fetchShopPromotions = async (shopId) => {
-    try {
-      const res = await fetch(
-        `https://kltn.azurewebsites.net/api/StorePromotions/by-shop/${shopId}`
-      );
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-      const mappings = await res.json();
+      const promoMap = {};
 
-      const detailedPromotions = await Promise.all(
-        mappings.map(async (item) => {
-          const res = await fetch(
-            `https://kltn.azurewebsites.net/api/Promotions/${item.promotionId}`
+      await Promise.all(
+        shops.map(async (shop) => {
+          const shopId = shop.id;
+          const shopItems = cartItems.filter((item) => item.shopId === shopId);
+          const shopTotal = shopItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
           );
-          if (!res.ok) return null;
-          return await res.json();
+
+          const productPromoIds = productPromotionMappings
+            .filter((pm) =>
+              shopItems.some((item) => item.productId === pm.productId)
+            )
+            .map((pm) => pm.promotionId);
+
+          const productPromotions = validPromotions.filter(
+            (promo) =>
+              promo.type === "product" && productPromoIds.includes(promo.id)
+          );
+
+          const shopPromoRes = await fetch(
+            `https://kltn.azurewebsites.net/api/StorePromotions/by-shop/${shopId}`
+          );
+          const shopPromoMappings = shopPromoRes.ok
+            ? await shopPromoRes.json()
+            : [];
+
+          const shopPromos = await Promise.all(
+            shopPromoMappings.map(async (m) => {
+              try {
+                const res = await fetch(
+                  `https://kltn.azurewebsites.net/api/Promotions/${m.promotionId}`
+                );
+                return res.ok ? await res.json() : null;
+              } catch {
+                return null;
+              }
+            })
+          );
+
+          const validShopPromos = shopPromos.filter((promo) => {
+            if (!promo) return false;
+            const start = new Date(promo.startDate);
+            const end = new Date(promo.endDate);
+            const isValid = start <= now && now <= end;
+            return (
+              isValid &&
+              (promo.type !== "order" ||
+                (promo.condition && shopTotal >= Number(promo.condition)))
+            );
+          });
+
+          const merged = [...validShopPromos];
+          productPromotions.forEach((pp) => {
+            if (!merged.some((p) => p.id === pp.id)) merged.push(pp);
+          });
+
+          promoMap[shopId] = merged;
         })
       );
 
-      const now = new Date();
-
-      return detailedPromotions.filter((promo) => {
-        if (!promo) return false;
-        const startDate = new Date(promo.startDate);
-        const endDate = new Date(promo.endDate);
-        return promo.type === "order" && startDate <= now && now <= endDate;
-      });
-    } catch (error) {
-      console.error("Failed to fetch shop promotions:", error);
-      return [];
+      setAvailablePromotions(promoMap);
+    } catch (err) {
+      console.error("Error fetching all promotions:", err);
     }
   };
 
   useEffect(() => {
-    if (!shops || shops.length === 0) return;
+    // Debug re-render
+    // console.log("Discount useEffect running");
 
-    const fetchAllPromotions = async () => {
-      const promoMap = {};
+    const sameShops =
+      JSON.stringify(shops) === JSON.stringify(prevShopsRef.current);
+    const sameCart =
+      JSON.stringify(cartItems) === JSON.stringify(prevCartItemsRef.current);
+    if (sameShops && sameCart) return;
 
-      for (const shop of shops) {
-        const shopId = shop.id;
+    prevShopsRef.current = shops;
+    prevCartItemsRef.current = cartItems;
 
-        const productsOfShop = cartItems.filter(
-          (item) => item.shopId === shopId
-        );
-
-        let productPromotions = [];
-        for (const p of productsOfShop) {
-          const productPromoMappings = await fetchProductPromotions(
-            p.productId
-          );
-          const promotionIds = productPromoMappings.map((pm) => pm.promotionId);
-          const detailedPromos = await fetchPromotionDetails(promotionIds);
-
-          productPromotions = productPromotions.concat(
-            detailedPromos.filter((dp) => dp.type === "product")
-          );
-        }
-
-        const shopPromotions = await fetchShopPromotions(shopId);
-
-        const allPromotions = [...shopPromotions];
-        productPromotions.forEach((pp) => {
-          if (!allPromotions.some((sp) => sp.id === pp.id)) {
-            allPromotions.push(pp);
-          }
-        });
-
-        promoMap[shopId] = allPromotions;
-      }
-
-      setAvailablePromotions(promoMap);
-    };
-
-    fetchAllPromotions();
+    if (shops && shops.length > 0 && cartItems && cartItems.length > 0) {
+      fetchAllPromotions();
+    }
   }, [shops, cartItems]);
 
   const handleSelectChange = (shopId, value) => {
@@ -152,8 +160,12 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
                   {shopPromos.map((promo) => (
                     <option key={promo.id} value={promo.code}>
                       {promo.code} - Giảm{" "}
-                      {promo.discountPercent ?? promo.discountAmount ?? "?"}
-                      {promo.discountPercent ? "%" : "₫"}
+                      {promo.type === "percent"
+                        ? `${promo.value}%`
+                        : promo.value.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}{" "}
                       {promo.type === "product" ? " (Sản phẩm)" : " (Đơn hàng)"}
                     </option>
                   ))}

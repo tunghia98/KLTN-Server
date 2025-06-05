@@ -17,45 +17,86 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [shops, setShops] = useState([]);
 
-  const fetchAddresses = async () => {
-    try {
-      const res = await fetch(
-        "https://kltn.azurewebsites.net/api/addresses/user",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error("Không lấy được địa chỉ");
-
-      const data = await res.json();
-      setAddresses(data);
-    } catch (err) {
-      console.error(err);
-      alert("Lỗi khi tải địa chỉ");
-    }
-  };
-
+  // Fetch addresses
   useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const res = await fetch(
+          "https://kltn.azurewebsites.net/api/addresses/user",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        if (!res.ok) throw new Error("Không lấy được địa chỉ");
+        const data = await res.json();
+        setAddresses(data);
+      } catch (err) {
+        console.error(err);
+        alert("Lỗi khi tải địa chỉ");
+      }
+    };
     fetchAddresses();
   }, []);
 
-  // Tính tổng tiền chưa trừ giảm giá
-  const totalAmount = checkedItems.reduce((total, item) => {
-    return total + item.price * item.quantity;
-  }, 0);
+  // Tổng tiền
+  const totalAmount = checkedItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  // Lấy danh sách shopId
+  const shopIds = useMemo(
+    () => [...new Set(checkedItems.map((item) => item.shopId))],
+    [checkedItems]
+  );
+
+  // Lấy tên shop
+  const fetchShopName = async (shopId) => {
+    try {
+      const res = await fetch(
+        `https://kltn.azurewebsites.net/api/shops/${shopId}`
+      );
+      if (!res.ok) throw new Error("Không tìm thấy cửa hàng");
+      const data = await res.json();
+      return data.name;
+    } catch (err) {
+      console.error("Lỗi khi lấy tên cửa hàng:", err);
+      return `Cửa hàng ${shopId}`;
+    }
+  };
+
+  // Fetch shops chỉ 1 lần
+  useEffect(() => {
+    if (shopIds.length === 0) {
+      setShops([]);
+      return;
+    }
+    const fetchShops = async () => {
+      const shopData = await Promise.all(
+        shopIds.map(async (id) => {
+          const name = await fetchShopName(id);
+          return { id, name };
+        })
+      );
+      setShops(shopData);
+    };
+    fetchShops();
+  }, [shopIds]);
+
+  // Ổn định dữ liệu để tránh fetch lại trong Discount
+  const stableShops = useMemo(() => shops, [shops]);
+  const stableCartItems = useMemo(() => cartItems, [cartItems]);
 
   const handleApplyDiscount = (shopId, code) => {
     setDiscountCodes((prev) => ({
       ...prev,
       [shopId]: code,
     }));
-
-    // Có thể xử lý gọi API kiểm tra mã giảm giá tại đây nếu cần
   };
 
+  // Xác nhận đơn hàng
   const handleConfirmOrder = async () => {
     if (!selectedAddressId) {
       alert("Vui lòng chọn địa chỉ nhận hàng!");
@@ -94,63 +135,6 @@ const CheckoutPage = () => {
       alert("Lỗi khi đặt hàng. Vui lòng thử lại.");
     }
   };
-  const fetchShopName = async (shopId) => {
-    try {
-      const res = await fetch(
-        `https://kltn.azurewebsites.net/api/shops/${shopId}`
-      );
-      if (!res.ok) throw new Error("Không tìm thấy cửa hàng");
-      const data = await res.json();
-      return data.name;
-    } catch (err) {
-      console.error("Lỗi khi lấy tên cửa hàng:", err);
-      return `Cửa hàng ${shopId}`;
-    }
-  };
-  const shopIds = useMemo(
-    () => [...new Set(checkedItems.map((item) => item.shopId))],
-    [checkedItems]
-  );
-
-  useEffect(() => {
-    const fetchShops = async () => {
-      const shopData = await Promise.all(
-        shopIds.map(async (id) => {
-          const name = await fetchShopName(id);
-          return { id, name };
-        })
-      );
-      setShops(shopData);
-    };
-
-    if (shopIds.length > 0 && shops.length !== shopIds.length) {
-      fetchShops();
-    }
-  }, [shopIds]);
-
-  // Map shopId -> shopName từ cartItems, có fallback nếu thiếu shopName
-  const shopMap = {};
-  cartItems.forEach((item) => {
-    if (!shopMap[item.shopId]) {
-      console.log(shopMap);
-      shopMap[item.shopId] = item.shopName || `Cửa hàng ${item.shopId}`;
-    }
-  });
-  useEffect(() => {
-    const fetchShops = async () => {
-      const shopData = await Promise.all(
-        shopIds.map(async (id) => {
-          const name = await fetchShopName(id);
-          return { id, name };
-        })
-      );
-      setShops(shopData);
-    };
-
-    if (shopIds.length > 0) {
-      fetchShops();
-    }
-  }, [shopIds]);
 
   return (
     <div className="checkout-page">
@@ -165,8 +149,8 @@ const CheckoutPage = () => {
           className="checkout-page-shippinginfo"
         />
         <Discount
-          shops={shops}
-          cartItems={cartItems || []}
+          shops={stableShops}
+          cartItems={stableCartItems}
           onApplyDiscount={handleApplyDiscount}
           className="checkout-page-discount"
         />
