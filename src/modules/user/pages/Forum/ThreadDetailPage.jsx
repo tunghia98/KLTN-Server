@@ -7,7 +7,7 @@ function ThreadDetailPage() {
   const { titleSlug } = useParams();
   const [thread, setThread] = useState(null);
   const [loading, setLoading] = useState(true);
-
+    const [comments, setComments] = useState([]);
   const [category, setCategory] = useState(null);
   const [crop, setCrop] = useState(null);
   const [region, setRegion] = useState(null);
@@ -20,13 +20,27 @@ function ThreadDetailPage() {
       const threads = await threadsRes.json();
       const foundThread = threads.find((t) => toSlug(t.title) === titleSlug);
       if (!foundThread) throw new Error("Bài viết không tồn tại");
-
       setThread(foundThread);
     } catch (error) {
       console.error("Lỗi khi tải bài viết:", error);
     }
-  };
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            await fetchThread();
+        };
 
+        fetchData();
+    }, []);
+    const fetchComments = async (postId) => {
+        try {
+            const res = await fetch(`https://kltn.azurewebsites.net/api/forumcomments?postId=${postId}`);
+            const data = await res.json();
+            setComments(data);
+        } catch (error) {
+            console.error("Lỗi khi tải bình luận:", error);
+        }
+    };
   // Fetch category data
   const fetchCategory = async (categoryId) => {
     try {
@@ -71,34 +85,30 @@ function ThreadDetailPage() {
     }
   };
 
-  // Use useEffect to trigger fetching when the component mounts
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchThread(); // Fetch thread data
-      if (thread) {
-        fetchCategory(thread.categoryId); // Fetch category data
-        fetchCrop(thread.cropId); // Fetch crop data
-        fetchRegion(thread.regionId); // Fetch region data
-        fetchUser(thread.userId); // Fetch user data
-      }
-      setLoading(false); // Set loading to false once all data is fetched
-    };
-
-    fetchData();
-  }, [titleSlug, thread]); // When titleSlug or thread changes, re-trigger fetch
+    useEffect(() => {
+        if (thread) {
+            fetchCategory(thread.categoryId);
+            fetchCrop(thread.cropId);
+            fetchRegion(thread.regionId);
+            fetchUser(thread.userId);
+            fetchComments(thread.id); // fetch comment sau khi thread có data
+            setLoading(false);
+        }
+    }, [thread]);
 
   if (loading) return <p>Đang tải...</p>;
   if (!thread) return <p>Không tìm thấy chủ đề này.</p>;
 
   return (
     <div className="thread-detail-page">
-      <ThreadDetail
-        thread={thread}
-        category={category}
-        crop={crop}
-        region={region}
-        userwriter={user}
-      />
+          <ThreadDetail
+              thread={thread}
+              category={category}
+              crop={crop}
+              region={region}
+              userwriter={user}
+              comments={comments}
+          />
     </div>
   );
 }

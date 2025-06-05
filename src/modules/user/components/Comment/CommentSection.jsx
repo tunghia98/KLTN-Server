@@ -96,7 +96,8 @@ function CommentSection({ comments, thread }) {
     }
 
     const data = await response.json();
-    return data?.reply || "Không có câu trả lời phù hợp.";
+      console.log(data);
+      return data?.comment?.content || "Không có câu trả lời phù hợp.";
   };
   const increaseCommentCount = async (threadId) => {
     try {

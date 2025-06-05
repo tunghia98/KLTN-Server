@@ -5,7 +5,7 @@ import Login from "../AuthForm/Login";
 import "./Forum.css";
 import CommentSection from "../Comment/CommentSection";
 
-function ThreadDetail({ thread, category, crop, region, userwriter }) {
+function ThreadDetail({ thread, category, crop, region, userwriter, comments }) {
   const [likes, setLikes] = useState(thread.likes || 0);
   const [isLocked, setIsLocked] = useState(thread.isLocked || false); // Thêm state khóa bài viết
   const { user } = useUser();
@@ -81,7 +81,20 @@ function ThreadDetail({ thread, category, crop, region, userwriter }) {
             </strong>{" "}
             – {new Date(thread.createdAt).toLocaleDateString()}
           </p>
-        </div>
+              </div>
+              <div className="comment-section">
+                  <h3>Bình luận</h3>
+                  {comments?.length > 0 ? (
+                      comments.map((comment) => (
+                          <div key={comment.id} className="comment">
+                              <p><strong>{comment.userName}</strong>: {comment.content}</p>
+                              <p>👍 {comment.likeCount}</p>
+                          </div>
+                      ))
+                  ) : (
+                      <p>Chưa có bình luận nào.</p>
+                  )}
+              </div>
 
         {(isAdmin || isAuthor) && (
           <button onClick={handleToggleLock} className="lock-thread-btn">
@@ -92,7 +105,7 @@ function ThreadDetail({ thread, category, crop, region, userwriter }) {
 
       {/* Chỉ hiển thị bình luận nếu bài viết chưa bị khóa */}
       {!isLocked ? (
-        <CommentSection comments={thread.comments} thread={thread} />
+              <CommentSection comments={comments} thread={thread} />
       ) : (
         <div className="comment-disabled-message">
           Bài viết đã bị khóa, không thể bình luận.
