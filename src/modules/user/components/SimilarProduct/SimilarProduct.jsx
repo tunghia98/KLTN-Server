@@ -44,7 +44,7 @@ function SimilarProduct({ products }) {
 
   return (
     <div className="similar-product">
-      <label className="product-detail-title">Sản phẩm tương tự</label>
+      <label className="product-detail-title">Sản phẩm gợi ý</label>
       <div className="similar-product-list">
         {products && products.length > 0 ? (
           products.map((product) => (
@@ -77,7 +77,7 @@ function SimilarProduct({ products }) {
             </div>
           ))
         ) : (
-          <p>Không có sản phẩm tương tự</p>
+          <p>Không có sản phẩm gợi ý</p>
         )}
       </div>
     </div>

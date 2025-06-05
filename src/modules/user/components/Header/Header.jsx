@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   faCircleUser,
   faMagnifyingGlass,
@@ -68,7 +68,7 @@ function Header() {
 
           <div className="header-location">
             <FontAwesomeIcon icon={faLocationDot} className="icon-location" />
-            <Link to="/location-map">Vị trí</Link>
+            <Link to="/location-map">Gần đây</Link>
           </div>
 
           <div className="header-login">
@@ -123,16 +123,13 @@ function Header() {
             <Link to="/products">Tất cả sản phẩm</Link>
           </li>
           <li>
-            <a>Bán chạy</a>
-          </li>
-          <li>
             <Link to="/forum">Diễn đàn</Link>
           </li>
           <li>
-            <a>Chính sách</a>
+            <Link to="/contact">Chính sách</Link>
           </li>
           <li>
-            <a>Liên hệ</a>
+            <Link to="/contact">Liên hệ</Link>
           </li>
         </ul>
       </div>

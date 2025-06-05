@@ -13,7 +13,7 @@ const CartSummary = ({ total, cartItems }) => {
     <div className="cart-summary">
       <h3>Tổng cộng: {total.toLocaleString()}đ</h3>
       <button className="checkout-btn" onClick={handleCheckout}>
-        Tiến hành thanh toán
+        Đặt hàng
       </button>
     </div>
   );

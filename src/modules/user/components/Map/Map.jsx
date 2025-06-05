@@ -75,19 +75,27 @@ const Map = () => {
       alert("Trình duyệt không hỗ trợ định vị.");
     }
   }, []);
+  const [sortOrder, setSortOrder] = useState("asc"); // 'asc' | 'desc'
 
   const shopsInRange =
     userPosition && shops.length > 0
-      ? shops.filter((shop) => {
-          if (!shop.latitude || !shop.longitude) return false;
-          const dist = haversineDistance(
-            userPosition.lat,
-            userPosition.lng,
-            shop.latitude,
-            shop.longitude
-          );
-          return dist <= distanceFilter;
-        })
+      ? shops
+          .filter((shop) => shop.latitude && shop.longitude)
+          .map((shop) => {
+            const distance = haversineDistance(
+              userPosition.lat,
+              userPosition.lng,
+              shop.latitude,
+              shop.longitude
+            );
+            return { ...shop, distance };
+          })
+          .filter((shop) => shop.distance <= distanceFilter)
+          .sort((a, b) =>
+            sortOrder === "asc"
+              ? a.distance - b.distance
+              : b.distance - a.distance
+          )
       : [];
 
   console.log("Shops in range:", shopsInRange); // Debug
@@ -195,6 +203,24 @@ const Map = () => {
         </div>
 
         <div className="map-right">
+          <div style={{ marginBottom: "10px" }}>
+            <label htmlFor="sort-order">
+              <strong>Sắp xếp theo:</strong>
+            </label>
+            <select
+              id="sort-order"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              style={{
+                padding: "6px",
+                fontSize: "14px",
+                marginLeft: "10px",
+              }}
+            >
+              <option value="asc">Gần → Xa</option>
+              <option value="desc">Xa → Gần</option>
+            </select>
+          </div>
           <h3>Cửa hàng trong bán kính {distanceFilter} km</h3>
           {shopsInRange.length > 0 ? (
             shopsInRange.map((shop) => (
@@ -202,20 +228,42 @@ const Map = () => {
                 key={shop.id}
                 className="shop-item"
                 onClick={() => handleMarkerClick(shop)}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                <img
-                  src={
-                    shop.avatarUrl
-                      ? `https://kltn.azurewebsites.net/api/Shops/shop-avatar/${shop.avatarUrl}`
-                      : "/default-avatar.png"
-                  }
-                  alt={shop.name}
-                />
-                <div>
-                  <strong>{shop.name}</strong>
-                  <p style={{ fontSize: "12px", margin: 0 }}>
-                    {shop.address || "Không có địa chỉ"}
-                  </p>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    src={
+                      shop.avatarUrl
+                        ? `https://kltn.azurewebsites.net/api/Shops/shop-avatar/${shop.avatarUrl}`
+                        : "/default-avatar.png"
+                    }
+                    alt={shop.name}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      marginRight: "10px",
+                      borderRadius: "50%",
+                    }}
+                  />
+                  <div>
+                    <strong>{shop.name}</strong>
+                    <p style={{ fontSize: "12px", margin: 0 }}>
+                      {shop.address || "Không có địa chỉ"}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    minWidth: "80px",
+                    textAlign: "right",
+                    fontSize: "14px",
+                  }}
+                >
+                  {shop.distance?.toFixed(2)} km
                 </div>
               </div>
             ))

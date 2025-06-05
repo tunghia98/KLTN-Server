@@ -9,7 +9,6 @@ const ContactPage = () => {
       <ul>
         <li>Email: support@lua-chonong.vn</li>
         <li>Hotline: 1900 6868</li>
-        <li>Địa chỉ: 123 Đường Đồng Lúa, Quận Nông Nghiệp, TP. Cây Lúa</li>
       </ul>
     </div>
   );

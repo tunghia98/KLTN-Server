@@ -14,9 +14,9 @@ const PromotionsManagementPage = () => {
     code: "",
     type: "",
     value: "",
+    condition: "",
     startDate: "",
     endDate: "",
-    condition: "",
     productId: [],
   });
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -119,6 +119,7 @@ const PromotionsManagementPage = () => {
         code: "",
         type: "",
         value: "",
+        conditon:"",
         startDate: "",
         endDate: "",
         productId: [],

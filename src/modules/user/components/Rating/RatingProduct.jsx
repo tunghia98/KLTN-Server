@@ -12,40 +12,44 @@ export default function Rating({ value = 0, count = 0, size = 20, onRate }) {
       onRate(index + 1);
     }
   };
-
+  const numericValue = isNaN(Number(value)) ? 0 : Number(value);
   return (
     <div className="rating-container">
       <div>
-              {Array.from({ length: totalStars }).map((_, i) => {
-        const isFull = i < fullStars;
-        const isHalf = i === fullStars && hasHalf;
+        {Array.from({ length: totalStars }).map((_, i) => {
+          const isFull = i < fullStars;
+          const isHalf = i === fullStars && hasHalf;
 
-        return (
-          <div
-            key={i}
-            className="star-wrapper"
-            onClick={() => handleClick(i)}
-            style={{ width: size, height: size, cursor: onRate ? "pointer" : "default" }}
-          >
-            {/* Background empty star */}
-            <Star size={size} className="star-icon empty" />
+          return (
+            <div
+              key={i}
+              className="star-wrapper"
+              onClick={() => handleClick(i)}
+              style={{
+                width: size,
+                height: size,
+                cursor: onRate ? "pointer" : "default",
+              }}
+            >
+              {/* Background empty star */}
+              <Star size={size} className="star-icon empty" />
 
-            {/* Filled or half star */}
-            {(isFull || isHalf) && (
-              <div
-                className={`star-overlay ${isHalf ? "half" : "full"}`}
-                style={{ width: isHalf ? size / 2 : size, height: size }}
-              >
-                <Star size={size} className="star-icon filled" />
-              </div>
-            )}
-          </div>
-        );
-      })}
+              {/* Filled or half star */}
+              {(isFull || isHalf) && (
+                <div
+                  className={`star-overlay ${isHalf ? "half" : "full"}`}
+                  style={{ width: isHalf ? size / 2 : size, height: size }}
+                >
+                  <Star size={size} className="star-icon filled" />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <span className="rating-text">
-        ({value.toFixed(1)}/5 - {count} đánh giá)
+        ({numericValue.toFixed(1)}/5 - {count} đánh giá)
       </span>
     </div>
   );
