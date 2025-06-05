@@ -97,7 +97,12 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
             if (!merged.some((p) => p.id === pp.id)) merged.push(pp);
           });
 
-          promoMap[shopId] = merged;
+          // Loại trùng theo promo.code
+          const uniqueByCode = Array.from(
+            new Map(merged.map((promo) => [promo.code, promo])).values()
+          );
+
+          promoMap[shopId] = uniqueByCode;
         })
       );
 
@@ -108,9 +113,6 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
   };
 
   useEffect(() => {
-    // Debug re-render
-    // console.log("Discount useEffect running");
-
     const sameShops =
       JSON.stringify(shops) === JSON.stringify(prevShopsRef.current);
     const sameCart =
@@ -120,7 +122,7 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
     prevShopsRef.current = shops;
     prevCartItemsRef.current = cartItems;
 
-    if (shops && shops.length > 0 && cartItems && cartItems.length > 0) {
+    if (shops?.length && cartItems?.length) {
       fetchAllPromotions();
     }
   }, [shops, cartItems]);
@@ -130,6 +132,11 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
       ...prev,
       [shopId]: value,
     }));
+
+    const promotion = availablePromotions[shopId]?.find(
+      (promo) => promo.code === value
+    );
+    if (onApplyDiscount) onApplyDiscount(shopId, promotion);
   };
 
   const handleApplyDiscount = (shopId) => {
@@ -144,11 +151,10 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
         const shopId = shop.id;
         const shopName = shop.name;
         const shopPromos = availablePromotions[shopId] || [];
+
         return (
           <div key={shopId} className="discount-input-wrapper">
-            <div className="shop-name-label">
-              <strong>{shopName}</strong>
-            </div>
+            <div className="shop-name-label">{shopName}</div>
             {shopPromos.length > 0 ? (
               <>
                 <select
@@ -156,7 +162,7 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
                   value={discountCodes[shopId] || ""}
                   onChange={(e) => handleSelectChange(shopId, e.target.value)}
                 >
-                  <option value="">-- Chọn mã giảm giá --</option>
+                  <option value="">Chọn mã giảm giá</option>
                   {shopPromos.map((promo) => (
                     <option key={promo.id} value={promo.code}>
                       {promo.code} - Giảm{" "}
@@ -166,7 +172,7 @@ const Discount = ({ shops, cartItems, onApplyDiscount }) => {
                             style: "currency",
                             currency: "VND",
                           })}{" "}
-                      {promo.type === "product" ? " (Sản phẩm)" : " (Đơn hàng)"}
+                      {promo.type === "product" ? "(Sản phẩm)" : "(Đơn hàng)"}
                     </option>
                   ))}
                 </select>

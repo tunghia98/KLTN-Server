@@ -147,6 +147,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: space-between;
 }
 .discount-code-input {
   flex: 1;
@@ -348,6 +349,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-
+.shop-name-label{
+  color: #457d58;
+  font-weight: 700;
+}
+.discount-code-select{
+  height: 30px;
+  border: 1px solid black;
+  border-radius: 10px;
+}
   

@@ -137,7 +137,8 @@ const CartPage = () => {
             addresses={addresses}
             className="checkout-page-shippinginfo"
           />
-          <OrderSummary total={total} />
+          <OrderSummary cartItems={checkedItems} discounts={{}} />
+
           <CartSummary total={total} cartItems={checkedItems} />
         </div>
       </div>

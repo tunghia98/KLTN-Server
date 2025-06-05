@@ -7,16 +7,17 @@ export default function ForumManagement() {
   const [activeTab, setActiveTab] = useState("tags");
 
   const TABS = [
-    { key: "tags", label: "Tùy chỉnh thẻ bài viết" },
     { key: "threads", label: "Quản lý bài viết" },
+    { key: "tags", label: "Tùy chỉnh thẻ bài viết" },
   ];
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "tags":
-        return <ThreadTagManager />;
       case "threads":
         return <ThreadManager />;
+      case "tags":
+        return <ThreadTagManager />;
+
       default:
         return <div>Không có nội dung phù hợp.</div>;
     }

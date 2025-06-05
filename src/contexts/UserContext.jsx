@@ -16,9 +16,9 @@ export const UserProvider = ({ children }) => {
 
   // Hàm đăng xuất
   const logout = () => {
-      localStorage.removeItem("user");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     setUser(null);
     setCartHistory([]);
     setOrderHistory([]);
@@ -38,7 +38,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-
+      setUser(JSON.parse(storedUser));
     }
     setLoading(false);
   }, []);
@@ -52,14 +52,13 @@ export const UserProvider = ({ children }) => {
         user,
         setUser,
         loading,
-        isLoggedIn,        
+        isLoggedIn,
         cartHistory,
         orderHistory,
         login,
         logout,
         addToCartHistory,
         addOrder,
-        
       }}
     >
       {children}

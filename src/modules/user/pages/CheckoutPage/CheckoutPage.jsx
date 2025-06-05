@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./CheckoutPage.css";
 import OrderSummary from "../../components/Checkout/OrderSummary.jsx";
 import ShippingInfo from "../../components/Checkout/ShippingInfo.jsx";
@@ -14,10 +13,11 @@ const CheckoutPage = () => {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [discountCodes, setDiscountCodes] = useState({});
+  const [appliedPromotions, setAppliedPromotions] = useState({});
   const navigate = useNavigate();
+
   const [shops, setShops] = useState([]);
 
-  // Fetch addresses
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
@@ -40,19 +40,16 @@ const CheckoutPage = () => {
     fetchAddresses();
   }, []);
 
-  // Tổng tiền
   const totalAmount = checkedItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
-  // Lấy danh sách shopId
   const shopIds = useMemo(
     () => [...new Set(checkedItems.map((item) => item.shopId))],
     [checkedItems]
   );
 
-  // Lấy tên shop
   const fetchShopName = async (shopId) => {
     try {
       const res = await fetch(
@@ -67,7 +64,6 @@ const CheckoutPage = () => {
     }
   };
 
-  // Fetch shops chỉ 1 lần
   useEffect(() => {
     if (shopIds.length === 0) {
       setShops([]);
@@ -85,27 +81,18 @@ const CheckoutPage = () => {
     fetchShops();
   }, [shopIds]);
 
-  // Ổn định dữ liệu để tránh fetch lại trong Discount
   const stableShops = useMemo(() => shops, [shops]);
   const stableCartItems = useMemo(() => cartItems, [cartItems]);
 
-  const handleApplyDiscount = (shopId, code) => {
-    setDiscountCodes((prev) => ({
-      ...prev,
-      [shopId]: code,
-    }));
+  const handleApplyDiscount = (shopId, promotion) => {
+    setDiscountCodes((prev) => ({ ...prev, [shopId]: promotion.code }));
+    setAppliedPromotions((prev) => ({ ...prev, [shopId]: promotion }));
   };
 
-  // Xác nhận đơn hàng
   const handleConfirmOrder = async () => {
-    if (!selectedAddressId) {
-      alert("Vui lòng chọn địa chỉ nhận hàng!");
-      return;
-    }
-    if (checkedItems.length === 0) {
-      alert("Không có sản phẩm nào để đặt hàng!");
-      return;
-    }
+    if (!selectedAddressId) return alert("Vui lòng chọn địa chỉ nhận hàng!");
+    if (checkedItems.length === 0)
+      return alert("Không có sản phẩm nào để đặt hàng!");
 
     try {
       const res = await fetch("https://kltn.azurewebsites.net/api/orders", {
@@ -116,25 +103,31 @@ const CheckoutPage = () => {
         },
         body: JSON.stringify({
           addressId: selectedAddressId,
-          items: checkedItems.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            shopId: item.shopId,
+          items: checkedItems.map(({ productId, quantity, shopId }) => ({
+            productId,
+            quantity,
+            shopId,
           })),
           totalAmount,
           discounts: discountCodes,
         }),
       });
-
       if (!res.ok) throw new Error("Đặt hàng thất bại!");
-
       alert("Đặt hàng thành công!");
       navigate("/order-success");
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Lỗi khi đặt hàng. Vui lòng thử lại.");
     }
   };
+  console.log("checkedItems:", checkedItems);
+  const shopNames = useMemo(() => {
+    const result = {};
+    shops.forEach(({ id, name }) => {
+      result[id] = name;
+    });
+    return result;
+  }, [shops]);
 
   return (
     <div className="checkout-page">
@@ -145,21 +138,19 @@ const CheckoutPage = () => {
       <div className="checkout-page-right">
         <ShippingInfo
           addresses={addresses}
-          onAddressChange={(id) => setSelectedAddressId(id)}
-          className="checkout-page-shippinginfo"
+          onAddressChange={setSelectedAddressId}
         />
         <Discount
           shops={stableShops}
           cartItems={stableCartItems}
           onApplyDiscount={handleApplyDiscount}
-          className="checkout-page-discount"
         />
         <OrderSummary
-          total={totalAmount}
-          cartItems={cartItems}
-          discounts={discountCodes}
-          className="checkout-page-summary"
+          cartItems={checkedItems}
+          discounts={appliedPromotions}
+          shopNames={shopNames}
         />
+
         <div style={{ marginTop: 20, textAlign: "center" }}>
           <button className="btn-primary" onClick={handleConfirmOrder}>
             Xác nhận đặt hàng
