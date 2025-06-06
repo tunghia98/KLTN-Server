@@ -13,7 +13,7 @@ const CheckoutPage = () => {
   const checkedItems = useMemo(() => {
     return cartItems.filter((item) => item.checked);
   }, [cartItems]);
-
+    const { fetchCartFromBackend } = useCart();
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [discountCodes, setDiscountCodes] = useState({});
@@ -119,38 +119,84 @@ const CheckoutPage = () => {
     }));
   };
 
-  const handleConfirmOrder = async () => {
-    if (!selectedAddressId) return alert("Vui lòng chọn địa chỉ nhận hàng!");
-    if (checkedItems.length === 0)
-      return alert("Không có sản phẩm nào để đặt hàng!");
+    const handleConfirmOrder = async () => {
+        if (!selectedAddressId) return alert("Vui lòng chọn địa chỉ nhận hàng!");
+        if (checkedItems.length === 0)
+            return alert("Không có sản phẩm nào để đặt hàng!");
 
-    try {
-      const res = await fetch("https://kltn.azurewebsites.net/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          addressId: selectedAddressId,
-          items: checkedItems.map(({ productId, quantity, shopId }) => ({
-            productId,
-            quantity,
-            shopId,
-          })),
-          totalAmount,
-          discounts: discountCodes,
-        }),
-      });
+        const token = localStorage.getItem("accessToken");
+        if (!token) return alert("Bạn chưa đăng nhập.");
 
-      if (!res.ok) throw new Error("Đặt hàng thất bại!");
-      alert("Đặt hàng thành công!");
-      navigate("/order-success");
-    } catch (err) {
-      console.error(err);
-      alert("Lỗi khi đặt hàng. Vui lòng thử lại.");
-    }
-  };
+        const grouped = {};
+        checkedItems.forEach(item => {
+            const shopId = String(item.shopId);
+            if (!grouped[shopId]) grouped[shopId] = [];
+            grouped[shopId].push(item);
+        });
+
+        try {
+            for (const shopId in grouped) {
+                const items = grouped[shopId];
+
+                const subTotal = items.reduce(
+                    (sum, item) => sum + item.price * item.quantity,
+                    0
+                );
+
+                const promotion = normalizedDiscounts[shopId];
+                let discountAmount = 0;
+
+                if (promotion) {
+                    if (promotion.type === "percent") {
+                        discountAmount = (subTotal * promotion.value) / 100;
+                    } else if (promotion.type === "amount") {
+                        discountAmount = promotion.value;
+                    }
+                }
+
+                const totalAmount = Math.max(subTotal - discountAmount, 0);
+
+                const orderItems = items.map(item => ({
+                    productId: item.productId || item.id,
+                    quantity: item.quantity,
+                }));
+
+                const res = await fetch("https://kltn.azurewebsites.net/api/orders", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        shopId,
+                        shippingAddressId: selectedAddressId,
+                        totalAmount,
+                        items: orderItems,
+                    }),
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Lỗi khi tạo đơn hàng cho shop ${shopId}`);
+                }
+
+                // ✅ XÓA SẢN PHẨM KHỎI GIỎ HÀNG SAU KHI ĐẶT HÀNG
+                for (const item of items) {
+                    if (!item.productId) continue;
+                    await fetch(`https://kltn.azurewebsites.net/api/cart/${item.productId}`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                }
+            }
+            fetchCartFromBackend();
+            alert("Đặt hàng thành công!");
+            navigate("/order-success");
+        } catch (err) {
+            console.error(err);
+            alert("❌ Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
+        }
+    };
+
 
   return (
     <div className="checkout-page">
