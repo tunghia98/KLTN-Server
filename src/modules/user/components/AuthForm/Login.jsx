@@ -8,7 +8,13 @@ import Popup from "../../../../components/Common/Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../../../contexts/UserContext.jsx";
 
-function Login({ isOpen, onClose, onSwitchToRegister, isReady }) {
+function Login({
+  isOpen,
+  onClose,
+  onSwitchToRegister,
+  isReady,
+  onSwitchToForgot,
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -118,7 +124,15 @@ function Login({ isOpen, onClose, onSwitchToRegister, isReady }) {
         </div>
         <div className="auth-options">
           <p style={{ marginTop: "0.5rem", textAlign: "center" }}>
-            <a href="#" style={{ fontSize: "0.9rem", color: "#666" }}>
+            <a
+              href="/forgot"
+              style={{ fontSize: "0.9rem", color: "#666" }}
+              onClick={(e) => {
+                e.preventDefault();
+                onClose();
+                onSwitchToForgot();
+              }}
+            >
               Quên mật khẩu?
             </a>
           </p>

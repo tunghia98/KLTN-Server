@@ -21,6 +21,7 @@ function Header() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isFotgotOpen, setForgotOpen] = useState(false);
 
   const { user, setUser } = useUser();
   const { cartItems } = useCart();
@@ -34,8 +35,13 @@ function Header() {
   const handleSwitchToLogin = () => {
     setRegisterOpen(false);
     setLoginOpen(true);
+    setForgotOpen(false);
   };
 
+  const handleSwitchToForgot = () => {
+    setLoginOpen(false);
+    setForgotOpen(true);
+  };
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
@@ -139,6 +145,7 @@ function Header() {
         isOpen={isLoginOpen}
         onClose={() => setLoginOpen(false)}
         onSwitchToRegister={handleSwitchToRegister}
+        onSwitchToForgot={handleSwitchToForgot}
       />
       <Register
         isOpen={isRegisterOpen}
