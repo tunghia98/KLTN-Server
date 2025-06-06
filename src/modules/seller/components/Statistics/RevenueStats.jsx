@@ -38,7 +38,8 @@ export default function RevenueStats() {
         if (!res.ok) throw new Error("Lỗi khi tải đơn hàng");
 
         const data = await res.json();
-        setOrders(data);
+        const deliveredOrders = data.filter((s) => s.status === "Đã giao");
+        setOrders(deliveredOrders);
       } catch (error) {
         console.error("Lỗi:", error);
         setOrders([]);
@@ -50,26 +51,24 @@ export default function RevenueStats() {
     fetchOrders();
   }, [user]);
 
-  // Tính tổng doanh thu trong khoảng thời gian filter
-  const totalRevenueInRange = orders.reduce((acc, order) => {
-    const orderDate = new Date(order.orderDate);
-    const from = new Date(fromDate);
-    const to = new Date(toDate);
-    to.setHours(23, 59, 59, 999);
+  const totalRevenueInRange = Array.isArray(orders)
+    ? orders.reduce((acc, order) => {
+        const orderDate = new Date(order.orderDate);
+        const from = new Date(fromDate);
+        const to = new Date(toDate);
+        to.setHours(23, 59, 59, 999);
 
-    if (orderDate >= from && orderDate <= to) {
-      return acc + (order.totalAmount || 0);
-    }
-    return acc;
-  }, 0);
+        if (orderDate >= from && orderDate <= to) {
+          return acc + (order.totalAmount || 0);
+        }
+        return acc;
+      }, 0)
+    : 0;
 
-  // Tổng doanh thu toàn bộ đơn hàng
-  const totalRevenueAllTime = orders.reduce(
-    (acc, order) => acc + (order.totalAmount || 0),
-    0
-  );
+  const totalRevenueAllTime = Array.isArray(orders)
+    ? orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0)
+    : 0;
 
-  // Dữ liệu cho biểu đồ doanh thu theo ngày
   const chartData = (() => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
@@ -77,19 +76,18 @@ export default function RevenueStats() {
 
     const revenueMap = new Map();
 
-    orders.forEach((order) => {
-      const orderDate = new Date(order.orderDate);
-      if (orderDate >= from && orderDate <= to) {
-        // key là ngày theo format dd/mm/yyyy
-        const dateKey = orderDate.toLocaleDateString("vi-VN");
-        revenueMap.set(
-          dateKey,
-          (revenueMap.get(dateKey) || 0) + (order.totalAmount || 0)
-        );
-      }
-    });
+    Array.isArray(orders) &&
+      orders.forEach((order) => {
+        const orderDate = new Date(order.orderDate);
+        if (orderDate >= from && orderDate <= to) {
+          const dateKey = orderDate.toLocaleDateString("vi-VN");
+          revenueMap.set(
+            dateKey,
+            (revenueMap.get(dateKey) || 0) + (order.totalAmount || 0)
+          );
+        }
+      });
 
-    // Chuyển Map thành mảng object cho chart
     return Array.from(revenueMap, ([date, totalRevenue]) => ({
       date,
       totalRevenue: Math.round(totalRevenue),

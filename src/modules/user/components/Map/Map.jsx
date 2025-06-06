@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -31,28 +31,28 @@ const Map = () => {
   const [shops, setShops] = useState([]);
   const [userPosition, setUserPosition] = useState(null);
   const [distanceFilter, setDistanceFilter] = useState(30);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  // Hàm tính khoảng cách Haversine
-  function haversineDistance(lat1, lon1, lat2, lon2) {
+  const mapRef = useRef(null);
+  const markerRefs = useRef({});
+
+  const haversineDistance = (lat1, lon1, lat2, lon2) => {
     const toRad = (deg) => (deg * Math.PI) / 180;
-    const R = 6371; // bán kính Trái Đất (km)
+    const R = 6371;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
     const a =
       Math.sin(dLat / 2) ** 2 +
       Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  }
+  };
 
   useEffect(() => {
     fetch("https://kltn.azurewebsites.net/api/shops/locations")
       .then((res) => res.json())
-      .then((data) => {
-        console.log("Fetched shops:", data); // Debug
-        setShops(data);
-        console.log("Fetched shops:", data);
-      })
+      .then((data) => setShops(data))
       .catch((err) => console.error("Fetch shop error:", err));
   }, []);
 
@@ -64,7 +64,6 @@ const Map = () => {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          console.log("User position:", pos); // Debug
           setUserPosition(pos);
         },
         (error) => {
@@ -75,9 +74,8 @@ const Map = () => {
       alert("Trình duyệt không hỗ trợ định vị.");
     }
   }, []);
-  const [sortOrder, setSortOrder] = useState("asc"); // 'asc' | 'desc'
 
-  const shopsInRange =
+  const filteredShops =
     userPosition && shops.length > 0
       ? shops
           .filter((shop) => shop.latitude && shop.longitude)
@@ -91,6 +89,9 @@ const Map = () => {
             return { ...shop, distance };
           })
           .filter((shop) => shop.distance <= distanceFilter)
+          .filter((shop) =>
+            shop.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
           .sort((a, b) =>
             sortOrder === "asc"
               ? a.distance - b.distance
@@ -98,17 +99,25 @@ const Map = () => {
           )
       : [];
 
-  console.log("Shops in range:", shopsInRange); // Debug
-
   const handleMarkerClick = (shop) => {
     navigate(`/sellers/${shop.id}-${toSlug(shop.name)}`);
+  };
+
+  const focusToShop = (shop) => {
+    const map = mapRef.current;
+    const marker = markerRefs.current[shop.id];
+    if (map && marker) {
+      map.flyTo([shop.latitude, shop.longitude], 14, { duration: 1.2 });
+      marker.openPopup();
+    }
   };
 
   return (
     <div className="map">
       <h2>Bản đồ cửa hàng gần bạn</h2>
+
       <label htmlFor="distance-input">
-        <strong>Nhập khoảng cách (km):</strong>
+        <strong>Khoảng cách (km):</strong>
       </label>
       <input
         id="distance-input"
@@ -133,6 +142,7 @@ const Map = () => {
           <MapContainer
             center={userPosition || [10.7769, 106.7009]}
             zoom={11}
+            whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
             style={{ height: "100%", width: "100%" }}
           >
             <TileLayer
@@ -157,9 +167,12 @@ const Map = () => {
               </>
             )}
 
-            {shopsInRange.map((shop) => (
+            {filteredShops.map((shop) => (
               <Marker
                 key={shop.id}
+                ref={(ref) => {
+                  if (ref) markerRefs.current[shop.id] = ref;
+                }}
                 position={[shop.latitude, shop.longitude]}
                 icon={redIcon}
               >
@@ -205,7 +218,7 @@ const Map = () => {
         <div className="map-right">
           <div style={{ marginBottom: "10px" }}>
             <label htmlFor="sort-order">
-              <strong>Sắp xếp theo:</strong>
+              <strong>Sắp xếp:</strong>
             </label>
             <select
               id="sort-order"
@@ -221,17 +234,34 @@ const Map = () => {
               <option value="desc">Xa → Gần</option>
             </select>
           </div>
+
+          <input
+            type="text"
+            placeholder="Tìm cửa hàng..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: "8px",
+              width: "100%",
+              fontSize: "14px",
+              marginBottom: "10px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+
           <h3>Cửa hàng trong bán kính {distanceFilter} km</h3>
-          {shopsInRange.length > 0 ? (
-            shopsInRange.map((shop) => (
+          {filteredShops.length > 0 ? (
+            filteredShops.map((shop) => (
               <div
                 key={shop.id}
                 className="shop-item"
-                onClick={() => handleMarkerClick(shop)}
+                onClick={() => focusToShop(shop)}
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  cursor: "pointer",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
@@ -256,13 +286,7 @@ const Map = () => {
                     </p>
                   </div>
                 </div>
-                <div
-                  style={{
-                    minWidth: "80px",
-                    textAlign: "right",
-                    fontSize: "14px",
-                  }}
-                >
+                <div style={{ minWidth: "80px", textAlign: "right" }}>
                   {shop.distance?.toFixed(2)} km
                 </div>
               </div>
