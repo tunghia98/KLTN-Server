@@ -101,7 +101,7 @@ export default function EditProductPage() {
                 throw new Error(errorData.message || 'Lỗi lưu sản phẩm');
             }
 
-            const result = await res.text();
+            const result = await res.json();
             const productId = isEditing ? product.id : result.productId;
 
             // Nếu có ảnh mới thì upload ảnh

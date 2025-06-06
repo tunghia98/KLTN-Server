@@ -160,8 +160,40 @@ const UserProfile = () => {
 
     alert("Đã cập nhật thông tin!");
     fetchUser();
-  };
+    };
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const handleChangePassword = async (passwordData) => {
+        const token = localStorage.getItem("accessToken");
+        const { currentPassword, newPassword, confirmPassword } = passwordData;
 
+        if (newPassword !== confirmPassword) {
+            alert("❌ Mật khẩu mới và nhập lại không khớp!");
+            return;
+        }
+
+        try {
+            const response = await fetch("https://kltn.azurewebsites.net/api/auth/change-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`, // nếu có xác thực
+                },
+                body: JSON.stringify({
+                    oldPassword: currentPassword,
+                    newPassword: newPassword,
+                }),
+            });
+
+            if (!response.ok) throw new Error("Đổi mật khẩu thất bại");
+
+            alert("✅ Đổi mật khẩu thành công!");
+
+            setShowPasswordForm(false);
+        } catch (error) {
+            alert("⚠️ Có lỗi xảy ra khi đổi mật khẩu");
+            console.error(error);
+        }
+    };
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -271,7 +303,10 @@ const UserProfile = () => {
               handleSubmit={handleProfileSubmit}
               handleAvatarChange={handleAvatarChange}
               previewAvatar={previewAvatar}
-              userInfo={userInfo}
+                          userInfo={userInfo}
+                          showPasswordForm={showPasswordForm}
+                          setShowPasswordForm={setShowPasswordForm}
+                          handleChangePassword={handleChangePassword} 
             />
           </div>
         </div>
