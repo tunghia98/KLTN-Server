@@ -16,8 +16,8 @@ const AllThreads = ({ allthreads, categories, crops, regions }) => {
   const [userThreads, setUserThreads] = useState([]);
   const [showUserThreads, setShowUserThreads] = useState(false);
   const itemsPerPage = 8;
+  const [sortOrder, setSortOrder] = useState("newest");
 
-  // Fetch user threads once userId is available
   useEffect(() => {
     if (!user?.userId) return;
 
@@ -42,24 +42,32 @@ const AllThreads = ({ allthreads, categories, crops, regions }) => {
     fetchUserThreads();
   }, [user?.userId]);
 
-  // Filter threads every time filter params or showUserThreads/userThreads/allthreads change
   useEffect(() => {
     const sourceThreads = showUserThreads ? userThreads : allthreads || [];
     const keyword = searchKeyword.toLowerCase().trim();
 
-    const filtered = sourceThreads.filter((thread) => {
-      const matchesCategory = category
-        ? thread.categoryId === Number(category)
-        : true;
-      const matchesCrop = crop ? thread.cropId === Number(crop) : true;
-      const matchesRegion = region ? thread.regionId === Number(region) : true;
-      const matchesKeyword = keyword
-        ? thread.title?.toLowerCase().includes(keyword)
-        : true;
-      return matchesCategory && matchesCrop && matchesRegion && matchesKeyword;
-    });
+    const filtered = sourceThreads
+      .filter((thread) => {
+        const matchesCategory = category
+          ? thread.categoryId === Number(category)
+          : true;
+        const matchesCrop = crop ? thread.cropId === Number(crop) : true;
+        const matchesRegion = region
+          ? thread.regionId === Number(region)
+          : true;
+        const matchesKeyword = keyword
+          ? thread.title?.toLowerCase().includes(keyword)
+          : true;
+        return (
+          matchesCategory && matchesCrop && matchesRegion && matchesKeyword
+        );
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+      });
 
-    console.log("Filtered threads count:", filtered.length);
     setThreads(filtered);
     setCurrentPage(1);
   }, [
@@ -70,6 +78,7 @@ const AllThreads = ({ allthreads, categories, crops, regions }) => {
     allthreads,
     userThreads,
     showUserThreads,
+    sortOrder,
   ]);
 
   const handleCategoryChange = (e) => {
@@ -98,6 +107,20 @@ const AllThreads = ({ allthreads, categories, crops, regions }) => {
   return (
     <div className="forum-container">
       <h2 className="forum-title">Tất Cả Chủ Đề</h2>
+
+      <div
+        className="sort-toggle"
+        style={{ textAlign: "right", marginBottom: "1rem" }}
+      >
+        <button
+          onClick={() =>
+            setSortOrder((prev) => (prev === "newest" ? "oldest" : "newest"))
+          }
+          className="sort-button"
+        >
+          {sortOrder === "newest" ? "⬇️ Mới nhất" : "⬆️ Cũ nhất"}
+        </button>
+      </div>
 
       <ForumSearchFilter
         categories={categories}

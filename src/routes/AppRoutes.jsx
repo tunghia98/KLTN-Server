@@ -56,6 +56,7 @@ const AppRoutes = () => {
       <Route path="/profile" element={<UserInfoPage />} />
       <Route path="/forum" element={<ForumPage />} />
       <Route path="/forum/thread/:titleSlug" element={<ThreadDetailPage />} />
+      <Route path="/forum/create" element={<CreateNewThread />} />
       <Route
         path="/sellers/:sellerSlug"
         element={
@@ -248,6 +249,7 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
+
       <Route
         path="/admin/support-channel"
         element={

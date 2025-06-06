@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import toSlug from "../../../../utils/toSlug"; // Đường dẫn đúng tới hàm toSlug của bạn
+import toSlug from "../../../../utils/toSlug";
 import "./ThreadManager.css";
 
 export default function ThreadManager() {
@@ -8,6 +8,7 @@ export default function ThreadManager() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
   const navigate = useNavigate();
 
   const fetchThreads = async () => {
@@ -50,22 +51,23 @@ export default function ThreadManager() {
 
       if (!res.ok) throw new Error("Trả lời thất bại");
 
-      alert("Đã trả lời tự động.");
+      alert("✅ Đã trả lời tự động.");
       fetchThreads();
     } catch (err) {
       console.error("Lỗi trả lời tự động:", err);
-      alert("Trả lời tự động thất bại.");
+      alert("❌ Trả lời tự động thất bại.");
     }
   };
 
-  const filteredThreads =
+  const filteredThreads = (
     filter === "unanswered"
-      ? threads.filter(
-          (thread) =>
-            thread.answers?.length === 0 && isOlderThan7Days(thread.createdAt)
-        )
-      : threads;
-
+      ? threads.filter((thread) => thread.commentCount === 0)
+      : threads
+  ).sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+  });
   return (
     <div className="thread-manager">
       <h2>Quản lý bài viết</h2>
@@ -81,7 +83,22 @@ export default function ThreadManager() {
           className={filter === "unanswered" ? "active" : ""}
           onClick={() => setFilter("unanswered")}
         >
-          Bài chưa trả lời sau 7 ngày
+          Bài viết chưa có câu trả lời
+        </button>
+      </div>
+
+      <div className="thread-sort">
+        <button
+          className={sortOrder === "newest" ? "active" : ""}
+          onClick={() => setSortOrder("newest")}
+        >
+          Mới nhất
+        </button>
+        <button
+          className={sortOrder === "oldest" ? "active" : ""}
+          onClick={() => setSortOrder("oldest")}
+        >
+          Cũ nhất
         </button>
       </div>
 

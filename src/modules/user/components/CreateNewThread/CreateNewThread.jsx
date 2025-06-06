@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "../../../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import Editor from "./Editor.jsx";
-import PreviewContent from "./PreviewContent.jsx";
 import SelectionModal from "./SelectionModal.jsx";
 import SelectedList from "./SelectedList.jsx";
 import ImageUpload from "./ImageUpload.jsx";
@@ -11,14 +10,13 @@ import ImageUpload from "./ImageUpload.jsx";
 const CreateNewThread = () => {
   const { user } = useUser();
   const navigate = useNavigate();
-
+  const accessToken = localStorage.getItem("accessToken");
   const [formData, setFormData] = useState({
     title: "",
-    category: [],
+    category: [], // ✅ để là array
     crop: [],
     region: [],
     content: null,
-    images: [],
   });
 
   const [categories, setCategories] = useState([]);
@@ -32,7 +30,9 @@ const CreateNewThread = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        let res = await fetch("https://kltn.azurewebsites.net/api/categoryforums");
+        let res = await fetch(
+          "https://kltn.azurewebsites.net/api/categoryforums"
+        );
         let catData = await res.json();
         setCategories(catData);
 
@@ -50,20 +50,18 @@ const CreateNewThread = () => {
     fetchData();
   }, []);
 
+  // ❗ Chỉ cho chọn 1 giá trị cho mỗi loại
   const toggleSelection = (field, id) => {
-    setFormData((prev) => {
-      const arr = prev[field];
-      if (arr.includes(id)) {
-        return { ...prev, [field]: arr.filter((x) => x !== id) };
-      } else {
-        return { ...prev, [field]: [...arr, id] };
-      }
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [field]: [id],
+    }));
   };
 
   const handleImageChange = (e) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     setFormData((prev) => ({ ...prev, images: files }));
+    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
@@ -72,31 +70,90 @@ const CreateNewThread = () => {
       alert("Bạn cần đăng nhập để đăng bài.");
       return;
     }
-    if (!formData.content) {
-      alert("Nội dung bài viết không được để trống.");
+    if (!formData.content || !formData.title) {
+      alert("Tiêu đề và nội dung không được để trống.");
+      return;
+    }
+    if (
+      !formData.category.length ||
+      !formData.crop.length ||
+      !formData.region.length
+    ) {
+      alert("Vui lòng chọn đầy đủ Phân loại, Giống cây và Khu vực.");
       return;
     }
 
-    console.log("Form Data:", formData);
-    navigate("/forum");
-  };
+    try {
+      const payload = {
+        title: formData.title,
+        content: JSON.stringify(formData.content), // chuyển thành chuỗi JSON
+        categoryId: formData.category.length > 0 ? formData.category[0] : null,
+        cropId: formData.crop.length > 0 ? formData.crop[0] : null,
+        regionId: formData.region.length > 0 ? formData.region[0] : null,
+        userId: Number(user.userId),
+      };
 
+      const response = await fetch(
+        "https://kltn.azurewebsites.net/api/ForumPosts/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      console.log(payload);
+
+      if (!response.ok) {
+        let errorMessage = "Lỗi khi tạo bài viết";
+        try {
+          const text = await response.text(); // Đọc raw text trước
+          if (text) {
+            const errData = JSON.parse(text); // parse thủ công
+            if (errData && errData.message) {
+              errorMessage = errData.message;
+            }
+          }
+        } catch (err) {
+          console.warn("Không thể parse JSON lỗi:", err);
+        }
+        throw new Error(errorMessage);
+      }
+
+      alert("Tạo bài viết thành công!");
+      navigate("/forum");
+    } catch (error) {
+      alert("Lỗi: " + error.message);
+    }
+  };
+  // useEffect(() => {
+  //   console.log("Đã chọn:", {
+  //     category: formData.category,
+  //     crop: formData.crop,
+  //     region: formData.region,
+  //   });
+  // }, [formData.category, formData.crop, formData.region]);
   return (
     <div style={{ maxWidth: 800, margin: "auto", padding: 20 }}>
       <h2 style={{ textAlign: "center" }}>📝 Tạo Bài Viết Mới</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Tiêu đề
-          <input
-            type="text"
+          <textarea
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
             required
+            rows={3}
             style={{
               width: "100%",
               padding: 8,
               margin: "8px 0 16px 0",
               boxSizing: "border-box",
+              resize: "vertical",
             }}
             placeholder="Tiêu đề bài viết"
           />
@@ -125,14 +182,18 @@ const CreateNewThread = () => {
         <div style={{ marginBottom: 16 }}>
           <div>
             <b>Phân loại:</b>{" "}
-            <SelectedList selectedIds={formData.category} options={categories} />
+            <SelectedList
+              selectedIds={formData.category}
+              options={categories}
+            />
           </div>
           <div>
             <b>Giống cây:</b>{" "}
             <SelectedList selectedIds={formData.crop} options={crops} />
           </div>
           <div>
-            <b>Khu vực:</b> <SelectedList selectedIds={formData.region} options={regions} />
+            <b>Khu vực:</b>{" "}
+            <SelectedList selectedIds={formData.region} options={regions} />
           </div>
         </div>
 
@@ -140,24 +201,6 @@ const CreateNewThread = () => {
           data={formData.content}
           onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
         />
-
-        <div style={{ marginTop: 16 }}>
-          <h3>Xem trước nội dung</h3>
-          <div
-            style={{
-              backgroundColor: "#fff",
-              border: "1px solid #ccc",
-              borderRadius: 4,
-              padding: 10,
-              minHeight: 150,
-              overflowY: "auto",
-            }}
-          >
-            <PreviewContent content={formData.content} />
-          </div>
-        </div>
-
-        <ImageUpload images={formData.images} onChange={handleImageChange} />
 
         <button
           type="submit"
@@ -182,7 +225,7 @@ const CreateNewThread = () => {
           selectedIds={formData.category}
           onToggle={(id) => toggleSelection("category", id)}
           onClose={() => setShowCategoryModal(false)}
-          onConfirm={() => setShowCategoryModal(false)} // Đóng modal khi xác nhận
+          onConfirm={() => setShowCategoryModal(false)}
         />
       )}
 
@@ -193,7 +236,7 @@ const CreateNewThread = () => {
           selectedIds={formData.crop}
           onToggle={(id) => toggleSelection("crop", id)}
           onClose={() => setShowCropModal(false)}
-              onConfirm={() => setShowCropModal(false)} // Đóng modal khi xác nhận
+          onConfirm={() => setShowCropModal(false)}
         />
       )}
 
@@ -204,7 +247,7 @@ const CreateNewThread = () => {
           selectedIds={formData.region}
           onToggle={(id) => toggleSelection("region", id)}
           onClose={() => setShowRegionModal(false)}
-              onConfirm={() => setShowRegionModal(false)} // Đóng modal khi xác nhận
+          onConfirm={() => setShowRegionModal(false)}
         />
       )}
     </div>

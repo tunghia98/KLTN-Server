@@ -59,6 +59,7 @@ export default function UserManagement() {
         <table className="user-table">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Họ và tên</th>
               <th>Email</th>
               <th>SĐT</th>
@@ -70,23 +71,32 @@ export default function UserManagement() {
           <tbody>
             {users.map((u) => (
               <tr key={u.id}>
+                <td>{u.id}</td>
                 <td>{u.name}</td>
                 <td>{u.email}</td>
                 <td>{u.phoneNumber}</td>
 
                 <td>
-                    {u.gender === "male" ? "Nam":u.gender === "female" ? "Nữ":"Khác"}
-                    
-                    </td>
-                <td>{u.status}</td>
+                  {u.gender === "male"
+                    ? "Nam"
+                    : u.gender === "female"
+                    ? "Nữ"
+                    : "Khác"}
+                </td>
+                <td>{u.status.charAt(0).toUpperCase() + u.status.slice(1)}</td>
+
                 <td>
                   <td>
-                    <button onClick={() => updateStatus(u.id, "bị khóa")}>
-                      Khoá
-                    </button>
-                    <button onClick={() => updateStatus(u.id, "hoạt động")}>
-                      Hoạt động
-                    </button>
+                    {u.status === "Hoạt động" && (
+                      <button onClick={() => updateStatus(u.id, "Bị khóa")}>
+                        Khoá
+                      </button>
+                    )}
+                    {u.status === "Bị khóa" && (
+                      <button onClick={() => updateStatus(u.id, "Hoạt động")}>
+                        Hoạt động
+                      </button>
+                    )}
                   </td>
                 </td>
               </tr>
