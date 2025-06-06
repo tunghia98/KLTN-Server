@@ -31,7 +31,7 @@ const OrderManagementPage = () => {
 
         fetchOrders();
     }, []);
-
+console.log(sellerOrders);
     const handleStatusChange = async (orderId, newStatus) => {
         const order = sellerOrders.find((o) => o.id === orderId);
 

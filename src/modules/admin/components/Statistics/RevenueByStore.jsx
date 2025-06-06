@@ -4,14 +4,12 @@ import { useUser } from "../../../../contexts/UserContext";
 export default function RevenueByStore() {
   const { user } = useUser();
   const [revenueByStore, setRevenueByStore] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchData = async () => {
-    if (user?.role !== "admin") {
-      // Nếu không phải admin thì không fetch dữ liệu
-      setRevenueByStore([]);
-      return;
-    }
-
+    setLoading(true);
+    setError(null);
     try {
       const response = await fetch(
         `https://kltn.azurewebsites.net/api/SystemReport/revenue-by-shop`,
@@ -27,37 +25,62 @@ export default function RevenueByStore() {
       }
 
       const data = await response.json();
-      console.log("Revenue By Store Data:", data);
       setRevenueByStore(data);
     } catch (error) {
-      console.error("Error fetching revenue by store:", error);
+      setError(error.message || "Có lỗi xảy ra");
       setRevenueByStore([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (user?.role === "admin") {
       fetchData();
+    } else {
+      setRevenueByStore([]);
     }
   }, [user]);
+
+  // Format tiền VND cho hiển thị
+  const formatCurrency = (value) => {
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
 
   return (
     <div>
       <h2>Doanh thu theo cửa hàng</h2>
-      <div className="revenue-by-store">
-        {Array.isArray(revenueByStore) && revenueByStore.length > 0 ? (
-          <ul>
-            {revenueByStore.map((store) => (
-              <li key={store.storeId}>
-                <span>Cửa hàng: {store.storeName}</span>{" "}
-                <span>Doanh thu: {store.totalRevenue} VND</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>Không có dữ liệu doanh thu.</p>
-        )}
-      </div>
+
+      {loading && <p>Đang tải dữ liệu...</p>}
+
+      {error && <p style={{ color: "red" }}>Lỗi: {error}</p>}
+
+      {!loading && !error && revenueByStore.length === 0 && (
+        <p>Không có dữ liệu doanh thu.</p>
+      )}
+
+      {!loading && !error && revenueByStore.length > 0 && (
+        <ul style={{ listStyleType: "none", padding: 0 }}>
+          {revenueByStore.map((store) => (
+            <li
+              key={store.storeId}
+              style={{
+                padding: "8px 12px",
+                borderBottom: "1px solid #ddd",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontWeight: "bold" }}>{store.storeName}</span>
+              <span>{formatCurrency(store.totalRevenue)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

@@ -29,7 +29,6 @@ import ChatPage from "../modules/seller/pages/Chat/ChatPage.jsx";
 import UserManagement from "../modules/admin/pages/UserManagement/UserManagement.jsx";
 import SellerManagement from "../modules/admin/pages/SellerManagement/SellerManagement.jsx";
 import TransactionManagement from "../modules/admin/pages/TransactionManagement/TransactionManagement.jsx";
-import StatisticsDashboard from "../modules/admin/pages/StatisticsDashboard/StatisticsDashboard.jsx";
 import AccessControlSettings from "../modules/admin/pages/AccessControl/AccessControlSettings.jsx";
 import ViolationManagement from "../modules/admin/pages/ViolationManagement/ViolationManagement.jsx";
 import SupportRequestManagement from "../modules/admin/pages/SupportRequestManagement/SupportRequestManagement.jsx";
@@ -214,16 +213,6 @@ const AppRoutes = () => {
           <PrivateRoute allowedRoles={["admin"]}>
             <ManagementLayout>
               <TransactionManagement />
-            </ManagementLayout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/admin/statistics"
-        element={
-          <PrivateRoute allowedRoles={["admin"]}>
-            <ManagementLayout>
-              <StatisticsDashboard />
             </ManagementLayout>
           </PrivateRoute>
         }
