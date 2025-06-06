@@ -69,11 +69,6 @@ export default function EditProductPage() {
         setLoading(true);
 
         try {
-            const url = isEditing
-                ? `https://kltn.azurewebsites.net/api/products/${product.id}`
-                : `https://kltn.azurewebsites.net/api/products/create`;
-            const method = isEditing ? "PUT" : "POST";
-
             const payload = {
                 name: product.name.trim(),
                 description: product.description.trim(),
@@ -81,54 +76,73 @@ export default function EditProductPage() {
                 quantity: parseInt(product.quantity),
                 categoryId: parseInt(product.categoryId),
                 status: product.status,
-                brand: product.brand.trim() // ✅ thêm dòng này
+                brand: product.brand.trim()
             };
 
             console.log("Payload gửi lên:", payload);
 
-            // Gửi yêu cầu tạo/cập nhật sản phẩm
-            const res = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-                },
-                body: JSON.stringify(payload)
-            });
+            let productId;
 
-            if (!res.ok) {
-                const errorData = await res.text();
-                throw new Error(errorData.message || 'Lỗi lưu sản phẩm');
+            if (isEditing) {
+                // 🛠 Cập nhật sản phẩm
+                const res = await fetch(`https://kltn.azurewebsites.net/api/products/${product.id}`, {
+                    method: "PUT",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || 'Lỗi cập nhật sản phẩm');
+                }
+
+                await res.text(); // text trả về như "Cập nhật thành công"
+                productId = product.id;
+            } else {
+                // 🛠 Tạo mới sản phẩm
+                const res = await fetch(`https://kltn.azurewebsites.net/api/products/create`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || 'Lỗi tạo sản phẩm');
+                }
+
+                const result = await res.json(); // result = { productId: ... }
+                productId = result.productId;
             }
 
-            const result = await res.json();
-            const productId = isEditing ? product.id : result.productId;
+            // ✅ Upload ảnh nếu có
+            const newFiles = product.images.filter(img => img instanceof File);
+            if (newFiles.length > 0) {
+                const uploadedUrls = [];
 
-            // Nếu có ảnh mới thì upload ảnh
-            if (product.images.length > 0) {
-                const newFiles = product.images.filter(img => img instanceof File);
+                for (const file of newFiles) {
+                    const uploadedUrl = await uploadImage(file);
+                    uploadedUrls.push(uploadedUrl);
+                }
 
-                if (newFiles.length > 0) {
-                    const uploadedUrls = [];
-
-                    for (const file of newFiles) {
-                        const uploadedUrl = await uploadImage(file);
-                        uploadedUrls.push(uploadedUrl);
-                    }
-
-                    // Chỉ gán các ảnh mới vừa upload thôi
-                    for (const imageUrl of uploadedUrls) {
-                        await fetch('https://kltn.azurewebsites.net/api/product-images', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-                            },
-                            body: JSON.stringify({ productId, imageUrl })
-                        });
-                    }
+                for (const imageUrl of uploadedUrls) {
+                    await fetch('https://kltn.azurewebsites.net/api/product-images', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                        },
+                        body: JSON.stringify({ productId, imageUrl })
+                    });
                 }
             }
+
             alert(isEditing ? "Cập nhật sản phẩm thành công!" : "Tạo sản phẩm thành công!");
             navigate('/seller/products');
         } catch (error) {
@@ -138,7 +152,6 @@ export default function EditProductPage() {
             setLoading(false);
         }
     };
-
 
     useEffect(() => {
         const fetchCategories = async () => {

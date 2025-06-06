@@ -5,9 +5,9 @@ import "./RatingForm.css";
 const RatingForm = ({ products = [], userId, onSubmit, onCancel }) => {
   const accessToken = localStorage.getItem("accessToken");
 
-  const [ratings, setRatings] = useState(
+    const [ratings, setRatings] = useState(
     products.map((product) => ({
-      productId: product.id,
+        productId: product.productId,
       productName: product.productName,
       rating: 0,
       comment: "",
@@ -56,7 +56,8 @@ const RatingForm = ({ products = [], userId, onSubmit, onCancel }) => {
     e.preventDefault();
 
     for (const item of ratings) {
-      if (item.rating > 0 && item.comment.trim()) {
+        if (item.rating > 0 && item.comment.trim()) {
+            console.log(products);
         const success = await fetchReview(
           item.productId,
           item.comment,
