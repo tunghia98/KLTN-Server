@@ -11,18 +11,43 @@ function ThreadDetail({ thread, category, crop, region, userwriter, comments }) 
   const { user } = useUser();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const navigate = useNavigate();
-
+    const [hasLiked, setHasLiked] = useState(false);
   const isAuthor = user && user.userId === thread.authorId;
   const isAdmin = user && user.role === "admin";
 
-  const handleLikePost = () => {
-    if (!user) {
-      setIsLoginOpen(true);
-      return;
-    }
-    setLikes((prev) => prev + 1);
-  };
 
+    const handleLikePost = async () => {
+        if (!user) {
+            setIsLoginOpen(true);
+            return;
+        }
+
+        if (hasLiked) return;
+
+        try {
+            const res = await fetch(
+                `https://kltn.azurewebsites.net/api/forumposts/${thread.id}/like`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    },
+                }
+            );
+
+            if (res.ok) {
+                setLikes((prev) => prev + 1);
+                setHasLiked(true);
+            } else {
+                const data = await res.json();
+                alert(data.message || "Không thể thích bài viết.");
+            }
+        } catch (error) {
+            console.error("Lỗi khi like bài viết:", error);
+            alert("Đã xảy ra lỗi, vui lòng thử lại sau.");
+        }
+    };
   const handleCloseLoginPopup = () => setIsLoginOpen(false);
 
   const handleToggleLock = async () => {
