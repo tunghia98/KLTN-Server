@@ -13,7 +13,7 @@ const steps = [
 ];
 
 export default function SellerOnboarding() {
-  const {user}=useUser();
+  const { user } = useUser();
   const [step, setStep] = useState(0);
   const nextStep = () => {
     if (step === 0) {
@@ -160,9 +160,9 @@ export default function SellerOnboarding() {
       //   throw new Error("Thêm tài khoản ngân hàng thất bại");
       // }
 
-      alert("Đăng ký shop thành công!");
+      alert("Đăng ký shop thành công! Chờ xét duyệt từ quản trị viên");
       setIsCompleted(true);
-      navigate("/seller/dashboard");
+      navigate("/");
     } catch (error) {
       console.error(error);
       alert("Có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại.");
