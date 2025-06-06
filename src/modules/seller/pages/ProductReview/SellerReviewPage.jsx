@@ -15,55 +15,6 @@ const SellerReviewPage = ({ sellerId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [productRatings, setProductRatings] = useState({});
 
-  const reviewsSample = [
-    {
-      id: 1,
-      user: { name: "Nguyen Van A" }, // ✅ Sửa chỗ này thành object
-      rating: 5,
-      content: "Sản phẩm rất tốt, giao hàng nhanh!",
-      date: "2025-06-01",
-      replies: ["Cảm ơn bạn đã ủng hộ!"],
-    },
-    {
-      id: 2,
-      user: { name: "Tran Thi B" },
-      rating: 4,
-      content: "Chất lượng khá ổn, giá hợp lý.",
-      date: "2025-05-28",
-      replies: [],
-    },
-    {
-      id: 3,
-      user: { name: "Le Van C" },
-      rating: 2,
-      content: "Sản phẩm không đúng như mô tả.",
-      date: "2025-05-30",
-      replies: [
-        "Chúng tôi xin lỗi vì sự cố này. Vui lòng liên hệ để được hỗ trợ.",
-      ],
-    },
-    {
-      id: 4,
-      user: { name: "Pham Thi D" },
-      rating: 3,
-      content: "Tạm được, nhưng giao hàng hơi chậm.",
-      date: "2025-06-02",
-      replies: [],
-    },
-    {
-      id: 5,
-      user: { name: "Hoang Van E" },
-      rating: 1,
-      content: "Chất lượng kém, không hài lòng.",
-      date: "2025-05-25",
-      replies: [],
-    },
-  ];
-  const count_tmp = reviewsSample.length;
-  const value_tmp =
-    count_tmp > 0
-      ? reviewsSample.reduce((sum, r) => sum + r.rating, 0) / count_tmp
-      : 0;
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -105,6 +56,27 @@ const SellerReviewPage = ({ sellerId }) => {
         });
 
         setProducts(productsWithImages);
+
+        // Fetch rating cho từng sản phẩm
+        const ratingsMap = {};
+        for (const product of products) {
+          try {
+            const res = await fetch(
+              `https://kltn.azurewebsites.net/api/ProductReviews/product/${product.id}`
+            );
+            if (!res.ok) throw new Error("Lỗi đánh giá");
+            const reviews = await res.json();
+            const count = reviews.length;
+            const value =
+              count > 0
+                ? reviews.reduce((sum, r) => sum + r.rating, 0) / count
+                : 0;
+            ratingsMap[product.id] = { value, count };
+          } catch (err) {
+            ratingsMap[product.id] = { value: 0, count: 0 };
+          }
+        }
+        setProductRatings(ratingsMap);
       } catch (error) {
         console.error("Lỗi tải sản phẩm:", error);
       } finally {
@@ -116,34 +88,39 @@ const SellerReviewPage = ({ sellerId }) => {
   }, []);
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      if (!selectedProduct) return;
+    const fetchReviews = async (idProduct) => {
       try {
         setLoading(true);
         const res = await fetch(
-          `https://kltn.azurewebsites.net/api/reviews/product/${selectedProduct.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
+          `https://kltn.azurewebsites.net/api/ProductReviews/product/${idProduct}`
         );
         if (!res.ok) throw new Error("Lỗi tải đánh giá");
 
         const allReviews = await res.json();
 
-        const count = allReviews.length;
+        // Chuyển đổi sang định dạng ReviewList cần
+        const formattedReviews = allReviews.map((r) => ({
+          id: r.id,
+          rating: r.rating,
+          content: r.content,
+          date: r.createdAt,
+          userId: r.userId, // có thể thay bằng tên thật nếu API trả về
+          replyAt: r.replyAt,
+          shopReply: r.shopReply,
+        }));
+
+        const count = formattedReviews.length;
         const value =
           count > 0
-            ? allReviews.reduce((sum, r) => sum + r.rating, 0) / count
+            ? formattedReviews.reduce((sum, r) => sum + r.rating, 0) / count
             : 0;
 
         setProductRatings((prev) => ({
           ...prev,
-          [selectedProduct.id]: { value, count },
+          [idProduct]: { value, count },
         }));
 
-        setReviews(allReviews);
+        setReviews(formattedReviews);
       } catch (error) {
         console.error("Lỗi tải đánh giá:", error);
       } finally {
@@ -151,7 +128,9 @@ const SellerReviewPage = ({ sellerId }) => {
       }
     };
 
-    fetchReviews();
+    if (selectedProduct?.id) {
+      fetchReviews(selectedProduct.id);
+    }
   }, [selectedProduct]);
 
   const handlePageChange = (pageNumber) => {
@@ -194,18 +173,10 @@ const SellerReviewPage = ({ sellerId }) => {
       ? productRatings[selectedProduct.id].count
       : 0;
 
-  const displayedReviews =
-    reviews.length > 0 ? reviews : selectedProduct ? reviewsSample : [];
-
-  const paginatedReviews = displayedReviews.slice(
+  const paginatedReviews = reviews.slice(
     (currentPage - 1) * reviewsPerPage,
     currentPage * reviewsPerPage
   );
-  useEffect(() => {
-    if (selectedProduct) {
-      setReviews(reviewsSample); // Ép để test
-    }
-  }, [selectedProduct]);
 
   return (
     <div className="seller-review-page">
@@ -220,29 +191,26 @@ const SellerReviewPage = ({ sellerId }) => {
       />
 
       <div className="product-summary">
-        {filteredProducts.map((product) => (
-          <SellerProductMiniCard
-            key={product.id}
-            product={product}
-            onClick={() => handleProductClick(product)}
-            value={value_tmp}
-            count={count_tmp}
-            productReviews={reviewsSample}
-          />
-        ))}
+        {filteredProducts.map((product) => {
+          const ratingData = productRatings[product.id] || {
+            value: 0,
+            count: 0,
+          };
+          return (
+            <SellerProductMiniCard
+              key={product.id}
+              product={product}
+              onClick={() => handleProductClick(product)}
+              value={ratingData.value}
+              count={ratingData.count}
+              productReviews={product.id === selectedProduct?.id ? reviews : []}
+            />
+          );
+        })}
       </div>
 
       {selectedProduct && (
         <>
-          <ReviewList
-            reviews={paginatedReviews}
-            reply={reply}
-            openReview={openReview}
-            onReplyChange={handleReplyChange}
-            onSubmitReply={handleSubmitReply}
-            onToggleReply={toggleReplySection}
-          />
-
           <div className="pagination">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
@@ -253,7 +221,7 @@ const SellerReviewPage = ({ sellerId }) => {
             <span>{currentPage}</span>
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage * reviewsPerPage >= displayedReviews.length}
+              disabled={currentPage * reviewsPerPage >= reviews.length}
             >
               Next
             </button>

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import Popup from "../../../../../src/components/Common/Popup.jsx";
 import "./OrderHistory.css";
 import RatingForm from "../../components/Rating/RatingForm.jsx";
+import { useUser } from "../../../../contexts/UserContext.jsx";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
+  const { user } = useUser();
   const [orderItems, setOrderItems] = useState({});
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
@@ -13,6 +15,9 @@ const OrderHistory = () => {
   const [showRatingPopup, setShowRatingPopup] = useState(false);
   const [ratingOrder, setRatingOrder] = useState(null);
   const [ratingItems, setRatingItems] = useState([]);
+
+  // State lưu danh sách orderId đã từng đánh giá trong phiên này
+  const [ratedOrders, setRatedOrders] = useState([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -105,6 +110,15 @@ const OrderHistory = () => {
     }
   };
 
+  const handleSubmitRating = (ratings) => {
+    console.log("Đã gửi đánh giá:", ratings);
+    alert("Đánh giá của bạn đã được gửi!");
+    setShowRatingPopup(false);
+    if (ratingOrder !== null) {
+      setRatedOrders((prev) => [...prev, ratingOrder]);
+    }
+  };
+
   if (loading) return <p>Đang tải đơn hàng...</p>;
   if (!orders.length) return <p>Bạn chưa có đơn hàng nào.</p>;
 
@@ -147,14 +161,15 @@ const OrderHistory = () => {
                   Hủy đơn
                 </button>
               )}
-              {order.status === "Đã giao" && (
-                <button
-                  className="btn btn-review"
-                  onClick={() => handleRating(order.id)}
-                >
-                  Đánh giá
-                </button>
-              )}
+              {order.status === "Đã giao" &&
+                !ratedOrders.includes(order.id) && (
+                  <button
+                    className="btn btn-review"
+                    onClick={() => handleRating(order.id)}
+                  >
+                    Đánh giá
+                  </button>
+                )}
             </div>
 
             {expandedOrderId === order.id && (
@@ -208,10 +223,8 @@ const OrderHistory = () => {
         >
           <RatingForm
             products={ratingItems}
-            onSubmit={(data) => {
-              console.log("Đánh giá:", data);
-              setShowRatingPopup(false);
-            }}
+            userId={Number(user.userId)}
+            onSubmit={handleSubmitRating}
             onCancel={() => setShowRatingPopup(false)}
           />
         </Popup>

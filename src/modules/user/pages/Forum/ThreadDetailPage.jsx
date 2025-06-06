@@ -84,6 +84,9 @@ function ThreadDetailPage() {
       console.error("Lỗi khi tải người dùng:", error);
     }
   };
+      useEffect(() => {
+            fetchUser(thread.userId);
+    }, [thread]);
 
     useEffect(() => {
         if (thread) {

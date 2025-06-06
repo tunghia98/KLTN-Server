@@ -8,7 +8,7 @@ const ReviewList = ({
   openReview,
   onReplyChange,
   onSubmitReply,
-  onToggleReply,
+  toggleReplySection,
 }) => {
   return (
     <div className="review-list">
@@ -19,7 +19,7 @@ const ReviewList = ({
           <div key={review.id} className="review-item">
             <ReviewCard review={review} />
             <div className="review-actions">
-              <button onClick={() => onToggleReply(review.id)}>
+              <button onClick={() => toggleReplySection(review.id)}>
                 {openReview === review.id ? "Ẩn phần trả lời" : "Trả lời"}
               </button>
               {openReview === review.id && (

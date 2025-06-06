@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import StarRatingInput from "./StarRatingInput";
 import "./RatingForm.css";
 
-const RatingForm = ({ products = [], onSubmit, onCancel }) => {
+const RatingForm = ({ products = [], userId, onSubmit, onCancel }) => {
+  const accessToken = localStorage.getItem("accessToken");
+
   const [ratings, setRatings] = useState(
     products.map((product) => ({
       productId: product.id,
@@ -13,13 +15,60 @@ const RatingForm = ({ products = [], onSubmit, onCancel }) => {
   );
 
   const handleChange = (index, field, value) => {
-    const newRatings = [...ratings];
-    newRatings[index][field] = value;
-    setRatings(newRatings);
+    const updated = [...ratings];
+    updated[index][field] = value;
+    setRatings(updated);
   };
 
-  const handleSubmit = (e) => {
+  const fetchReview = async (productId, content, rating) => {
+    try {
+      const res = await fetch(
+        `https://kltn.azurewebsites.net/api/ProductReviews`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            productId: productId,
+            userId: userId,
+            content: content,
+            rating: rating,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        const errorText = await res.text(); // dùng .text() để đọc raw lỗi
+        console.error("Lỗi khi gửi đánh giá:", errorText);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Lỗi fetchReview:", error);
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    for (const item of ratings) {
+      if (item.rating > 0 && item.comment.trim()) {
+        const success = await fetchReview(
+          item.productId,
+          item.comment,
+          item.rating
+        );
+        if (!success) {
+          alert(`Gửi đánh giá cho sản phẩm ${item.productName} thất bại!`);
+          return;
+        }
+      }
+    }
+
     if (onSubmit) onSubmit(ratings);
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../../../contexts/UserContext.jsx";
 import { useCart } from "../../../../contexts/CartContext.jsx";
@@ -16,7 +16,6 @@ function ProductDetail({ product, seller, sellerAddress }) {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const { fetchCartFromBackend } = useCart();
-  const productSellCounter = 10;
   const [showDiscount, setShowDiscount] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
   const [regularPrice, setRegularPrice] = useState(null);
@@ -27,6 +26,10 @@ function ProductDetail({ product, seller, sellerAddress }) {
   const [count, setCount] = useState([]);
   const [promotionId, setPromotionId] = useState([]);
   const [promotions, setPromotions] = useState([]);
+  const [sellerProductsCount, setSellerProductsCount] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [dataRating, setDataRating] = useState(null);
   // Cập nhật giá khi có discount
   useEffect(() => {
     if (discount === 0) {
@@ -188,7 +191,7 @@ function ProductDetail({ product, seller, sellerAddress }) {
       if (!res.ok) throw new Error("Lấy đánh giá thất bại");
 
       const data = await res.json();
-
+      setDataRating(data);
       const totalRating = data.reduce((sum, item) => sum + item.rating, 0); // ✅ tính tổng rating
       const count = data.length;
       const averageRating = totalRating / count;
@@ -330,7 +333,36 @@ function ProductDetail({ product, seller, sellerAddress }) {
   const sellerSlug = `${seller?.id}-${toSlug(seller?.name)}`;
   const path = `/products/${productSlug}`;
   const sellerPath = `/sellers/${sellerSlug}`;
+  const fetchSellerProductsCount = async (sellerId) => {
+    try {
+      setLoading(true);
 
+      // 1. Fetch products song song (hiện tại chỉ có 1 API)
+      const [productRes] = await Promise.all([
+        fetch(
+          `https://kltn.azurewebsites.net/api/Products/by-shop/${sellerId}`
+        ),
+      ]);
+
+      if (!productRes.ok) {
+        throw new Error("Không thể tải dữ liệu");
+      }
+
+      const products = await productRes.json();
+
+      // 5. Set state
+      setSellerProductsCount(products?.length || 0);
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchSellerProductsCount(seller.id);
+  }, [seller.id]);
+  console.log(sellerProductsCount);
   return (
     <div className="product-detail">
       <div className="product-detail-img">
@@ -377,7 +409,7 @@ function ProductDetail({ product, seller, sellerAddress }) {
 
           <div className="product-rating-and-sold">
             <RatingProduct value={average} count={count} />
-            <p>Đã bán: {productSellCounter}</p>
+            <p>Đã bán: {product.bestSeller}</p>
           </div>
 
           <div className="product-price-and-discount">
@@ -441,7 +473,11 @@ function ProductDetail({ product, seller, sellerAddress }) {
                   // giả sử loại amount là giảm tiền cố định
                   description = `Giảm giá ${promo.value.toLocaleString(
                     "vi-VN"
-                  )}₫ với mã ${promo.code} khi hóa đơn đặt hàng trên ${promo.condition.toLocaleString("vi-VN")}đ`;
+                  )}₫ với mã ${
+                    promo.code
+                  } khi hóa đơn đặt hàng trên ${promo.condition.toLocaleString(
+                    "vi-VN"
+                  )}đ`;
                 } else {
                   description = `Mã giảm giá ${promo.code} - ${promo.type}`;
                 }
@@ -466,8 +502,8 @@ function ProductDetail({ product, seller, sellerAddress }) {
           <div className="supply-information">
             <Link to={sellerPath}>{seller?.name || "Shop"}</Link>
             <div className="supply-rating-and-sold">
-              <RatingShop value={average} count={count} size={24} />
-              <span>{productSellCounter} sản phẩm</span>
+              <RatingShop seller={seller} data={dataRating} />
+              <span>{sellerProductsCount} sản phẩm</span>
             </div>
           </div>
         </div>
