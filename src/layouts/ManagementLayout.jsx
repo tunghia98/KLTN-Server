@@ -34,9 +34,9 @@ function ManagementLayout({ children }) {
           <li>
             <Link to="/admin/support-channel">Kênh hỗ trợ</Link>
           </li> */}
-          <li>
+          {/* <li>
             <Link to="/admin/customization">Tùy chỉnh</Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/admin/forum">Quản lý diễn đàn</Link>
           </li>
@@ -58,9 +58,9 @@ function ManagementLayout({ children }) {
             <li>
               <Link to="/seller/statistics">Thống kê</Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="/seller/delivery">Vận chuyển</Link>
-            </li>
+            </li> */}
             <li>
               <Link to="/seller/promotions">Khuyến mãi</Link>
             </li>

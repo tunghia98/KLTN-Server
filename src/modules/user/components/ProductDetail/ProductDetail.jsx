@@ -491,7 +491,7 @@ function ProductDetail({ product, seller, sellerAddress }) {
 
           <div className="delivery-fee">
             <p>Phí vận chuyển</p>
-            <span>Miễn phí</span>
+            <span>Liên hệ</span>
           </div>
         </div>
 

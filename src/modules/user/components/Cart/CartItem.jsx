@@ -9,7 +9,6 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onTog
             .then(res => res.json())
             .then(data => {
                 setMaxQuantity(data.quantity);
-                console.log(data.quantity)
                 // Bạn có thể lưu data.quantity vào state để sử dụng giới hạn quantity nhập
             })
             .catch(err => console.error(err));

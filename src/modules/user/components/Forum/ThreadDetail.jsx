@@ -79,7 +79,7 @@ function ThreadDetail({
   };
 
   if (!thread) return <p className="thread-empty">Chủ đề không tồn tại.</p>;
-
+  const contentData = JSON.parse(thread.content);
   return (
     <div className="thread-detail-container">
       <div className="thread-detail-card">
@@ -98,7 +98,13 @@ function ThreadDetail({
         </div>
 
         <div className="thread-detail-content">
-          <p>{thread.content}</p>
+          <p>
+            {contentData.blocks
+              .filter((block) => block.type === "paragraph")
+              .map((block) => block.data.text)
+              .join("\n")}
+          </p>
+
           <button onClick={handleLikePost} className="like-button">
             {user ? "👍 Thích bài viết" : "Đăng nhập để thích bài viết"}
           </button>

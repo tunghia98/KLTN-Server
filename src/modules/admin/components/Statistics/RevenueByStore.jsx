@@ -3,80 +3,117 @@ import { useUser } from "../../../../contexts/UserContext";
 
 export default function RevenueByStore() {
   const { user } = useUser();
-  const [revenueByStore, setRevenueByStore] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [fromDate, setFromDate] = useState("2025-06-01");
+  const [toDate, setToDate] = useState("2025-06-30");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `https://kltn.azurewebsites.net/api/SystemReport/revenue-by-shop`,
-        {
+  useEffect(() => {
+    if (user?.role !== "admin") return;
+
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(`https://kltn.azurewebsites.net/api/orders`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
-      );
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch revenue by store");
+        if (!res.ok) throw new Error("Lỗi khi tải đơn hàng");
+
+        const data = await res.json();
+        console.log(data);
+        const deliveredOrders = data.filter((o) => o.status === "Đã giao");
+        setOrders(deliveredOrders);
+      } catch (err) {
+        setError(err.message || "Lỗi xảy ra khi tải dữ liệu");
+        setOrders([]);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const data = await response.json();
-      setRevenueByStore(data);
-    } catch (error) {
-      setError(error.message || "Có lỗi xảy ra");
-      setRevenueByStore([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user?.role === "admin") {
-      fetchData();
-    } else {
-      setRevenueByStore([]);
-    }
+    fetchOrders();
   }, [user]);
 
-  // Format tiền VND cho hiển thị
-  const formatCurrency = (value) => {
-    return value.toLocaleString("vi-VN", {
+  const revenueByShop = (() => {
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    to.setHours(23, 59, 59, 999);
+
+    const shopMap = new Map();
+    console.log(orders);
+    orders.forEach((order) => {
+      const orderDate = new Date(order.orderDate);
+      if (orderDate >= from && orderDate <= to) {
+        const key = order.shopId;
+        const existing = shopMap.get(key) || {
+          shopId: order.shopId,
+          shopName: order.shopName,
+          totalRevenue: 0,
+        };
+        existing.totalRevenue += order.totalAmount || 0;
+        shopMap.set(key, existing);
+      }
+    });
+
+    return Array.from(shopMap.values());
+  })();
+
+  const formatCurrency = (value) =>
+    value.toLocaleString("vi-VN", {
       style: "currency",
       currency: "VND",
     });
-  };
 
   return (
     <div>
       <h2>Doanh thu theo cửa hàng</h2>
 
+      <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+        <label>
+          Từ ngày:{" "}
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            max={toDate}
+          />
+        </label>
+        <label>
+          Đến ngày:{" "}
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            min={fromDate}
+          />
+        </label>
+      </div>
+
       {loading && <p>Đang tải dữ liệu...</p>}
-
       {error && <p style={{ color: "red" }}>Lỗi: {error}</p>}
-
-      {!loading && !error && revenueByStore.length === 0 && (
-        <p>Không có dữ liệu doanh thu.</p>
+      {!loading && !error && revenueByShop.length === 0 && (
+        <p>Không có dữ liệu doanh thu trong khoảng thời gian đã chọn.</p>
       )}
-
-      {!loading && !error && revenueByStore.length > 0 && (
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          {revenueByStore.map((store) => (
+      {!loading && !error && revenueByShop.length > 0 && (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {revenueByShop.map((shop) => (
             <li
-              key={store.storeId}
+              key={shop.shopId}
               style={{
-                padding: "8px 12px",
-                borderBottom: "1px solid #ddd",
+                padding: "10px 16px",
+                borderBottom: "1px solid #eee",
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
               }}
             >
-              <span style={{ fontWeight: "bold" }}>{store.storeName}</span>
-              <span>{formatCurrency(store.totalRevenue)}</span>
+              <span style={{ fontWeight: "bold" }}>{shop.shopName}</span>
+              <span>{formatCurrency(shop.totalRevenue)}</span>
             </li>
           ))}
         </ul>
