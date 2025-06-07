@@ -81,7 +81,6 @@ const CartPage = () => {
       if (!groups[item.shopId]) groups[item.shopId] = [];
       groups[item.shopId].push(item);
     });
-    console.log(groups);
     return groups;
   };
 

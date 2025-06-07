@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Cart.css";
 import QuantitySelector from "../../../../components/Common/QuantitySelector.jsx";
 
 const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onToggleCheckAll }) => {
-    if (!item) return null;
-
+    const [maxQuantity, setMaxQuantity] = useState(99);
+    useEffect(() => {
+        fetch(`https://kltn.azurewebsites.net/api/products/${item.productId}`)
+            .then(res => res.json())
+            .then(data => {
+                setMaxQuantity(data.quantity);
+                console.log(data.quantity)
+                // Bạn có thể lưu data.quantity vào state để sử dụng giới hạn quantity nhập
+            })
+            .catch(err => console.error(err));
+    }, [item.productId]);
   return (
     <div className="cart-item grid-item">
       <input type="checkbox" className="cart-item-checkbox"   checked={item.checked}
@@ -29,7 +38,8 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove, onToggleCheck, onTog
 
       <div className="cart-item-quantity">
         <QuantitySelector
-          quantity={item.quantity}
+                  quantity={item.quantity}
+                  maxQuantity={maxQuantity} 
                   onIncrease={() => onIncrease(item.productId)}
                   onDecrease={() => onDecrease(item.productId)}
         />

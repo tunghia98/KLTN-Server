@@ -14,7 +14,6 @@ function ProductDetail({ product, seller, sellerAddress }) {
   const user = useUser();
   const { name, price, description, images = [], discount, id } = product;
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
   const { fetchCartFromBackend } = useCart();
   const [showDiscount, setShowDiscount] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
@@ -29,7 +28,44 @@ function ProductDetail({ product, seller, sellerAddress }) {
   const [sellerProductsCount, setSellerProductsCount] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [dataRating, setDataRating] = useState(null);
+    const [dataRating, setDataRating] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+    const increaseQuantity = () => {
+        if (quantity < product.quantity) {
+            setQuantity(prev => prev + 1);
+        }
+    };
+
+    const decreaseQuantity = () => {
+        if (quantity > 1) {
+            setQuantity(prev => prev - 1);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+
+        // Chỉ cho phép số
+        if (/^\d*$/.test(value)) {
+            const num = parseInt(value, 10);
+
+            // Nếu input rỗng hoặc là số trong khoảng hợp lệ
+            if (value === '') {
+                setQuantity('');
+            } else if (num >= 1 && num <= product.quantity) {
+                setQuantity(num);
+            } else if (num > product.quantity) {
+                setQuantity(product.quantity);
+            }
+        }
+    };
+
+    const handleBlur = () => {
+        // Khi người dùng rời khỏi input, đảm bảo quantity hợp lệ
+        if (quantity === '' || quantity < 1) {
+            setQuantity(1);
+        }
+    };
   // Cập nhật giá khi có discount
   useEffect(() => {
     if (discount === 0) {
@@ -42,8 +78,7 @@ function ProductDetail({ product, seller, sellerAddress }) {
     }
   }, [discount, price]);
 
-  const increaseQuantity = () => setQuantity((prev) => Math.min(prev + 1, 100));
-  const decreaseQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
+
 
   const handleBuyNow = async () => {
     const accessToken = localStorage.getItem("accessToken");
@@ -74,7 +109,7 @@ function ProductDetail({ product, seller, sellerAddress }) {
         },
         body: JSON.stringify({
           productId: product.id,
-          quantity: 1,
+            quantity: quantity,
         }),
       });
 
@@ -407,8 +442,10 @@ function ProductDetail({ product, seller, sellerAddress }) {
             <h1>{name}</h1>
           </div>
 
-          <div className="product-rating-and-sold">
-            <RatingProduct value={average} count={count} />
+            <div className="product-rating-and-sold">
+                      
+                      <RatingProduct value={average} count={count} />
+                      <p>Số lượng: {product.quantity}</p>
             <p>Đã bán: {product.bestSeller}</p>
           </div>
 
@@ -511,9 +548,14 @@ function ProductDetail({ product, seller, sellerAddress }) {
         <div className="product-quantity">
           <label>Số lượng:</label>
           <div className="quantity-controls">
-            <button onClick={decreaseQuantity}>-</button>
-            <input type="text" value={quantity} readOnly />
-            <button onClick={increaseQuantity}>+</button>
+                      <button onClick={decreaseQuantity}>-</button>
+                      <input
+                          type="text"
+                          value={quantity}
+                          onChange={handleInputChange}
+                          onBlur={handleBlur}
+                      />
+                      <button onClick={increaseQuantity}>+</button>
           </div>
         </div>
         <div className="button-transactions">
