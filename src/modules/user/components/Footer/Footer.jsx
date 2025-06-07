@@ -93,8 +93,22 @@ function Footer() {
             </div>
 
             <div className="grid-item-payment-shipping">
-              <h4 className="title">HÌNH THỨC THANH TOÁN</h4>
-              <div>COD</div>
+              <h4 className="title">THANH TOÁN & VẬN CHUYỂN</h4>
+              <ul className="payment-shipping-notes">
+                <li>
+                  Người bán sẽ liên hệ qua số điện thoại của bạn để hoàn tất đơn
+                  đặt hàng.
+                </li>
+                <li>
+                  Vui lòng cân nhắc kỹ trước khi giao dịch để đảm bảo quyền lợi
+                  của chính mình.
+                </li>
+                <li>
+                  <strong>
+                    Hãy báo cáo nếu sản phẩm không đảm bảo chất lượng.
+                  </strong>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
