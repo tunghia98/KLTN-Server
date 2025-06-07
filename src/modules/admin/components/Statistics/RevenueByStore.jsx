@@ -1,14 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "../../../../contexts/UserContext";
+import "../../../seller/components/Statistics/Statistics.css";
 
 export default function RevenueByStore() {
   const { user } = useUser();
   const [orders, setOrders] = useState([]);
+  const [shops, setShops] = useState([]);
   const [fromDate, setFromDate] = useState("2025-06-01");
   const [toDate, setToDate] = useState("2025-06-30");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("desc"); // "asc" | "desc"
 
+  // Fetch all shops
+  useEffect(() => {
+    const fetchShops = async () => {
+      try {
+        const res = await fetch("https://kltn.azurewebsites.net/api/Shops");
+        if (!res.ok) throw new Error("Không thể tải cửa hàng");
+        const data = await res.json();
+        setShops(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchShops();
+  }, []);
+
+  // Fetch delivered orders
   useEffect(() => {
     if (user?.role !== "admin") return;
 
@@ -26,7 +47,6 @@ export default function RevenueByStore() {
         if (!res.ok) throw new Error("Lỗi khi tải đơn hàng");
 
         const data = await res.json();
-        console.log(data);
         const deliveredOrders = data.filter((o) => o.status === "Đã giao");
         setOrders(deliveredOrders);
       } catch (err) {
@@ -40,20 +60,22 @@ export default function RevenueByStore() {
     fetchOrders();
   }, [user]);
 
+  // Revenue calculation
   const revenueByShop = (() => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
     to.setHours(23, 59, 59, 999);
 
     const shopMap = new Map();
-    console.log(orders);
+
     orders.forEach((order) => {
       const orderDate = new Date(order.orderDate);
       if (orderDate >= from && orderDate <= to) {
         const key = order.shopId;
         const existing = shopMap.get(key) || {
           shopId: order.shopId,
-          shopName: order.shopName,
+          shopName:
+            shops.find((s) => s.id === order.shopId)?.name || "Không rõ",
           totalRevenue: 0,
         };
         existing.totalRevenue += order.totalAmount || 0;
@@ -61,7 +83,23 @@ export default function RevenueByStore() {
       }
     });
 
-    return Array.from(shopMap.values());
+    let result = Array.from(shopMap.values());
+
+    // Search filter
+    if (searchTerm.trim()) {
+      result = result.filter((shop) =>
+        shop.shopName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sort filter
+    result.sort((a, b) =>
+      sortOrder === "asc"
+        ? a.totalRevenue - b.totalRevenue
+        : b.totalRevenue - a.totalRevenue
+    );
+
+    return result;
   })();
 
   const formatCurrency = (value) =>
@@ -71,7 +109,7 @@ export default function RevenueByStore() {
     });
 
   return (
-    <div>
+    <div className="statistics-container">
       <h2>Doanh thu theo cửa hàng</h2>
 
       <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
@@ -93,6 +131,24 @@ export default function RevenueByStore() {
             min={fromDate}
           />
         </label>
+      </div>
+
+      <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+        <input
+          type="text"
+          placeholder="Tìm kiếm tên cửa hàng..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ padding: "6px", flex: 1 }}
+        />
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          style={{ padding: "6px" }}
+        >
+          <option value="desc">Doanh thu cao → thấp</option>
+          <option value="asc">Doanh thu thấp → cao</option>
+        </select>
       </div>
 
       {loading && <p>Đang tải dữ liệu...</p>}

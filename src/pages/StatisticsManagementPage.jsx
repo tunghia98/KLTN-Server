@@ -10,7 +10,6 @@ import "./StatisticsManagementPage.css";
 
 // Component chung
 export default function StatisticsManagement({ role = "seller" }) {
-
   const isAdmin = role === "admin";
 
   const TABS = [
@@ -22,7 +21,7 @@ export default function StatisticsManagement({ role = "seller" }) {
     ...(isAdmin
       ? [
           { key: "revenueByStore", label: "Doanh thu theo cửa hàng" },
-          { key: "revenueByCategory", label: "Doanh thu theo danh mục" },
+          // { key: "revenueByCategory", label: "Doanh thu theo danh mục" },
         ]
       : []),
   ];
@@ -34,7 +33,7 @@ export default function StatisticsManagement({ role = "seller" }) {
     revenue: <RevenueStats />,
     top: <TopProducts />,
     revenueByStore: <RevenueByStore />,
-    revenueByCategory: <RevenueByCategory />,
+    // revenueByCategory: <RevenueByCategory />,
   };
 
   const [activeTab, setActiveTab] = useState("total");

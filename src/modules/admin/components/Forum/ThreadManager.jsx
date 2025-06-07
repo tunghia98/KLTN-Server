@@ -29,36 +29,6 @@ export default function ThreadManager() {
     fetchThreads();
   }, []);
 
-  const isOlderThan7Days = (dateString) => {
-    const createdDate = new Date(dateString);
-    const now = new Date();
-    const diffInDays = (now - createdDate) / (1000 * 60 * 60 * 24);
-    return diffInDays >= 7;
-  };
-
-  const handleAutoReply = async (threadId) => {
-    try {
-      const res = await fetch(
-        `https://kltn.azurewebsites.net/api/forumposts/${threadId}/auto-reply`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error("Trả lời thất bại");
-
-      alert("✅ Đã trả lời tự động.");
-      fetchThreads();
-    } catch (err) {
-      console.error("Lỗi trả lời tự động:", err);
-      alert("❌ Trả lời tự động thất bại.");
-    }
-  };
-
   const filteredThreads = (
     filter === "unanswered"
       ? threads.filter((thread) => thread.commentCount === 0)
@@ -77,13 +47,13 @@ export default function ThreadManager() {
           className={filter === "all" ? "active" : ""}
           onClick={() => setFilter("all")}
         >
-          Tất cả bài viết
+          Tất cả bài viết <span>({threads.length})</span>
         </button>
         <button
           className={filter === "unanswered" ? "active" : ""}
           onClick={() => setFilter("unanswered")}
         >
-          Bài viết chưa có câu trả lời
+          Bài viết chưa có câu trả lời <span>({filter.length})</span>
         </button>
       </div>
 
@@ -120,14 +90,6 @@ export default function ThreadManager() {
                 {thread.authorName} –{" "}
                 {new Date(thread.createdAt).toLocaleDateString()}
               </div>
-              {filter === "unanswered" && (
-                <button
-                  className="auto-reply-btn"
-                  onClick={() => handleAutoReply(thread.id)}
-                >
-                  Trả lời tự động
-                </button>
-              )}
             </li>
           ))}
         </ul>
